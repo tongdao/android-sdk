@@ -74,7 +74,7 @@ public class TongDao {
         try {
             return TongDaoDeviceUuidFactory.getDeviceUuid(appContext).toString();
         } catch (UnsupportedEncodingException e) {
-            Log.e("LingQianV2", "UnsupportedEncodingException");
+            Log.e("TongRd SDK", "UnsupportedEncodingException");
         }
         return null;
     }
@@ -86,7 +86,7 @@ public class TongDao {
      */
     public static void track(String eventName) {
         if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
-            Log.e("track permission", "! is not allowed start for action");
+            Log.e("TongRd SDK", "event starting with ! are reserved");
         } else {
             sendEvent(ACTION_TYPE.track, eventName, null);
         }
@@ -100,7 +100,7 @@ public class TongDao {
      */
     public static void track(String eventName, HashMap<String, Object> values) {
         if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
-            Log.e("track permission", "! is not allowed start for action");
+            Log.e("TongRd SDK", "event starting with ! are reserved");
         } else {
             try {
                 sendEvent(ACTION_TYPE.track, eventName, TongDaoDataTool.makeUserProperties(values));
@@ -676,8 +676,6 @@ public class TongDao {
             long messageId = messageObj.optLong(MESSAGE_TAG);
             long clientId = messageObj.optLong(CLIENT_TAG);
             if (messageId != 0 && clientId != 0) {
-                Log.e("mid", "" + messageId);
-                Log.e("cid", "" + clientId);
                 sendOpenMessage("!open_message", messageId, clientId);
             }
         } catch (JSONException e) {
@@ -780,8 +778,6 @@ public class TongDao {
             long messageId = tdMessageBean.getMid();
             long clientId = tdMessageBean.getCid();
             if (messageId != 0 && clientId != 0) {
-                Log.e("mid", "" + messageId);
-                Log.e("cid", "" + clientId);
                 sendOpenMessage("!open_message", messageId, clientId);
             }
         } catch (JSONException e) {
@@ -804,8 +800,6 @@ public class TongDao {
             long messageId = tdMessageBean.getMid();
             long clientId = tdMessageBean.getCid();
             if (messageId != 0 && clientId != 0) {
-                Log.e("mid", "" + messageId);
-                Log.e("cid", "" + clientId);
                 sendOpenMessage("!receive_message", messageId, clientId);
             }
         } catch (JSONException e) {

@@ -229,7 +229,6 @@ public class TongDaoBridge {
                         @Override
                         public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
                             setCanRun(true);
-                            Log.e("onSuccess", "" + statusCode);
                             if (isNeedRun()) {
                                 trackEvents(null);
                             }
@@ -261,7 +260,6 @@ public class TongDaoBridge {
     }
 
     private void onServerError(int statusCode, JSONObject errorResponse, OnErrorListener onErrorListener) {
-        Log.e("onFailure", "" + statusCode);
         if (errorResponse == null) {
             if (onErrorListener != null) {
                 TdErrorBean trackErrorBean = new TdErrorBean();
