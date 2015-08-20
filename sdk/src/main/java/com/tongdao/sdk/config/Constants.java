@@ -1,7 +1,7 @@
 package com.tongdao.sdk.config;
 
 public class Constants {
-    public final static String API_URL = "https://api.jarkaslab.com/";
+    public final static String API_URL = "https://api.tongrd.com/";
     public final static String API_VERSION = "v2/";
 
     public final static String API_URI_EVENTS = "events";
