@@ -97,6 +97,10 @@ public class TongDaoApiTool {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeaders(generateHeaders(appKey, false, false, requestProperties));
         httpPost.setEntity(new StringEntity(content, "UTF-8"));
+        if(null != requestProperties){
+            android.util.Log.v("requestProperties == ", requestProperties.toString());
+        }
+
         HttpResponse httpResponse = httpClient.execute(httpPost);
         int resCode = httpResponse.getStatusLine().getStatusCode();
 

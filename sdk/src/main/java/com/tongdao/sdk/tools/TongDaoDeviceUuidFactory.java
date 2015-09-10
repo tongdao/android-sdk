@@ -38,11 +38,11 @@ public class TongDaoDeviceUuidFactory {
         if (uuid == null) {
             synchronized (TongDaoDeviceUuidFactory.class) {
                 if (uuid == null) {
-                    final String id = TongDaoSavingTool.getUserId(context);
+                    /*final String id = TongDaoSavingTool.getUserId(context);
                     if (id != null) {
                         // Use the ids previously computed and stored in the prefs file
                         uuid = UUID.fromString(id);
-                    } else {
+                    } else {*/
                         final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
                         // Use the Android ID unless it's broken, in which case fallback on deviceId,
                         // unless it's not available, then fallback on a random number which we store
@@ -53,7 +53,7 @@ public class TongDaoDeviceUuidFactory {
                             final String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
                             uuid = deviceId != null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")) : UUID.randomUUID();
                         }
-                    }
+                    //}
                 }
             }
         }

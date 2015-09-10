@@ -8,17 +8,27 @@ import com.tongdao.sdk.tools.TongDaoCheckTool;
 public class TdEventBean {
 
     public enum ACTION_TYPE {
-        identify, track
+        merge, identify, track
     }
 
     private ACTION_TYPE action;
     private String userId;
+    private String previousId;
     private String event;
     private JSONObject properties;
     private String timestamp;
 
     public TdEventBean(ACTION_TYPE action, String userId, String event, JSONObject properties) {
         this.action = action;
+        this.userId = userId;
+        this.event = event;
+        this.properties = properties;
+        this.timestamp = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+    }
+
+    public TdEventBean(ACTION_TYPE action, String userId, String previousId, String event, JSONObject properties) {
+        this.action = action;
+        this.previousId = previousId;
         this.userId = userId;
         this.event = event;
         this.properties = properties;

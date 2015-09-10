@@ -36,6 +36,8 @@ public class TongDaoBridge {
     private static TongDaoBridge uniqueInstance = null;
     private String APP_KEY;
     private String USER_ID;
+    private String PREVIOUS_ID;
+    private boolean ANONYMOUS;
     private Context appContext;
     private ArrayList<TdEventBean> eventList = new ArrayList<TdEventBean>();
     private ArrayList<TdEventBean> waitingList = new ArrayList<TdEventBean>();
@@ -71,9 +73,24 @@ public class TongDaoBridge {
         TongDaoSavingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
+    private TongDaoBridge(Context appContext, String appKey, String userId, String previousId, boolean anonymous) {
+        this.appContext = appContext;
+        this.APP_KEY = appKey;
+        this.USER_ID = userId;
+        this.PREVIOUS_ID = previousId;
+        this.ANONYMOUS = anonymous;
+        TongDaoSavingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
+    }
+
     public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String USER_ID) {
         if (uniqueInstance == null) {
             uniqueInstance = new TongDaoBridge(appContext, APP_KEY, USER_ID);
+        }
+        return uniqueInstance;
+    }
+    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String USER_ID, String PREVIOUS_ID, boolean ANONYMOUS) {
+        if (uniqueInstance == null) {
+            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, USER_ID, PREVIOUS_ID, ANONYMOUS);
         }
         return uniqueInstance;
     }
@@ -89,6 +106,39 @@ public class TongDaoBridge {
                             JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
                             if (properties != null && USER_ID != null) {
                                 TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
+                                trackEvents(tempLqEventBean);
+                            }
+                        } catch (JSONException e) {
+                            Log.e("init properties", "JSONException");
+                        }
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void changePropertiesAndUserId(final ACTION_TYPE actionType, final String previousId, final String userId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (appContext != null) {
+                    String gaid = TongDaoAppInfoTool.getGaid(appContext);
+                    if (appContext != null) {
+                        try {
+                            JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
+                            if(actionType == ACTION_TYPE.merge){
+                                PREVIOUS_ID = previousId;
+                            }
+                            USER_ID = userId;
+                            if (properties != null && USER_ID != null) {
+                                TdEventBean tempLqEventBean = null;
+
+                                if(null == PREVIOUS_ID){
+                                    tempLqEventBean = new TdEventBean(actionType, USER_ID, null, properties);
+                                }else{
+                                    tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, null, properties);
+                                }
+
                                 trackEvents(tempLqEventBean);
                             }
                         } catch (JSONException e) {

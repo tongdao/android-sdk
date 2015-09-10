@@ -21,6 +21,8 @@ import android.util.DisplayMetrics;
 
 public class TongDaoDataTool {
 
+    public static Boolean mAnonymous = true;
+
     public static JSONObject makeInfoProperties(Context appContext, String gaid) throws JSONException {
         JSONObject propertiesObj = new JSONObject();
         //application
@@ -97,7 +99,7 @@ public class TongDaoDataTool {
         }
 
         propertiesObj.put("!fingerprint", fingerprintObj);
-
+        propertiesObj.put("!anonymous", mAnonymous);
         return propertiesObj;
     }
 
@@ -295,4 +297,11 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
+    public static void setAnonymous(Boolean anonymous){
+        mAnonymous = anonymous;
+    }
+
+    public static Boolean getAnonymous(){
+        return mAnonymous;
+    }
 }

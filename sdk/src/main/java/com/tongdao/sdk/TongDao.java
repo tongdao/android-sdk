@@ -33,6 +33,7 @@ import com.tongdao.sdk.tools.TongDaoCheckTool;
 import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
+import com.tongdao.sdk.tools.TongDaoSavingTool;
 
 public class TongDao {
 
@@ -64,6 +65,58 @@ public class TongDao {
         }
     }
 
+    /**
+     * 初始化同道服务,请在onCreate方法中调用
+     *
+     * @param appContext 应用程序的上下文
+     * @param appKey     开发者从同道平台获得的AppKey
+     * @param userId     用户自定义
+     * @return boolean 同道服务的初始化结果
+     */
+    public static boolean init(Context appContext, String appKey, String userId){
+        if(null == userId){
+            userId = TongDao.generateUserId(appContext);
+            if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
+                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, userId);
+                TongDaoSavingTool.setAnonymous(appContext, true);
+                lingQianBridge.init();
+                return true;
+            } else {
+                return false;
+            }
+        }else {
+            if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
+                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, userId, null, false);
+                TongDaoSavingTool.setAnonymous(appContext, false);
+                lingQianBridge.init();
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    /**
+     * 使用用户自定义userid
+     *
+     * @param userId 用户自定义的userid
+     * @return void 没有返回值
+     */
+    public static void setUserId(Context appContext, String userId){
+        if(null == userId){
+            if(!TongDaoSavingTool.getAnonymous(appContext)){
+                TongDaoSavingTool.saveUserInfoData(appContext, TongDao.generateUserId(appContext), TongDao.generateUserId(appContext), true);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.track, null,TongDao.generateUserId(appContext));
+            }
+        }else{
+            if(TongDaoSavingTool.getAnonymous(appContext)){
+                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateUserId(appContext), false);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateUserId(appContext), userId);
+            }else{
+                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateUserId(appContext), false);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.track, TongDao.generateUserId(appContext), userId);
+            }
+        }
+    }
     /**
      * 使用同道SDK生成userId
      *
