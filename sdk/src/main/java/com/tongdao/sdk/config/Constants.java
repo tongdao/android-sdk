@@ -11,5 +11,5 @@ public class Constants {
     public final static String API_URI_MESSAGES = "messages";
     public final static String API_URI_MESSAGES_QS = "user_id=%s";
 
-    public final static int SDK_VERSION = 20104;
+    public final static int SDK_VERSION = 20200;
 }
