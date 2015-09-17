@@ -103,7 +103,6 @@ public class TongDaoApiTool {
 
         HttpResponse httpResponse = httpClient.execute(httpPost);
         int resCode = httpResponse.getStatusLine().getStatusCode();
-
         if (resCode != RES_204 && resCode != RES_200) {
             //error call back
             String errorJsonString = inputStreamTOString(httpResponse.getEntity());

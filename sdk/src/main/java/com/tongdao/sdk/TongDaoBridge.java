@@ -88,6 +88,7 @@ public class TongDaoBridge {
         }
         return uniqueInstance;
     }
+
     public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String USER_ID, String PREVIOUS_ID, boolean ANONYMOUS) {
         if (uniqueInstance == null) {
             uniqueInstance = new TongDaoBridge(appContext, APP_KEY, USER_ID, PREVIOUS_ID, ANONYMOUS);
@@ -117,33 +118,38 @@ public class TongDaoBridge {
         }).start();
     }
 
+    /**
+     * @param actionType 用户动作类型
+     * @param previousId device
+     * @param userIdid   用户设置的id
+     */
     public void changePropertiesAndUserId(final ACTION_TYPE actionType, final String previousId, final String userId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (appContext != null) {
-                    String gaid = TongDaoAppInfoTool.getGaid(appContext);
-                    if (appContext != null) {
-                        try {
-                            JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
-                            if(actionType == ACTION_TYPE.merge){
-                                PREVIOUS_ID = previousId;
-                            }
-                            USER_ID = userId;
-                            if (properties != null && USER_ID != null) {
-                                TdEventBean tempLqEventBean = null;
-
-                                if(null == PREVIOUS_ID){
-                                    tempLqEventBean = new TdEventBean(actionType, USER_ID, null, properties);
-                                }else{
-                                    tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, null, properties);
+                    try {
+                        USER_ID = userId;
+                        if (USER_ID != null) {
+                            TdEventBean tempLqEventBean = null;
+                            PREVIOUS_ID = previousId;
+                            if (actionType == ACTION_TYPE.merge) {
+                                tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, null, null);
+                            } else {
+                                if (PREVIOUS_ID != null) {
+                                    tempLqEventBean = new TdEventBean(ACTION_TYPE.merge, USER_ID, PREVIOUS_ID, null, null);
+                                    trackEvents(tempLqEventBean);
                                 }
+                                String gaid = TongDaoAppInfoTool.getGaid(appContext);
+                                JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
+                                tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, properties);
 
-                                trackEvents(tempLqEventBean);
                             }
-                        } catch (JSONException e) {
-                            Log.e("init properties", "JSONException");
+
+                            trackEvents(tempLqEventBean);
                         }
+                    } catch (JSONException e) {
+                        Log.e("init properties", "JSONException");
                     }
                 }
             }
@@ -175,7 +181,7 @@ public class TongDaoBridge {
         }
 
         eventsObj.put("events", eventsArray);
-//    	 Log.e("event string", eventsObj.toString());
+        Log.e("event string", eventsObj.toString());
         return eventsObj.toString();
     }
 

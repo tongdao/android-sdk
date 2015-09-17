@@ -105,7 +105,7 @@ public class TongDao {
         if(null == userId){
             if(!TongDaoSavingTool.getAnonymous(appContext)){
                 TongDaoSavingTool.saveUserInfoData(appContext, TongDao.generateUserId(appContext), TongDao.generateUserId(appContext), true);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.track, null,TongDao.generateUserId(appContext));
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null,TongDao.generateUserId(appContext));
             }
         }else{
             if(TongDaoSavingTool.getAnonymous(appContext)){
@@ -113,7 +113,7 @@ public class TongDao {
                 lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateUserId(appContext), userId);
             }else{
                 TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateUserId(appContext), false);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.track, TongDao.generateUserId(appContext), userId);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, TongDao.generateUserId(appContext), userId);
             }
         }
     }

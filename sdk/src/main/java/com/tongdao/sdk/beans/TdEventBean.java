@@ -46,6 +46,10 @@ public class TdEventBean {
             tempJsonObj.put("event", this.event);
         }
 
+        if (this.previousId != null && ACTION_TYPE.merge == action) {
+            tempJsonObj.put("previous_id", this.previousId);
+        }
+
         if (this.properties != null) {
             tempJsonObj.put("properties", this.properties);
         }
