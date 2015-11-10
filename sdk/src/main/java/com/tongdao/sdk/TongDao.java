@@ -54,10 +54,10 @@ public class TongDao {
      * @param appKey     开发者从同道平台获得的AppKey
      * @return boolean 同道服务的初始化结果
      */
-    public static boolean init(Context appContext, String appKey/*,String userId*/) {
-        String userId = TongDao.generateUserId(appContext);
-        if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-            lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, userId);
+    public static boolean init(Context appContext, String appKey) {
+        String deviceId = TongDao.generateDeviceId(appContext);
+        if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
+            lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             lingQianBridge.init();
             return true;
         } else {
@@ -74,10 +74,10 @@ public class TongDao {
      * @return boolean 同道服务的初始化结果
      */
     public static boolean init(Context appContext, String appKey, String userId){
+        String deviceId = TongDao.generateDeviceId(appContext);
         if(null == userId){
-            userId = TongDao.generateUserId(appContext);
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, userId);
+                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
                 TongDaoSavingTool.setAnonymous(appContext, true);
                 lingQianBridge.init();
                 return true;
@@ -86,7 +86,7 @@ public class TongDao {
             }
         }else {
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, userId, null, false);
+                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
                 TongDaoSavingTool.setAnonymous(appContext, false);
                 lingQianBridge.init();
                 return true;
@@ -104,16 +104,16 @@ public class TongDao {
     public static void setUserId(Context appContext, String userId){
         if(null == userId){
             if(!TongDaoSavingTool.getAnonymous(appContext)){
-                TongDaoSavingTool.saveUserInfoData(appContext, TongDao.generateUserId(appContext), TongDao.generateUserId(appContext), true);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null,TongDao.generateUserId(appContext));
+                TongDaoSavingTool.saveUserInfoData(appContext, TongDao.generateDeviceId(appContext), TongDao.generateDeviceId(appContext), true);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null,TongDao.generateDeviceId(appContext));
             }
         }else{
             if(TongDaoSavingTool.getAnonymous(appContext)){
-                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateUserId(appContext), false);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateUserId(appContext), userId);
+                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateDeviceId(appContext), false);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateDeviceId(appContext), userId);
             }else{
-                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateUserId(appContext), false);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, TongDao.generateUserId(appContext), userId);
+                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateDeviceId(appContext), false);
+                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, TongDao.generateDeviceId(appContext), userId);
             }
         }
     }
@@ -123,7 +123,7 @@ public class TongDao {
      * @param appContext 应用程序的上下文
      * @return String 生成userId
      */
-    public static String generateUserId(Context appContext) {
+    public static String generateDeviceId(Context appContext) {
         try {
             return TongDaoDeviceUuidFactory.getDeviceUuid(appContext).toString();
         } catch (UnsupportedEncodingException e) {

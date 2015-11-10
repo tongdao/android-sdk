@@ -39,16 +39,6 @@ public class TongDaoSavingTool {
         editor.commit();
     }
 
-    public static String getUserId(Context appContext) {
-        SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
-        return sp.getString(USER_ID, null);
-    }
-
-    public static String getAppKey(Context appContext) {
-        SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
-        return sp.getString(APP_KEY, null);
-    }
-
     public static Boolean getAnonymous(Context appContext){
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         boolean anonymous = sp.getBoolean(ANONYMOUS, true);

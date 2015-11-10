@@ -37,6 +37,7 @@ public class TongDaoBridge {
     private String APP_KEY;
     private String USER_ID;
     private String PREVIOUS_ID;
+    private String DEVICE_ID;
     private boolean ANONYMOUS;
     private Context appContext;
     private ArrayList<TdEventBean> eventList = new ArrayList<TdEventBean>();
@@ -66,32 +67,34 @@ public class TongDaoBridge {
         this.canRun = canRun;
     }
 
-    private TongDaoBridge(Context appContext, String appKey, String userId) {
+    private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId) {
         this.appContext = appContext;
         this.APP_KEY = appKey;
         this.USER_ID = userId;
+        this.DEVICE_ID = deviceId;
         TongDaoSavingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
-    private TongDaoBridge(Context appContext, String appKey, String userId, String previousId, boolean anonymous) {
+    private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId, String previousId, boolean anonymous) {
         this.appContext = appContext;
         this.APP_KEY = appKey;
         this.USER_ID = userId;
+        this.DEVICE_ID = deviceId;
         this.PREVIOUS_ID = previousId;
         this.ANONYMOUS = anonymous;
         TongDaoSavingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
-    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String USER_ID) {
+    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID) {
         if (uniqueInstance == null) {
-            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, USER_ID);
+            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, DEVICE_ID, USER_ID);
         }
         return uniqueInstance;
     }
 
-    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String USER_ID, String PREVIOUS_ID, boolean ANONYMOUS) {
+    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID, String PREVIOUS_ID, boolean ANONYMOUS) {
         if (uniqueInstance == null) {
-            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, USER_ID, PREVIOUS_ID, ANONYMOUS);
+            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, DEVICE_ID, USER_ID, PREVIOUS_ID, ANONYMOUS);
         }
         return uniqueInstance;
     }
@@ -275,12 +278,12 @@ public class TongDaoBridge {
     }
 
     private void trackEvents(TdEventBean lqEventBean) throws JSONException {
-        if (this.appContext != null && this.APP_KEY != null && this.USER_ID != null) {
+        if (this.appContext != null && this.APP_KEY != null && this.USER_ID != null && this.DEVICE_ID != null) {
             if (isCanRun()) {
                 setCanRun(false);
                 final ArrayList<TdEventBean> tempLqEventBeanArray = addAllLqEventBean(lqEventBean);
                 try {
-                    TongDaoApiTool.post(this.APP_KEY, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
+                    TongDaoApiTool.post(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 
                         @Override
                         public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -369,12 +372,12 @@ public class TongDaoBridge {
     }
 
     private void downloadLandingPage(String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
-        if (this.appContext == null || APP_KEY == null || USER_ID == null) {
+        if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
             return;
         }
 
         String url = TongDaoUrlTool.getLandingPageUrl(pageId, USER_ID);
-        TongDaoApiTool.get(APP_KEY, true, url, null, new TdHttpResponseHandler() {
+        TongDaoApiTool.get(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -417,12 +420,12 @@ public class TongDaoBridge {
 
 
     private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
-        if (this.appContext == null || APP_KEY == null || USER_ID == null) {
+        if (this.appContext == null || APP_KEY == null || USER_ID == null  || DEVICE_ID == null) {
             return;
         }
 
         String url = TongDaoUrlTool.getInAppMessageUrl(USER_ID);
-        TongDaoApiTool.get(APP_KEY, false, url, null, new TdHttpResponseHandler() {
+        TongDaoApiTool.get(APP_KEY, DEVICE_ID, false, url, null, new TdHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
                 if (responseBody != null) {

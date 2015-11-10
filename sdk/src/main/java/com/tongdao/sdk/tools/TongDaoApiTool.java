@@ -49,6 +49,7 @@ public class TongDaoApiTool {
     private static final String AUTO_CLAIM_FLAG = "1";
     private static final String SDK_VERSION = String.valueOf(Constants.SDK_VERSION);
     private static final String X_APP_KEY = "X-APP-KEY";
+    private static final String X_DEVICE_KEY = "X-DEVICE-KEY";
     private static final String ACCEPT_NAME = "Accept";
     private static final String ACCEPT_VALUE = "application/json";
     private static final String CONTENT_TYPE_NAME = "Content-Type";
@@ -57,11 +58,12 @@ public class TongDaoApiTool {
     private static final int RES_200 = 200;
     private static final int BUFFER_SIZE = 4096;
 
-    private static Header[] generateHeaders(String appKey, boolean isGet, boolean isPageCall, ArrayList<String[]> requestProperties) {
+    private static Header[] generateHeaders(String appKey, String deviceId, boolean isGet, boolean isPageCall, ArrayList<String[]> requestProperties) {
         ArrayList<String[]> allRequestProperties = new ArrayList<String[]>();
         allRequestProperties.add(new String[]{X_SDK_VERSION, SDK_VERSION});
         allRequestProperties.add(new String[]{X_APP_KEY, appKey});
         allRequestProperties.add(new String[]{ACCEPT_NAME, ACCEPT_VALUE});
+        allRequestProperties.add(new String[]{X_DEVICE_KEY, deviceId});
         //add the local session time to head
         allRequestProperties.add(new String[]{X_LOCAL_TIME, TongDaoCheckTool.getTimeStamp(System.currentTimeMillis())});
 
@@ -87,7 +89,7 @@ public class TongDaoApiTool {
         return headers;
     }
 
-    public static void post(String appKey, String url, ArrayList<String[]> requestProperties, String content, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
+    public static void post(String appKey, String deviceId, String url, ArrayList<String[]> requestProperties, String content, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
         HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
         HttpConnectionParams.setSoTimeout(params, TIME_OUT);
@@ -95,7 +97,7 @@ public class TongDaoApiTool {
         TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
 
         HttpPost httpPost = new HttpPost(url);
-        httpPost.setHeaders(generateHeaders(appKey, false, false, requestProperties));
+        httpPost.setHeaders(generateHeaders(appKey, deviceId, false, false, requestProperties));
         httpPost.setEntity(new StringEntity(content, "UTF-8"));
         if(null != requestProperties){
             android.util.Log.v("requestProperties == ", requestProperties.toString());
@@ -117,7 +119,7 @@ public class TongDaoApiTool {
         }
     }
 
-    public static void get(String appKey, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
+    public static void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
         HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
         HttpConnectionParams.setSoTimeout(params, TIME_OUT);
@@ -125,7 +127,7 @@ public class TongDaoApiTool {
         TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
 
         HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeaders(generateHeaders(appKey, true, isPageCall, requestProperties));
+        httpGet.setHeaders(generateHeaders(appKey, deviceId, true, isPageCall, requestProperties));
 
         HttpResponse httpResponse = httpClient.execute(httpGet);
         int resCode = httpResponse.getStatusLine().getStatusCode();

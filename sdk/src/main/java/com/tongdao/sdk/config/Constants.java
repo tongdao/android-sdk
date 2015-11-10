@@ -1,7 +1,6 @@
 package com.tongdao.sdk.config;
 
 public class Constants {
-    //public final static String API_URL = "https://api.jarkaslab.com/";
     public final static String API_URL = "https://api.tongrd.com/";
     public final static String API_VERSION = "v2/";
 
@@ -11,5 +10,5 @@ public class Constants {
     public final static String API_URI_MESSAGES = "messages";
     public final static String API_URI_MESSAGES_QS = "user_id=%s";
 
-    public final static int SDK_VERSION = 20200;
+    public final static int SDK_VERSION = 20201;
 }
