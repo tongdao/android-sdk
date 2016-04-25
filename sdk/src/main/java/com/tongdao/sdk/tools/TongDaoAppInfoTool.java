@@ -48,22 +48,13 @@ public class TongDaoAppInfoTool {
     private static final String FINE = "fine";
     private static final String COARSE = "coarse";
 
-//	public static int getAppIconSourceId(Context appContext)throws NameNotFoundException {
-//		return appContext.getPackageManager().getPackageInfo(appContext.getPackageName(), 0).applicationInfo.icon;
-//	}
-
     public static Object[] getDeviceInfo(Context c) {
-        //DisplayMetrics dm = c.getResources().getDisplayMetrics();
         String model = android.os.Build.MODEL;
         String brand = android.os.Build.MANUFACTURER;
         String product_id = android.os.Build.PRODUCT;
         String build_id = android.os.Build.DISPLAY;
         String device_name = android.os.Build.DEVICE;
         String os_version = Build.VERSION.RELEASE;
-        //int resolution_width = dm.widthPixels;
-        //int resolution_height = dm.heightPixels;
-        //String screen_size = getScreenSize(dm);
-        //int screen_dpi = dm.densityDpi;
         String language = Locale.getDefault().toString();
         //String serial_number = DeviceUuidFactory.getDeviceUuid(c).toString();
         //TelephonyManager tm = (TelephonyManager) c.getSystemService(PHONE_SERVICE);
@@ -86,13 +77,6 @@ public class TongDaoAppInfoTool {
 
         return null;
     }
-
-//	private static String getScreenSize(DisplayMetrics dm) {
-//		float screenWidth = dm.widthPixels / dm.xdpi;
-//		float screenHeight = dm.heightPixels / dm.ydpi;
-//		double size = Math.sqrt(Math.pow(screenWidth, 2.0D)+ Math.pow(screenHeight, 2.0D));
-//		return String.valueOf(size).substring(0, 4) + "inches";
-//	}
 
     public static Object[] getNetworkInfo(Context c) {
         PackageManager pm = c.getPackageManager();

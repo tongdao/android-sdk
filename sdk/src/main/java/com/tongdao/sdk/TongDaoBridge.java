@@ -271,6 +271,9 @@ public class TongDaoBridge {
                 try {
                     trackEvents(tdEventBean);
                 } catch (JSONException e) {
+                    if( !Thread.currentThread().isInterrupted() ) {
+                        Thread.currentThread().interrupt();
+                    }
                     Log.e("startTrackEvents", "JSONException");
                 }
             }
@@ -344,11 +347,11 @@ public class TongDaoBridge {
                 try {
                     downloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
                 } catch (ClientProtocolException e) {
-                    Log.e("startDownloadLandingPage", "ClientProtocolException");
+                    Log.e("startDownloadLandingPg", "ClientProtocolException");
                 } catch (IOException e) {
-                    Log.e("startDownloadLandingPage", "IOException");
+                    Log.e("startDownloadLandingPg", "IOException");
                 } catch (JSONException e) {
-                    Log.e("startDownloadLandingPage", "JSONException");
+                    Log.e("startDownloadLandingPg", "JSONException");
                 }
             }
         }).start();
@@ -361,11 +364,11 @@ public class TongDaoBridge {
                 try {
                     downloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
                 } catch (ClientProtocolException e) {
-                    Log.e("startDownloadInAppMessages", "ClientProtocolException");
+                    Log.e("startDownloadInAppMsgs", "ClientProtocolException");
                 } catch (IOException e) {
-                    Log.e("startDownloadInAppMessages", "IOException");
+                    Log.e("startDownloadInAppMsgs", "IOException");
                 } catch (JSONException e) {
-                    Log.e("startDownloadInAppMessages", "JSONException");
+                    Log.e("startDownloadInAppMsgs", "JSONException");
                 }
             }
         }).start();
