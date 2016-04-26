@@ -6,15 +6,8 @@ import com.tongdao.sdk.config.Constants;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -36,6 +29,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -163,29 +157,71 @@ public class TongDaoApiTool {
         }
     }
 
+//    public static void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
+//        HttpParams params = new BasicHttpParams();
+//        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
+//        HttpConnectionParams.setSoTimeout(params, TIME_OUT);
+//        DefaultHttpClient httpClient = new DefaultHttpClient(params);
+//        TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
+//
+//        HttpGet httpGet = new HttpGet(url);
+//        httpGet.setHeaders(generateHeaders(appKey, deviceId, true, isPageCall, requestProperties));
+//
+//        HttpResponse httpResponse = httpClient.execute(httpGet);
+//        int resCode = httpResponse.getStatusLine().getStatusCode();
+//        String resJson = inputStreamTOString(httpResponse.getEntity());
+//
+//        if (resCode != RES_204 && resCode != RES_200) {
+//            //error call back
+//            if (handler != null) {
+//                handler.onFailure(resCode, resJson);
+//            }
+//        } else {
+//            //success call back
+//            if (handler != null) {
+//                handler.onSuccess(resCode, resJson);
+//            }
+//        }
+//    }
+
     public static void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
-        HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
-        HttpConnectionParams.setSoTimeout(params, TIME_OUT);
-        DefaultHttpClient httpClient = new DefaultHttpClient(params);
-        TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
+        int resCode = 0;
 
-        HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeaders(generateHeaders(appKey, deviceId, true, isPageCall, requestProperties));
+        URL requestUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+        connection.setConnectTimeout(TIME_OUT);
+        connection.setReadTimeout(TIME_OUT);
+        connection.setDoOutput(true);
+        connection.setRequestMethod("GET");
 
-        HttpResponse httpResponse = httpClient.execute(httpGet);
-        int resCode = httpResponse.getStatusLine().getStatusCode();
-        String resJson = inputStreamTOString(httpResponse.getEntity());
+        generateHeaders(connection, appKey, deviceId, false, isPageCall, requestProperties);
+
+        // Read response
+        StringBuilder responseSB = new StringBuilder();
+        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+        String line;
+        while ( (line = br.readLine()) != null)
+            responseSB.append(line);
+
+        if (connection != null) {
+            resCode = connection.getResponseCode();
+            Log.e("respCode", ":" + resCode);
+
+        }
+
+        // Close streams
+        br.close();
 
         if (resCode != RES_204 && resCode != RES_200) {
-            //error call back
+
             if (handler != null) {
-                handler.onFailure(resCode, resJson);
+                handler.onFailure(resCode, responseSB.toString());
             }
         } else {
             //success call back
             if (handler != null) {
-                handler.onSuccess(resCode, resJson);
+                handler.onSuccess(resCode, null);
             }
         }
     }
@@ -251,24 +287,22 @@ public class TongDaoApiTool {
         public X509Certificate[] getAcceptedIssuers() {
             return null;
         }
+        //
+        public static void addSSLManagerForConnection(HttpsURLConnection conn) {
 
-        public static void addSSLManagerForHttpClient(HttpClient httpClient) {
             X509TrustManager xtm = new TdSSLTrustManager();
-            TrustManager mytm[] = {xtm};
-            SSLContext ctx;
+            TrustManager[] trustAllCerts = new TrustManager[]{xtm};
+
             try {
-                ctx = SSLContext.getInstance("TLS");
-                ctx.init(null, mytm, null);
-                org.apache.http.conn.ssl.SSLSocketFactory socketFactory = new LingQianSSLSocketFactory(ctx);
-                httpClient.getConnectionManager().getSchemeRegistry().register(new org.apache.http.conn.scheme.Scheme("https", socketFactory, 443));
-            } catch (NoSuchAlgorithmException e) {
-                Log.e("NoSuchAlgorithmEx", "add ssl manager for connection");
+                SSLContext sc = SSLContext.getInstance("TLS");
+
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+
+                conn.setDefaultSSLSocketFactory(sc.getSocketFactory());
             } catch (KeyManagementException e) {
-                Log.e("KeyManagementEx", "add ssl manager for connection");
-            } catch (KeyStoreException e) {
-                Log.e("KeyStoreException", "add ssl manager for connection");
-            } catch (UnrecoverableKeyException e) {
-                Log.e("UnrecoverableKeyEx", "add ssl manager for connection");
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
             }
         }
     }
