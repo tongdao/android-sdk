@@ -1,17 +1,5 @@
 package com.tongdao.sdk.tools;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.NetworkInterface;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
-import org.json.JSONArray;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,8 +13,28 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.tongdao.sdk.permissions.IPermissionResponse;
+import com.tongdao.sdk.permissions.PermissionConstants;
+import com.tongdao.sdk.permissions.TongDaoPermissionModule;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.NetworkInterface;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Semaphore;
 
 public class TongDaoAppInfoTool {
     private static final String CONNECTION_TYPE_UNKNOWN = "UNKNOWN";
@@ -47,6 +55,8 @@ public class TongDaoAppInfoTool {
     private static final String PHONE_SERVICE = "phone";
     private static final String FINE = "fine";
     private static final String COARSE = "coarse";
+
+    public static final Semaphore LOCK = new Semaphore(0);
 
     public static Object[] getDeviceInfo(Context c) {
         String model = android.os.Build.MODEL;
@@ -162,33 +172,91 @@ public class TongDaoAppInfoTool {
         return ary.toString();
     }
 
-    public static Object[] getCurrentLocation(Context context) {
+    public static Object[] getCurrentLocation(final Context context) {
+        Semaphore LOCK = new Semaphore(0);
         double latitude = 0;
         double longitude = 0;
         String source = UNKNOWN;
+
         PackageManager pm = context.getPackageManager();
         String packageName = context.getPackageName();
-        int accessCoarseLocation = pm.checkPermission(ACCESS_COARSE_LOCATION_PERMISSION, packageName);
-        int accessFineLocation = pm.checkPermission(ACCESS_FINE_LOCATION_PERMISSION, packageName);
-        double[] ary = getFormattedLocationString(context, accessCoarseLocation, accessFineLocation);
-        if ((ary != null) && (ary.length > 1)) {
-            latitude = ary[0];
-            longitude = ary[1];
+
+        checkForCoarsePermission(context, LOCK);
+        try {
+            LOCK.acquire();
+        } catch(InterruptedException ex) {
+            LOCK.release();
         }
 
-        if (accessFineLocation == 0) {
-            source = FINE;
-        } else {
-            if (accessCoarseLocation == 0) {
-                source = COARSE;
+        int accessCoarseLocation = pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName);
+        int accessFineLocation = pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName);
+
+        if( accessCoarseLocation == 0 || accessFineLocation == 0 ) {
+
+            double[] ary = getFormattedLocationString(context, accessCoarseLocation, accessFineLocation);
+            if ((ary != null) && (ary.length > 1)) {
+                latitude = ary[0];
+                longitude = ary[1];
+            }
+
+            if (accessFineLocation == 0) {
+                source = FINE;
+            } else {
+                if (accessCoarseLocation == 0) {
+                    source = COARSE;
+                }
+            }
+            if (latitude == 0 && longitude == 0) {
+                source = UNKNOWN;
             }
         }
-
-        if (latitude == 0 && longitude == 0) {
-            source = UNKNOWN;
-        }
-
         return new Object[]{latitude, longitude, source};
+    }
+
+    private static void checkForCoarsePermission(final Context context, final Semaphore LOCK) {
+        if (!TongDaoPermissionModule.checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                !TongDaoSavingTool.getPermissionDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+
+            TongDaoPermissionModule.requestPermission(context, PermissionConstants.REQUEST_CODE_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION, new IPermissionResponse<Void>() {
+
+                        @Override
+                        public Void permissionGranted() throws Exception {
+                            checkForFinePermission(context, LOCK);
+                            return null;
+                        }
+
+                        @Override
+                        public Void permissionDenied() {
+                            TongDaoSavingTool.setPermissionDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION);
+                            checkForFinePermission(context, LOCK);
+                            return null;
+                        }
+                    });
+        }
+    }
+
+    private static void checkForFinePermission(final Context context, final Semaphore LOCK) {
+        if (!TongDaoPermissionModule.checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
+                !TongDaoSavingTool.getPermissionDenied(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            TongDaoPermissionModule.requestPermission(context, PermissionConstants.REQUEST_CODE_FINE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION, new IPermissionResponse<Void>() {
+
+                        @Override
+                        public Void permissionGranted() throws Exception {
+                            LOCK.release();
+                            return null;
+                        }
+
+                        @Override
+                        public Void permissionDenied() {
+                            LOCK.release();
+                            TongDaoSavingTool.setPermissionDenied(context, Manifest.permission.ACCESS_FINE_LOCATION);
+                            return null;
+                        }
+                    });
+        }
     }
 
     private static double[] getFormattedLocationString(Context c, int accessCoarseLocation, int accessFineLocation) {
@@ -286,12 +354,51 @@ public class TongDaoAppInfoTool {
 //		return isRunning;
 //	}
 
-    public static String[] getImeiInfos(Context appContext) {
-        TelephonyManager telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
-        String imei = telephonyManager.getDeviceId();
-        String imeiMD5 = getMD5(imei);
-        String imeiSha1 = getSHA1(imei);
-        return new String[]{imei, imeiMD5, imeiSha1};
+    public static void getImeiInfos(final Context appContext, final JSONObject jsonObject) {
+        try {
+            if (!TongDaoPermissionModule.checkPermission(appContext, Manifest.permission.READ_PHONE_STATE) &&
+                    !TongDaoSavingTool.getPermissionDenied(appContext, Manifest.permission.READ_PHONE_STATE)) {
+                TongDaoPermissionModule.requestPermission(appContext, PermissionConstants.REQUEST_CODE_TELEPHONY,
+                        Manifest.permission.READ_PHONE_STATE, new IPermissionResponse<Void>() {
+                            @Override
+                            public Void permissionGranted() throws Exception {
+                                addObject(appContext, jsonObject);
+                                LOCK.release();
+                                return null;
+                            }
+
+                            @Override
+                            public Void permissionDenied() {
+                                TongDaoSavingTool.setPermissionDenied(appContext, Manifest.permission.READ_PHONE_STATE);
+                                LOCK.release();
+                                return null;
+                            }
+                        });
+
+                LOCK.acquire();
+            } else {
+                addObject(appContext, jsonObject);
+            }
+        } catch (InterruptedException ex) {
+            LOCK.release();
+            ex.printStackTrace();
+        }
+    }
+
+    private static void addObject(final Context appContext, final JSONObject jsonObject) {
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
+            String imei = telephonyManager.getDeviceId();
+            String imeiMD5 = getMD5(imei);
+            String imeiSha1 = getSHA1(imei);
+
+            jsonObject.put("!imei", imei);
+            jsonObject.put("!imei_md5", imeiMD5);
+            jsonObject.put("!imei_sha1", imeiSha1);
+        } catch (JSONException ex) {
+            LOCK.release();
+            ex.printStackTrace();
+        }
     }
 
     public static String[] getMacInfos() {

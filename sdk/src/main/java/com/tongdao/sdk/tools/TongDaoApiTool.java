@@ -1,19 +1,17 @@
 package com.tongdao.sdk.tools;
 
+import android.os.Parcel;
 import android.util.Log;
 
 import com.tongdao.sdk.config.Constants;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -157,33 +155,6 @@ public class TongDaoApiTool {
         }
     }
 
-//    public static void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
-//        HttpParams params = new BasicHttpParams();
-//        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
-//        HttpConnectionParams.setSoTimeout(params, TIME_OUT);
-//        DefaultHttpClient httpClient = new DefaultHttpClient(params);
-//        TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
-//
-//        HttpGet httpGet = new HttpGet(url);
-//        httpGet.setHeaders(generateHeaders(appKey, deviceId, true, isPageCall, requestProperties));
-//
-//        HttpResponse httpResponse = httpClient.execute(httpGet);
-//        int resCode = httpResponse.getStatusLine().getStatusCode();
-//        String resJson = inputStreamTOString(httpResponse.getEntity());
-//
-//        if (resCode != RES_204 && resCode != RES_200) {
-//            //error call back
-//            if (handler != null) {
-//                handler.onFailure(resCode, resJson);
-//            }
-//        } else {
-//            //success call back
-//            if (handler != null) {
-//                handler.onSuccess(resCode, resJson);
-//            }
-//        }
-//    }
-
     public static void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
         int resCode = 0;
 
@@ -226,53 +197,53 @@ public class TongDaoApiTool {
         }
     }
 
-    private static String inputStreamTOString(HttpEntity bodyEntity) {
-        String jsonString = null;
-        if (bodyEntity == null) {
-            return jsonString;
-        }
-
-        InputStream inStream = null;
-        ByteArrayOutputStream outStream = null;
-        try {
-            inStream = bodyEntity.getContent();
-            if (inStream != null) {
-                outStream = new ByteArrayOutputStream();
-                byte[] data = new byte[BUFFER_SIZE];
-                int count = -1;
-                while ((count = inStream.read(data, 0, BUFFER_SIZE)) != -1) {
-                    outStream.write(data, 0, count);
-                }
-                outStream.flush();
-                data = null;
-                jsonString = new String(outStream.toByteArray(), "UTF-8");
-            }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (inStream != null) {
-                try {
-                    inStream.close();
-                    inStream = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (outStream != null) {
-                try {
-                    outStream.close();
-                    outStream = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return jsonString;
-    }
+//    private static String inputStreamTOString(HttpEntity bodyEntity) {
+//        String jsonString = null;
+//        if (bodyEntity == null) {
+//            return jsonString;
+//        }
+//
+//        InputStream inStream = null;
+//        ByteArrayOutputStream outStream = null;
+//        try {
+//            inStream = bodyEntity.getContent();
+//            if (inStream != null) {
+//                outStream = new ByteArrayOutputStream();
+//                byte[] data = new byte[BUFFER_SIZE];
+//                int count = -1;
+//                while ((count = inStream.read(data, 0, BUFFER_SIZE)) != -1) {
+//                    outStream.write(data, 0, count);
+//                }
+//                outStream.flush();
+//                data = null;
+//                jsonString = new String(outStream.toByteArray(), "UTF-8");
+//            }
+//        } catch (IllegalStateException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (inStream != null) {
+//                try {
+//                    inStream.close();
+//                    inStream = null;
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            if (outStream != null) {
+//                try {
+//                    outStream.close();
+//                    outStream = null;
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//        return jsonString;
+//    }
 
     public static class TdSSLTrustManager implements X509TrustManager {
         public TdSSLTrustManager() {
@@ -287,7 +258,7 @@ public class TongDaoApiTool {
         public X509Certificate[] getAcceptedIssuers() {
             return null;
         }
-        //
+//
         public static void addSSLManagerForConnection(HttpsURLConnection conn) {
 
             X509TrustManager xtm = new TdSSLTrustManager();

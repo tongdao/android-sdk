@@ -282,7 +282,7 @@ public class TongDaoBridge {
 
     private void trackEvents(TdEventBean lqEventBean) throws JSONException {
         if (this.appContext != null && this.APP_KEY != null && this.USER_ID != null && this.DEVICE_ID != null) {
-            if (isCanRun()) {
+            if ( isCanRun() ) {
                 setCanRun(false);
                 final ArrayList<TdEventBean> tempLqEventBeanArray = addAllLqEventBean(lqEventBean);
                 try {
