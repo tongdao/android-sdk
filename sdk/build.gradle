@@ -10,7 +10,7 @@ ext {
 
     libraryDescription = 'A wrapper to track events'
 
-    siteUrl = 'tongdao.io/'
+    siteUrl = 'https://github.com/jaymehtasa/android-sdk'
     gitUrl = 'https://github.com/jaymehtasa/android-sdk.git'
 
     libraryVersion = '2.2.1'
