@@ -11,9 +11,13 @@ ext {
     libraryDescription = 'A wrapper to track events'
 
     siteUrl = 'tongdao.io/'
-    gitUrl = 'https://github.com/nuuneoi/FBLikeAndroid.git'
+    gitUrl = 'https://github.com/jaymehtasa/android-sdk.git'
 
     libraryVersion = '2.2.1'
+
+    developerId = 'adrien'
+    developerName = 'Adrien Moreau'
+    developerEmail = 'adrien@tongrd.com'
 
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
