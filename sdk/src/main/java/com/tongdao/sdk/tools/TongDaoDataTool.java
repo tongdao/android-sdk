@@ -33,7 +33,7 @@ public class TongDaoDataTool {
             applicationObj.put("!version_name", versioObjs[1] == null ? "" : (String) (versioObjs[1]));
 
             String appData = TongDaoSavingTool.getApplicationInfoData(appContext);
-            if( appData == null || !appData.equalsIgnoreCase(applicationObj.toString()) ) {
+            if (appData == null || !appData.equalsIgnoreCase(applicationObj.toString())) {
                 propertiesObj.put("!application", applicationObj);
                 TongDaoSavingTool.setApplicationInfoData(appContext, applicationObj.toString());
             }
@@ -53,7 +53,7 @@ public class TongDaoDataTool {
         connectionObj.put("!connection_quality", (String) networkObjs[1]);
 
         String connectionData = TongDaoSavingTool.getConnectionInfoData(appContext);
-        if( connectionData == null || !connectionData.equalsIgnoreCase(connectionObj.toString()) ) {
+        if (connectionData == null || !connectionData.equalsIgnoreCase(connectionObj.toString())) {
             propertiesObj.put("!connection", connectionObj);
             TongDaoSavingTool.setConnectionInfoData(appContext, connectionObj.toString());
         }
@@ -67,7 +67,7 @@ public class TongDaoDataTool {
         locationObj.put("!source", (String) locationObjs[2]);
 
         String locationData = TongDaoSavingTool.getLocationInfoData(appContext);
-        if( locationData == null || !locationData.equalsIgnoreCase(locationObj.toString()) ) {
+        if (locationData == null || !locationData.equalsIgnoreCase(locationObj.toString())) {
             propertiesObj.put("!location", locationObj);
             TongDaoSavingTool.setLocationInfoData(appContext, locationObj.toString());
         }
@@ -91,14 +91,14 @@ public class TongDaoDataTool {
         deviceObj.put("!height", resolution_height);
 
         String deviceData = TongDaoSavingTool.getDeviceInfoData(appContext);
-        if( deviceData == null || !deviceData.equalsIgnoreCase(deviceObj.toString()) ) {
+        if (deviceData == null || !deviceData.equalsIgnoreCase(deviceObj.toString())) {
             propertiesObj.put("!device", deviceObj);
             TongDaoSavingTool.setDeviceInfoData(appContext, deviceObj.toString());
         }
 
         //fingerprint
         JSONObject fingerprintObj = new JSONObject();
-
+        TongDaoAppInfoTool.getImeiInfos(appContext, fingerprintObj);
         String[] macInfos = TongDaoAppInfoTool.getMacInfos();
         fingerprintObj.put("!mac", macInfos[0]);
         fingerprintObj.put("!mac_md5", macInfos[1]);
@@ -114,12 +114,25 @@ public class TongDaoDataTool {
         }
 
         String fingerPrintInfoData = TongDaoSavingTool.getFingerprintInfoData(appContext);
-        if( fingerPrintInfoData == null || !fingerPrintInfoData.equalsIgnoreCase(fingerprintObj.toString()) ) {
+        if (fingerPrintInfoData == null || !fingerPrintInfoData.equalsIgnoreCase(fingerprintObj.toString())) {
             propertiesObj.put("!fingerprint", fingerprintObj);
             TongDaoSavingTool.setFingerprintInfoData(appContext, fingerprintObj.toString());
         }
 
-        propertiesObj.put("!anonymous", mAnonymous);
+        boolean anonymousSet = TongDaoSavingTool.getAnonymousSet(appContext);
+        if (!anonymousSet) {
+            propertiesObj.put("!anonymous", mAnonymous);
+            TongDaoSavingTool.isAnonymousSet(appContext);
+            TongDaoSavingTool.setAnonymous(appContext, mAnonymous);
+        } else {
+            boolean anonymousData = TongDaoSavingTool.getAnonymous(appContext);
+            if (mAnonymous != anonymousData) {
+                propertiesObj.put("!anonymous", mAnonymous);
+                TongDaoSavingTool.setAnonymous(appContext, mAnonymous);
+            }
+        }
+
+        System.out.println("Device object info->" + propertiesObj.toString());
         return propertiesObj;
     }
 
@@ -317,11 +330,11 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
-    public static void setAnonymous(Boolean anonymous){
+    public static void setAnonymous(Boolean anonymous) {
         mAnonymous = anonymous;
     }
 
-    public static Boolean getAnonymous(){
+    public static Boolean getAnonymous() {
         return mAnonymous;
     }
 }

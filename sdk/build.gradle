@@ -1,5 +1,25 @@
 apply plugin: 'com.android.library'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'tongrd'
+
+    publishedGroupId = 'com.tongdao.sdk'
+    libraryName = 'Tongrd'
+    artifact = 'tongrd'
+
+    libraryDescription = 'A wrapper to track events'
+
+    siteUrl = 'tongdao.io/'
+    gitUrl = 'https://github.com/nuuneoi/FBLikeAndroid.git'
+
+    libraryVersion = '2.2.1'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.0"
@@ -36,3 +56,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.1'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

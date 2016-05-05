@@ -48,8 +48,9 @@ public class TongDaoAppInfoTool {
     private static final String CONNECTION_TYPE_MOBILE_EVDO_A = "EVDO_A";
     private static final String CONNECTION_TYPE_MOBILE_GPRS = "GPRS";
     private static final String CONNECTION_TYPE_MOBILE_UMTS = "UMTS";
-    private static final String ACCESS_COARSE_LOCATION_PERMISSION = "android.permission.ACCESS_COARSE_LOCATION";
-    private static final String ACCESS_FINE_LOCATION_PERMISSION = "android.permission.ACCESS_FINE_LOCATION";
+    public static final String ACCESS_COARSE_LOCATION_PERMISSION = "android.permission.ACCESS_COARSE_LOCATION";
+    public static final String ACCESS_FINE_LOCATION_PERMISSION = "android.permission.ACCESS_FINE_LOCATION";
+    public static final String ACCESS_TELEPHONY_PERMISSION = "android.permission.READ_PHONE_STATE";
     private static final String OS_NAME = "android";
     private static final String UNKNOWN = "unknown";
     private static final String PHONE_SERVICE = "phone";
@@ -181,9 +182,8 @@ public class TongDaoAppInfoTool {
         PackageManager pm = context.getPackageManager();
         String packageName = context.getPackageName();
 
-        checkForCoarsePermission(context, LOCK);
         try {
-            LOCK.acquire();
+            checkForCoarsePermission(context, LOCK);
         } catch(InterruptedException ex) {
             LOCK.release();
         }
@@ -213,7 +213,7 @@ public class TongDaoAppInfoTool {
         return new Object[]{latitude, longitude, source};
     }
 
-    private static void checkForCoarsePermission(final Context context, final Semaphore LOCK) {
+    private static void checkForCoarsePermission(final Context context, final Semaphore LOCK) throws InterruptedException{
         if (!TongDaoPermissionModule.checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
                 !TongDaoSavingTool.getPermissionDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
@@ -233,6 +233,7 @@ public class TongDaoAppInfoTool {
                             return null;
                         }
                     });
+            LOCK.acquire();
         }
     }
 
@@ -275,6 +276,9 @@ public class TongDaoAppInfoTool {
                     }
                 }
             } catch (java.lang.IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            catch (java.lang.SecurityException e) {
                 e.printStackTrace();
             }
         }
@@ -376,7 +380,7 @@ public class TongDaoAppInfoTool {
                         });
 
                 LOCK.acquire();
-            } else {
+            } else if (TongDaoPermissionModule.checkPermission(appContext, Manifest.permission.READ_PHONE_STATE)) {
                 addObject(appContext, jsonObject);
             }
         } catch (InterruptedException ex) {

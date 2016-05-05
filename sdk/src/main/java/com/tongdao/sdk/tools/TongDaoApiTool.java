@@ -162,7 +162,6 @@ public class TongDaoApiTool {
         HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
         connection.setConnectTimeout(TIME_OUT);
         connection.setReadTimeout(TIME_OUT);
-        connection.setDoOutput(true);
         connection.setRequestMethod("GET");
 
         generateHeaders(connection, appKey, deviceId, false, isPageCall, requestProperties);

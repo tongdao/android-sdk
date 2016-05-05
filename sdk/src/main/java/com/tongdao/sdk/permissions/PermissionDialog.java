@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 
 import com.tongdao.sdk.R;
+import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 
 import java.util.ArrayList;
 
@@ -80,11 +81,19 @@ public class PermissionDialog extends DialogFragment {
         if (texts == null)
             throw new IllegalArgumentException();
 
+        String str = "";
         for (int i = 0; i < permissions.size(); ++i) {
+            if( permissions.get(i).equalsIgnoreCase(TongDaoAppInfoTool.ACCESS_COARSE_LOCATION_PERMISSION) ||
+                    permissions.get(i).equalsIgnoreCase(TongDaoAppInfoTool.ACCESS_FINE_LOCATION_PERMISSION) ) {
+                str = "Location";
+            }
+            else if( permissions.get(i).equalsIgnoreCase(TongDaoAppInfoTool.ACCESS_TELEPHONY_PERMISSION) ){
+                str = "Telephony";
+            }
             if (i == permissions.size() - 1)
-                message += permissions.get(i);
+                message += str;
             else
-                message += permissions.get(i) + ", ";
+                message += str + ", ";
         }
         message += " permission";
         b.setMessage(message);

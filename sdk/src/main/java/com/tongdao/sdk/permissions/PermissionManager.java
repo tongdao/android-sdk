@@ -141,7 +141,7 @@ public class PermissionManager {
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                         .setAutoCancel(true)
                         .setColor(Color.RED)
-//                        .setSmallIcon(R.drawable.ic_notification_icon)
+                        .setSmallIcon(R.drawable.ic_notification_icon)
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setTicker(context.getString(text))
                         .setContentIntent(pi)

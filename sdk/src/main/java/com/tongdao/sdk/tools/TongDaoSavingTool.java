@@ -12,6 +12,7 @@ public class TongDaoSavingTool {
     private static final String APP_KEY = "LQ_APP_KEY";
     private static final String PREVIOUS_ID = "LQ_PREVIOUS_ID";
     private static final String ANONYMOUS = "LQ_ANONYMOUS";
+    private static final String ANONYMOUS_SET = "IS_ANONYMOUS";
     private static final String APPLICATION_DATA = "APPLICATION_DATA";
     private static final String CONNECTION_DATA = "CONNECTION_DATA";
     private static final String LOCATION_DATA = "LOCATION_DATA";
@@ -44,6 +45,18 @@ public class TongDaoSavingTool {
         editor.putString(PREVIOUS_ID, previousId);
         editor.putBoolean(ANONYMOUS, anonymous);
         editor.commit();
+    }
+
+    public static void isAnonymousSet(Context appContext){
+        SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean(ANONYMOUS_SET, true);
+        editor.commit();
+    }
+
+    public static boolean getAnonymousSet(Context appContext){
+        SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
+        return sp.getBoolean(ANONYMOUS_SET, false);
     }
 
     public static Boolean getAnonymous(Context appContext){

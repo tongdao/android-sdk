@@ -3,7 +3,9 @@ package com.tongdao.sdk.permissions;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Window;
 
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 
@@ -11,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by ankitthakkar on 28/04/16.
+ * Created by kinjal.patel on 28/04/16.
  */
 public class PermissionActivity extends Activity implements PermissionChecker {
     private String permission;
@@ -23,6 +25,11 @@ public class PermissionActivity extends Activity implements PermissionChecker {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Window window = this.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         Intent intent = getIntent();
         permission = intent.getStringExtra("permission");
         requestCode = intent.getIntExtra("requestCode", 0);

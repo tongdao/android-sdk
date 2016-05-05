@@ -108,7 +108,7 @@ public class TongDaoBridge {
                     if (appContext != null) {
                         try {
                             JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
-                            if (properties != null && USER_ID != null) {
+                            if (properties != null && properties.keys().hasNext() && USER_ID != null) {
                                 TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
                                 trackEvents(tempLqEventBean);
                             }

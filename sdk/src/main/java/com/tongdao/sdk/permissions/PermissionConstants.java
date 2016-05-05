@@ -1,7 +1,7 @@
 package com.tongdao.sdk.permissions;
 
 /**
- * Created by ankitthakkar on 28/04/16.
+ * Created by kinjal.patel on 28/04/16.
  */
 public class PermissionConstants {
 
