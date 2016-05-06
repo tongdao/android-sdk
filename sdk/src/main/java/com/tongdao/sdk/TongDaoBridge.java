@@ -108,7 +108,7 @@ public class TongDaoBridge {
                     if (appContext != null) {
                         try {
                             JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
-                            if (properties != null && USER_ID != null) {
+                            if (properties != null && properties.keys().hasNext() && USER_ID != null) {
                                 TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
                                 trackEvents(tempLqEventBean);
                             }
@@ -271,6 +271,9 @@ public class TongDaoBridge {
                 try {
                     trackEvents(tdEventBean);
                 } catch (JSONException e) {
+                    if( !Thread.currentThread().isInterrupted() ) {
+                        Thread.currentThread().interrupt();
+                    }
                     Log.e("startTrackEvents", "JSONException");
                 }
             }
@@ -279,7 +282,7 @@ public class TongDaoBridge {
 
     private void trackEvents(TdEventBean lqEventBean) throws JSONException {
         if (this.appContext != null && this.APP_KEY != null && this.USER_ID != null && this.DEVICE_ID != null) {
-            if (isCanRun()) {
+            if ( isCanRun() ) {
                 setCanRun(false);
                 final ArrayList<TdEventBean> tempLqEventBeanArray = addAllLqEventBean(lqEventBean);
                 try {
@@ -344,11 +347,11 @@ public class TongDaoBridge {
                 try {
                     downloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
                 } catch (ClientProtocolException e) {
-                    Log.e("startDownloadLandingPage", "ClientProtocolException");
+                    Log.e("startDownloadLandingPg", "ClientProtocolException");
                 } catch (IOException e) {
-                    Log.e("startDownloadLandingPage", "IOException");
+                    Log.e("startDownloadLandingPg", "IOException");
                 } catch (JSONException e) {
-                    Log.e("startDownloadLandingPage", "JSONException");
+                    Log.e("startDownloadLandingPg", "JSONException");
                 }
             }
         }).start();
@@ -361,11 +364,11 @@ public class TongDaoBridge {
                 try {
                     downloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
                 } catch (ClientProtocolException e) {
-                    Log.e("startDownloadInAppMessages", "ClientProtocolException");
+                    Log.e("startDownloadInAppMsgs", "ClientProtocolException");
                 } catch (IOException e) {
-                    Log.e("startDownloadInAppMessages", "IOException");
+                    Log.e("startDownloadInAppMsgs", "IOException");
                 } catch (JSONException e) {
-                    Log.e("startDownloadInAppMessages", "JSONException");
+                    Log.e("startDownloadInAppMsgs", "JSONException");
                 }
             }
         }).start();

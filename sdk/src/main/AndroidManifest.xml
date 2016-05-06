@@ -3,5 +3,9 @@
     package="com.tongdao.sdk">
 
     <application />
+    <activity
+        android:name="com.tongdao.sdk.permissions.PermissionActivity"
+        android:configChanges="locale|keyboardHidden|navigation|orientation|screenSize"
+        android:screenOrientation="portrait" />
 
 </manifest>
