@@ -32,7 +32,7 @@ ext {
     siteUrl = 'https://github.com/jaymehtasa/android-sdk'
     gitUrl = 'https://github.com/jaymehtasa/android-sdk.git'
 
-    libraryVersion = '2.2.1'
+    libraryVersion = '3.0.0'
 
     developerId = 'adrien'
     developerName = 'Adrien Moreau'
