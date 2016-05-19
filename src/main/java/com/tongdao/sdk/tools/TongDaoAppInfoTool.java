@@ -7,11 +7,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings.Secure;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
@@ -184,14 +187,14 @@ public class TongDaoAppInfoTool {
 
         try {
             checkForCoarsePermission(context, LOCK);
-        } catch(InterruptedException ex) {
+        } catch (InterruptedException ex) {
             LOCK.release();
         }
 
         int accessCoarseLocation = pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName);
         int accessFineLocation = pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName);
 
-        if( accessCoarseLocation == 0 || accessFineLocation == 0 ) {
+        if (accessCoarseLocation == 0 || accessFineLocation == 0) {
 
             double[] ary = getFormattedLocationString(context, accessCoarseLocation, accessFineLocation);
             if ((ary != null) && (ary.length > 1)) {
@@ -213,7 +216,7 @@ public class TongDaoAppInfoTool {
         return new Object[]{latitude, longitude, source};
     }
 
-    private static void checkForCoarsePermission(final Context context, final Semaphore LOCK) throws InterruptedException{
+    private static void checkForCoarsePermission(final Context context, final Semaphore LOCK) throws InterruptedException {
         if (!TongDaoPermissionModule.checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
                 !TongDaoSavingTool.getPermissionDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
@@ -261,6 +264,7 @@ public class TongDaoAppInfoTool {
     }
 
     private static double[] getFormattedLocationString(Context c, int accessCoarseLocation, int accessFineLocation) {
+
         double[] ary = new double[2];
         LocationManager localLocationManager = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
         Location localLocation = null;
@@ -271,14 +275,18 @@ public class TongDaoAppInfoTool {
                 localLocation = localLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 if ((localLocation == null) && (j != 0)) {
                     localLocation = localLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (localLocation == null || (localLocation.getLatitude() == 0 && localLocation.getLongitude() == 0)) {
+
+                        MyLocationListener locationListener = new MyLocationListener(localLocationManager);
+                        localLocation = locationListener.getGPSLocation();
+                    }
                     if (localLocation == null) {
                         localLocation = localLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
                     }
                 }
             } catch (java.lang.IllegalArgumentException e) {
                 e.printStackTrace();
-            }
-            catch (java.lang.SecurityException e) {
+            } catch (java.lang.SecurityException e) {
                 e.printStackTrace();
             }
         }
@@ -288,6 +296,54 @@ public class TongDaoAppInfoTool {
             ary[1] = localLocation.getLongitude();
         }
         return ary;
+    }
+
+
+    static class MyLocationListener implements LocationListener {
+        Semaphore lock = new Semaphore(0);
+        LocationManager locationManager;
+        Location location;
+
+        MyLocationListener(LocationManager locManager) {
+            this.locationManager = locManager;
+        }
+
+        public Location getGPSLocation() {
+//            Looper looper = Looper.myLooper();
+            Looper.prepare();
+            this.locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, 0, 0, this);
+            try {
+                lock.acquire();
+            } catch (InterruptedException e) {
+                lock.release();
+                e.printStackTrace();
+            }
+
+            return location;
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            this.location = location;
+            locationManager.removeUpdates(this);
+            lock.release();
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
     }
 
 //	public static boolean isAppExist(Context context, String packageName) {
