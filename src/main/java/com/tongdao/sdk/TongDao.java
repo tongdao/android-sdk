@@ -187,6 +187,8 @@ public class TongDao {
         }
     }
 
+
+
     /**
      * 终止记录用户的使用时长
      *
@@ -206,6 +208,18 @@ public class TongDao {
     public static void onSessionEnd(String pageName) {
         if (lingQianBridge != null && lingQianBridge.getUserId() != null && pageName != null) {
             lingQianBridge.onSessionEnd(pageName);
+        }
+    }
+
+    public static void onAppSessionStart() {
+        if (lingQianBridge != null && lingQianBridge.getUserId() != null) {
+            lingQianBridge.onAppSessionStart();
+        }
+    }
+
+    public static void onAppSessionEnd() {
+        if (lingQianBridge != null && lingQianBridge.getUserId() != null) {
+            lingQianBridge.onAppSessionEnd();
         }
     }
 
@@ -863,6 +877,7 @@ public class TongDao {
     }
 
     public static void registerApplication(Application application) {
-        application.registerActivityLifecycleCallbacks(new TongDaoActivityCallback());
+        application.registerActivityLifecycleCallbacks(new TongDaoActivityCallback(application.getApplicationContext()));
+        TongDao.onAppSessionStart();
     }
 }

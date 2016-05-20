@@ -264,6 +264,25 @@ public class TongDaoBridge {
         }
     }
 
+    public void onAppSessionEnd() {
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
+
+        TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_app");
+        startTrackEvents(tempEb);
+
+    }
+
+    public void onAppSessionStart() {
+        this.startTime = System.currentTimeMillis();
+
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
+
+        TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!open_app");
+        startTrackEvents(tempEb);
+    }
+
     public void startTrackEvents(final TdEventBean tdEventBean) {
         new Thread(new Runnable() {
             @Override
