@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tongdao.sdk">
 
-    <application />
+    <application>
+        <uses-library android:name="android.test.runner"/>
+    </application>
+
     <activity
         android:name="com.tongdao.sdk.permissions.PermissionActivity"
         android:configChanges="locale|keyboardHidden|navigation|orientation|screenSize"

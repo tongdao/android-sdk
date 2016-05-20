@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -29,6 +30,7 @@ import com.tongdao.sdk.enums.TdGender;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
+import com.tongdao.sdk.session.TongDaoActivityCallback;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
 import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
@@ -856,7 +858,11 @@ public class TongDao {
                 sendOpenMessage("!receive_message", messageId, clientId);
             }
         } catch (JSONException e) {
-            Log.e("trackReceivedInAppMessage", "JSONException");
+            Log.e("trackReceivedInAppMsg", "JSONException");
         }
+    }
+
+    public static void registerApplication(Application application) {
+        application.registerActivityLifecycleCallbacks(new TongDaoActivityCallback());
     }
 }
