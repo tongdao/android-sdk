@@ -3,11 +3,17 @@ package com.tongdao.sdk.session;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.util.Log;
 
 import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.tools.TongDaoSavingTool;
 
 import java.util.List;
 
@@ -20,6 +26,11 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
 
     public TongDaoActivityCallback(Context context) {
         this.context = context;
+
+        IntentFilter inFilter = new IntentFilter();
+        inFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        inFilter.addAction(Intent.ACTION_SCREEN_ON);
+        context.registerReceiver(new DeviceEventReceiver(), inFilter);
     }
 
     @Override
@@ -28,38 +39,24 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityPaused(Activity activity) {
-        try {
-            Thread.sleep(500);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        if( isApplicationBroughtToBackground() ) {
-            TongDao.onAppSessionEnd();
-        }
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
-        try {
-            Thread.sleep(500);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
         if( isAppBroughtToBackground && !isApplicationBroughtToBackground() ) {
             TongDao.onAppSessionStart();
         }
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {
-
-    }
-
-    @Override
     public void onActivityStopped(Activity activity) {
-
+        if( isApplicationBroughtToBackground() ) {
+            TongDao.onAppSessionEnd();
+        }
     }
 
     @Override
@@ -69,7 +66,15 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-
+        try {
+            Thread.sleep(100);
+            if( isApplicationBroughtToBackground() ) {
+                isAppBroughtToBackground = false;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isApplicationBroughtToBackground() {
@@ -84,6 +89,19 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
         }
         isAppBroughtToBackground = false;
         return false;
+    }
+
+    private class DeviceEventReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if( intent.getAction() == Intent.ACTION_SCREEN_OFF && !isApplicationBroughtToBackground()) {
+                TongDao.onAppSessionEnd();
+            }
+
+            if( intent.getAction() == Intent.ACTION_SCREEN_ON && !isApplicationBroughtToBackground()) {
+                TongDao.onAppSessionStart();
+            }
+        }
     }
 
 }

@@ -4,17 +4,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.util.Base64;
 
 import com.tongdao.sdk.enums.TdAppStore;
 
 @SuppressLint("SimpleDateFormat")
 public class TongDaoCheckTool {
-
     public static boolean isEmpty(String text) {
         if (text != null && !text.trim().equals("") && text.length() > 1 && !text.equals("null")) {
             return false;
@@ -123,4 +126,5 @@ public class TongDaoCheckTool {
                 return 1009;
         }
     }
+
 }

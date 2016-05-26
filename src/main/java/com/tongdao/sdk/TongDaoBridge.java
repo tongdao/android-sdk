@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tongdao.sdk.beans.TdErrorBean;
@@ -58,6 +59,7 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_MID = "mid";
     private String pageNameStart;
     private String pageNameEnd;
+    private final String LOCK = "lock";
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -188,6 +190,35 @@ public class TongDaoBridge {
         return eventsObj.toString();
     }
 
+    private void makeSessionEventJsonString(TdEventBean sessionEvent, boolean isNeedToSendRequest) throws JSONException {
+        if (sessionEvent == null) {
+            return;
+        }
+
+        JSONObject eventObj;
+
+        String appSessionData = TongDaoSavingTool.getAppSessionData(appContext);
+        if (TextUtils.isEmpty(appSessionData)) {
+            eventObj = new JSONObject();
+        } else {
+            eventObj = new JSONObject(appSessionData);
+        }
+        JSONArray eventArray = eventObj.optJSONArray("events");
+        if (eventArray == null) {
+            eventArray = new JSONArray();
+        }
+        eventArray.put(sessionEvent.getJsonObject());
+
+        eventObj.put("events", eventArray);
+        Log.e("session event string", eventObj.toString());
+
+        TongDaoSavingTool.setAppSessionData(appContext, eventObj.toString());
+
+        if (isNeedToSendRequest) {
+            trackAppSessionEvent();
+        }
+    }
+
     private synchronized ArrayList<TdEventBean> addAllLqEventBean(TdEventBean lqEventBean) {
         ArrayList<TdEventBean> tempLqEventBeanArray = new ArrayList<TdEventBean>();
         tempLqEventBeanArray.addAll(this.eventList);
@@ -269,8 +300,12 @@ public class TongDaoBridge {
         values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
 
         TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_app");
-        startTrackEvents(tempEb);
 
+        try {
+            makeSessionEventJsonString(tempEb, false);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void onAppSessionStart() {
@@ -280,7 +315,12 @@ public class TongDaoBridge {
         values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
 
         TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!open_app");
-        startTrackEvents(tempEb);
+
+        try {
+            makeSessionEventJsonString(tempEb, true);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void startTrackEvents(final TdEventBean tdEventBean) {
@@ -288,9 +328,11 @@ public class TongDaoBridge {
             @Override
             public void run() {
                 try {
-                    trackEvents(tdEventBean);
+                    synchronized (LOCK) {
+                        trackEvents(tdEventBean);
+                    }
                 } catch (JSONException e) {
-                    if( !Thread.currentThread().isInterrupted() ) {
+                    if (!Thread.currentThread().isInterrupted()) {
                         Thread.currentThread().interrupt();
                     }
                     Log.e("startTrackEvents", "JSONException");
@@ -301,7 +343,7 @@ public class TongDaoBridge {
 
     private void trackEvents(TdEventBean lqEventBean) throws JSONException {
         if (this.appContext != null && this.APP_KEY != null && this.USER_ID != null && this.DEVICE_ID != null) {
-            if ( isCanRun() ) {
+            if (isCanRun()) {
                 setCanRun(false);
                 final ArrayList<TdEventBean> tempLqEventBeanArray = addAllLqEventBean(lqEventBean);
                 try {
@@ -330,6 +372,7 @@ public class TongDaoBridge {
                     setEventList(tempLqEventBeanArray);
                     setCanRun(true);
                 } catch (IOException e) {
+                    e.printStackTrace();
                     Log.e("IOException", "trackEvents");
                     setEventList(tempLqEventBeanArray);
                     setCanRun(true);
@@ -338,6 +381,37 @@ public class TongDaoBridge {
                 addWaitList(lqEventBean);
             }
         }
+    }
+
+    private void trackAppSessionEvent() throws JSONException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (LOCK) {
+                        TongDaoApiTool.post(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
+
+                            @Override
+                            public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
+                                Log.e("Session event response", "" + statusCode);
+                                TongDaoSavingTool.setAppSessionData(appContext, null);
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, String responseBody) throws JSONException {
+
+                            }
+                        });
+                    }
+                } catch (ClientProtocolException e) {
+                    Log.e("ClientProtocolException", "trackEvents");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void onServerError(int statusCode, JSONObject errorResponse, OnErrorListener onErrorListener) {
@@ -442,7 +516,7 @@ public class TongDaoBridge {
 
 
     private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
-        if (this.appContext == null || APP_KEY == null || USER_ID == null  || DEVICE_ID == null) {
+        if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
             return;
         }
 

@@ -66,9 +66,9 @@ public class PermissionDialog extends DialogFragment {
         request = getArguments().getInt("req");
 
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.dialog_title)
+                .setTitle("Permission Request")
                 .setCancelable(false)
-                .setPositiveButton(android.R.string.ok,
+                .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 if (checker != null && checker.getManager() != null) {
@@ -86,16 +86,18 @@ public class PermissionDialog extends DialogFragment {
             if( permissions.get(i).equalsIgnoreCase(TongDaoAppInfoTool.ACCESS_COARSE_LOCATION_PERMISSION) ||
                     permissions.get(i).equalsIgnoreCase(TongDaoAppInfoTool.ACCESS_FINE_LOCATION_PERMISSION) ) {
                 str = "Location";
+                message = "位置获取已关闭，可在手机设置中打开";
             }
             else if( permissions.get(i).equalsIgnoreCase(TongDaoAppInfoTool.ACCESS_TELEPHONY_PERMISSION) ){
                 str = "Telephony";
+                message = "信息获取已关闭，可在手机设置中打开";
             }
-            if (i == permissions.size() - 1)
-                message += str;
-            else
-                message += str + ", ";
+//            if (i == permissions.size() - 1)
+//                message += str;
+//            else
+//                message += str + ", ";
         }
-        message += " permission";
+//        message += " permission";
         b.setMessage(message);
         return b.create();
     }

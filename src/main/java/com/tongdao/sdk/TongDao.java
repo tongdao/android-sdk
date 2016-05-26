@@ -61,6 +61,7 @@ public class TongDao {
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
             lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             lingQianBridge.init();
+            TongDao.onAppSessionStart();
             return true;
         } else {
             return false;
@@ -82,6 +83,7 @@ public class TongDao {
                 lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
                 TongDaoSavingTool.setAnonymous(appContext, true);
                 lingQianBridge.init();
+                TongDao.onAppSessionStart();
                 return true;
             } else {
                 return false;
@@ -91,6 +93,7 @@ public class TongDao {
                 lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
                 TongDaoSavingTool.setAnonymous(appContext, false);
                 lingQianBridge.init();
+                TongDao.onAppSessionStart();
                 return true;
             } else {
                 return false;
@@ -212,13 +215,17 @@ public class TongDao {
     }
 
     public static void onAppSessionStart() {
+        Log.e("session event track bf", "Start" + 0);
         if (lingQianBridge != null && lingQianBridge.getUserId() != null) {
+            Log.e("session event track", "Start" + 0);
             lingQianBridge.onAppSessionStart();
         }
     }
 
     public static void onAppSessionEnd() {
+        Log.e("session event track bf", "Emd" + 0);
         if (lingQianBridge != null && lingQianBridge.getUserId() != null) {
+            Log.e("session event track", "Emd" + 0);
             lingQianBridge.onAppSessionEnd();
         }
     }
@@ -878,6 +885,5 @@ public class TongDao {
 
     public static void registerApplication(Application application) {
         application.registerActivityLifecycleCallbacks(new TongDaoActivityCallback(application.getApplicationContext()));
-        TongDao.onAppSessionStart();
     }
 }

@@ -18,6 +18,7 @@ public class TongDaoSavingTool {
     private static final String LOCATION_DATA = "LOCATION_DATA";
     private static final String DEVICE_DATA = "DEVICE_DATA";
     private static final String FINGERPRINT_DATA = "FINGERPRINT_DATA";
+    private static final String APP_SESSION_DATA = "APP_SESSION";
 
     public static void saveAppKeyAndUserId(Context appContext, String appKey, String userId) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
@@ -150,4 +151,17 @@ public class TongDaoSavingTool {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(FINGERPRINT_DATA, null);
     }
+
+    public static void setAppSessionData(Context appContext, String sessionData) {
+        SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(APP_SESSION_DATA, sessionData);
+        editor.commit();
+    }
+
+    public static String getAppSessionData(Context appContext) {
+        SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
+        return sp.getString(APP_SESSION_DATA, null);
+    }
+
 }
