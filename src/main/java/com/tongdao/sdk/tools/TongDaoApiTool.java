@@ -1,6 +1,5 @@
 package com.tongdao.sdk.tools;
 
-import android.os.Parcel;
 import android.util.Log;
 
 import com.tongdao.sdk.config.Constants;
@@ -82,7 +81,7 @@ public class TongDaoApiTool {
 //        HttpParams params = new BasicHttpParams();
 //        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
 //        HttpConnectionParams.setSoTimeout(params, TIME_OUT);
-//        DefaultHttpClient httpClient = new DefaultHttpClient(params);
+//        DefaultHttpClient httpClient = new Defa(params);
 //        TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
 //
 //        HttpPost httpPost = new HttpPost(url);
@@ -112,11 +111,13 @@ public class TongDaoApiTool {
         int resCode = 0;
 
         URL requestUrl = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+        HttpsURLConnection connection = (HttpsURLConnection) requestUrl.openConnection();
         connection.setConnectTimeout(TIME_OUT);
         connection.setReadTimeout(TIME_OUT);
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
+
+        TdSSLTrustManager.addSSLManagerForConnection(connection);
 
         generateHeaders(connection, appKey, deviceId, false, false, requestProperties);
 

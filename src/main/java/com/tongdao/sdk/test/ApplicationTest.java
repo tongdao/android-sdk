@@ -5,10 +5,14 @@ import android.content.Context;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
+import com.tongdao.sdk.TongDao;
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 import com.tongdao.sdk.tools.TongDaoDataTool;
+import com.tongdao.sdk.tools.TongDaoSavingTool;
 
 import org.json.JSONObject;
+
+import java.util.Random;
 
 /**
  * Created by kinjal.patel on 13/05/16.
@@ -34,63 +38,63 @@ public class ApplicationTest extends InstrumentationTestCase {
 
     }
 
-//    public void testIdentifyWhenApplicationDataChanged() {
-//        String userId = generateUserId();
-//
-//        assertNotNull(userId);
-//
-//        TongDaoSavingTool.setApplicationInfoData(activityContext, "DummyApplicationData");
-//
-//        TongDao.init(activityContext, APP_KEY);
-//        TongDao.setUserId(activityContext, userId);
-//    }
-//
-//    public void testIdentifyWhenConnectionDataChanged() {
-//        String userId = generateUserId();
-//
-//        assertNotNull(userId);
-//
-//        TongDaoSavingTool.setConnectionInfoData(activityContext, "DummyConnectionData");
-//
-//        TongDao.init(activityContext, APP_KEY);
-//        TongDao.setUserId(activityContext, userId);
-//    }
-//
-//    public void testIdentifyWhenLocationDataChanged() {
-//        String userId = generateUserId();
-//
-//        assertNotNull(userId);
-//
-//        TongDaoSavingTool.setLocationInfoData(activityContext, "DummyLocationData");
-//
-//        TongDao.init(activityContext, APP_KEY);
-//        TongDao.setUserId(activityContext, userId);
-//    }
-//
-//    public void testIdentifyWhenFingerPrintDataChanged() {
-//        String userId = generateUserId();
-//
-//        assertNotNull(userId);
-//
-//        TongDaoSavingTool.setFingerprintInfoData(activityContext, "DummyFingerPrintData");
-//
-//        TongDao.init(activityContext, APP_KEY);
-//        TongDao.setUserId(activityContext, userId);
-//    }
-//
-//    public void testIdentifyWhenDeviceDataChanged() {
-//        String userId = generateUserId();
-//
-//        assertNotNull(userId);
-//
-//        TongDaoSavingTool.setDeviceInfoData(activityContext, "DummyDeviceData");
-//
-//        TongDao.init(activityContext, APP_KEY);
-//        TongDao.setUserId(activityContext, userId);
-//    }
-//
-//    private String generateUserId() {
-//        return String.valueOf(new Random().nextInt(10));
-//    }
+    public void testIdentifyWhenApplicationDataChanged() {
+        String userId = generateUserId();
+
+        assertNotNull(userId);
+
+        TongDaoSavingTool.setApplicationInfoData(activityContext, "DummyApplicationData");
+
+        TongDao.init(activityContext, APP_KEY);
+        TongDao.setUserId(activityContext, userId);
+    }
+
+    public void testIdentifyWhenConnectionDataChanged() {
+        String userId = generateUserId();
+
+        assertNotNull(userId);
+
+        TongDaoSavingTool.setConnectionInfoData(activityContext, "DummyConnectionData");
+
+        TongDao.init(activityContext, APP_KEY);
+        TongDao.setUserId(activityContext, userId);
+    }
+
+    public void testIdentifyWhenLocationDataChanged() {
+        String userId = generateUserId();
+
+        assertNotNull(userId);
+
+        TongDaoSavingTool.setLocationInfoData(activityContext, "DummyLocationData");
+
+        TongDao.init(activityContext, APP_KEY);
+        TongDao.setUserId(activityContext, userId);
+    }
+
+    public void testIdentifyWhenFingerPrintDataChanged() {
+        String userId = generateUserId();
+
+        assertNotNull(userId);
+
+        TongDaoSavingTool.setFingerprintInfoData(activityContext, "DummyFingerPrintData");
+
+        TongDao.init(activityContext, APP_KEY);
+        TongDao.setUserId(activityContext, userId);
+    }
+
+    public void testIdentifyWhenDeviceDataChanged() {
+        String userId = generateUserId();
+
+        assertNotNull(userId);
+
+        TongDaoSavingTool.setDeviceInfoData(activityContext, "DummyDeviceData");
+
+        TongDao.init(activityContext, APP_KEY);
+        TongDao.setUserId(activityContext, userId);
+    }
+
+    private String generateUserId() {
+        return String.valueOf(new Random().nextInt(10));
+    }
 
 }

@@ -26,6 +26,13 @@ public class TdEventBean {
         this.timestamp = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
     }
 
+    public TdEventBean(ACTION_TYPE action, String userId, String event) {
+        this.action = action;
+        this.userId = userId;
+        this.event = event;
+        this.timestamp = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+    }
+
     public TdEventBean(ACTION_TYPE action, String userId, String previousId, String event, JSONObject properties) {
         this.action = action;
         this.previousId = previousId;
