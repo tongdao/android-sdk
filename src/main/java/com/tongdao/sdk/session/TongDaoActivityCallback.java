@@ -67,7 +67,7 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
     @Override
     public void onActivityDestroyed(Activity activity) {
         try {
-            Thread.sleep(100);
+            Thread.sleep(500);
             if( isApplicationBroughtToBackground() ) {
                 isAppBroughtToBackground = false;
             }
