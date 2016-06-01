@@ -14,6 +14,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
 
 import com.tongdao.sdk.R;
+import com.tongdao.sdk.tools.I18N;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,8 +142,8 @@ public class PermissionManager {
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                         .setAutoCancel(true)
                         .setColor(Color.RED)
-                        .setSmallIcon(R.drawable.ic_notification_icon)
-                        .setContentTitle(context.getString(R.string.notification_title))
+//                        .setSmallIcon(R.drawable.ic_notification_icon)
+                        .setContentTitle(I18N.DIALOG_TITLE)
                         .setTicker(context.getString(text))
                         .setContentIntent(pi)
                         .setContentText(context.getString(text));
