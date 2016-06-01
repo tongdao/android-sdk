@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 
 import com.tongdao.sdk.R;
+import com.tongdao.sdk.tools.I18N;
 
 @SuppressWarnings("unused")
 public class SystemPermissionDialog extends DialogFragment {
@@ -29,12 +30,12 @@ public class SystemPermissionDialog extends DialogFragment {
         int text = getArguments().getInt("text");
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.system_dialog_title)
+                .setTitle(I18N.DIALOG_TITLE)
                 .setCancelable(false)
                 .setMessage(text)
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.settings,
+                .setPositiveButton(I18N.SETTINGS,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);

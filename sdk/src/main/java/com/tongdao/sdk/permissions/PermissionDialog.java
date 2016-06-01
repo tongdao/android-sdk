@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 
 import com.tongdao.sdk.R;
+import com.tongdao.sdk.tools.I18N;
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class PermissionDialog extends DialogFragment {
         request = getArguments().getInt("req");
 
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.dialog_title)
+                .setTitle(I18N.DIALOG_TITLE)
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
