@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/test_userid_item"
+        android:title="login"
+        app:showAsAction="always"></item>
+
+    <item
+        android:id="@+id/setting_add_item"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="设置自定义按钮"
+        app:showAsAction="always"></item>
+
+    <item
+        android:id="@+id/setting_bk_item"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="设置背景"
+        app:showAsAction="always"></item>
+
+    <item
+        android:id="@+id/setting_jp_item"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="设置奖品"
+        app:showAsAction="always"></item>
+
+</menu>
