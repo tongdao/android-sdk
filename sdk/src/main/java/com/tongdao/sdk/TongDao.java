@@ -98,9 +98,14 @@ public class TongDao {
     }
 
     public static void trackEvent() {
-        if( lingQianBridge != null ) {
-            lingQianBridge.trackIdentify();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if( lingQianBridge != null ) {
+                    lingQianBridge.trackIdentify();
+                }
+            }
+        }).start();
     }
 
     /**

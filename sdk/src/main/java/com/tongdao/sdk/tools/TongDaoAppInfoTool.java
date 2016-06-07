@@ -186,7 +186,7 @@ public class TongDaoAppInfoTool {
         int accessCoarseLocation = pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName);
         int accessFineLocation = pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName);
 
-        if( accessCoarseLocation == 0 || accessFineLocation == 0 ) {
+        if (accessCoarseLocation == 0 || accessFineLocation == 0) {
 
             double[] ary = getFormattedLocationString(context, accessCoarseLocation, accessFineLocation);
             if ((ary != null) && (ary.length > 1)) {
@@ -225,8 +225,7 @@ public class TongDaoAppInfoTool {
                 }
             } catch (java.lang.IllegalArgumentException e) {
                 e.printStackTrace();
-            }
-            catch (java.lang.SecurityException e) {
+            } catch (java.lang.SecurityException e) {
                 e.printStackTrace();
             }
         }
@@ -330,9 +329,14 @@ public class TongDaoAppInfoTool {
                 LOCK.acquire();
             } else */
 
-            if (appContext.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != -1) {
-                addObject(appContext, jsonObject);
-            }
+        PackageManager pm = appContext.getPackageManager();
+        String packageName = appContext.getPackageName();
+
+        int phoneStatePermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);
+
+        if (phoneStatePermission == 0) {
+            addObject(appContext, jsonObject);
+        }
         /*} catch (InterruptedException ex) {
             LOCK.release();
             ex.printStackTrace();
