@@ -1,9 +1,11 @@
 package com.tongdao.demo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -26,6 +28,7 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
+import com.tongdao.sdk.TongDao;
 import com.tongdao.sdk.beans.TdRewardBean;
 import com.tongdao.sdk.interfaces.ui.OnRewardUnlockedListener;
 import com.tongdao.sdk.ui.TongDaoUiCore;
@@ -38,6 +41,8 @@ import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends ActionBarActivity implements OnClickListener {
 
@@ -110,9 +115,37 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         TongDaoUiCore.displayInAppMessage(this);
+
+        if( this.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == -1 ) {
+            this.requestPermissions(new String[]{ Manifest.permission.READ_PHONE_STATE }, 1);
+        }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == -1 || grantResults.length == 0) {
+            finish();
+            return;
+        }
+
+        for (int i : grantResults) {
+            if (i == PackageManager.PERMISSION_GRANTED) {
+                TongDao.trackEvent();
+            }
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if( requestCode == 1 && this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == -1 ) {
+            this.requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 2);
+        }
+
+        if( requestCode == 2 && this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == -1 ) {
+            this.requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 3);
+        }
+    }
+
 
     @Override
     protected void onPause() {

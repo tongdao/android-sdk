@@ -6,6 +6,7 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,6 +96,13 @@ public class TongDao {
             }
         }
     }
+
+    public static void trackEvent() {
+        if( lingQianBridge != null ) {
+            lingQianBridge.trackIdentify();
+        }
+    }
+
     /**
      * 使用用户自定义userid
      *
