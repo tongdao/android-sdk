@@ -58,6 +58,9 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     private PushAgent mPushAgent;
     public Handler handler = new Handler();
 
+    PackageManager pm;
+    String packageName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +106,15 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             TongDaoUiCore.identifyPushToken(device_token);
             Log.e("Push", device_token);
         }
+
+        pm = this.getPackageManager();
+        packageName = this.getPackageName();
+
+        int phoneStatePermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);
+
+        if (phoneStatePermission != 0) {
+            this.requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
+        }
     }
 
     @Override
@@ -116,16 +128,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             e.printStackTrace();
         }
         TongDaoUiCore.displayInAppMessage(this);
-
-        if( this.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == -1 ) {
-            this.requestPermissions(new String[]{ Manifest.permission.READ_PHONE_STATE }, 1);
-        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == -1 || grantResults.length == 0) {
-            finish();
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == -1 && grantResults.length == 0) {
+//            finish();
             return;
         }
 
@@ -133,16 +143,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             if (i == PackageManager.PERMISSION_GRANTED) {
                 TongDao.trackEvent();
             }
-        }
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if( requestCode == 1 && pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName) != 0 ) {
+                this.requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 2);
+            }
 
-        if( requestCode == 1 && this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == -1 ) {
-            this.requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 2);
-        }
-
-        if( requestCode == 2 && this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == -1 ) {
-            this.requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 3);
+            if( requestCode == 2 && pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName) != 0 ) {
+                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 3);
+            }
         }
     }
 
