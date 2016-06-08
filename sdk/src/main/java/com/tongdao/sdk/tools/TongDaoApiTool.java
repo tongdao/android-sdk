@@ -123,6 +123,8 @@ public class TongDaoApiTool {
 
         // Write data
         OutputStream os = connection.getOutputStream();
+        if( content == null )
+            return;
         os.write(content.getBytes());
 
         // Read response
@@ -135,8 +137,6 @@ public class TongDaoApiTool {
 
         if (connection != null) {
             resCode = connection.getResponseCode();
-            Log.e("respCode", ":" + resCode);
-
         }
 
         // Close streams
@@ -177,8 +177,6 @@ public class TongDaoApiTool {
 
         if (connection != null) {
             resCode = connection.getResponseCode();
-            Log.e("respCode", ":" + resCode);
-
         }
 
         // Close streams

@@ -100,6 +100,17 @@ public class TongDao {
             }
         }
     }
+
+    public static void trackEvent() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if( lingQianBridge != null ) {
+                    lingQianBridge.trackIdentify();
+                }
+            }
+        }).start();
+    }
     /**
      * 使用用户自定义userid
      *

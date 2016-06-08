@@ -124,6 +124,21 @@ public class TongDaoBridge {
         }).start();
     }
 
+    public void trackIdentify() {
+        if (appContext != null) {
+            try {
+                String gaid = TongDaoAppInfoTool.getGaid(appContext);
+                JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
+                if (properties != null && properties.keys().hasNext() && USER_ID != null) {
+                    TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
+                    trackEvents(tempLqEventBean);
+                }
+            } catch (JSONException e) {
+                Log.e("init properties", "JSONException");
+            }
+        }
+    }
+
     /**
      * @param actionType 用户动作类型
      * @param previousId device

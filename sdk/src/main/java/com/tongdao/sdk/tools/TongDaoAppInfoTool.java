@@ -19,10 +19,6 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.tongdao.sdk.permissions.IPermissionResponse;
-import com.tongdao.sdk.permissions.PermissionConstants;
-import com.tongdao.sdk.permissions.TongDaoPermissionModule;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -176,19 +172,12 @@ public class TongDaoAppInfoTool {
     }
 
     public static Object[] getCurrentLocation(final Context context) {
-        Semaphore LOCK = new Semaphore(0);
         double latitude = 0;
         double longitude = 0;
         String source = UNKNOWN;
 
         PackageManager pm = context.getPackageManager();
         String packageName = context.getPackageName();
-
-        try {
-            checkForCoarsePermission(context, LOCK);
-        } catch (InterruptedException ex) {
-            LOCK.release();
-        }
 
         int accessCoarseLocation = pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName);
         int accessFineLocation = pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName);
@@ -213,53 +202,6 @@ public class TongDaoAppInfoTool {
             }
         }
         return new Object[]{latitude, longitude, source};
-    }
-
-    private static void checkForCoarsePermission(final Context context, final Semaphore LOCK) throws InterruptedException {
-        if (!TongDaoPermissionModule.checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
-                !TongDaoSavingTool.getPermissionDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-            TongDaoPermissionModule.requestPermission(context, PermissionConstants.REQUEST_CODE_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION, new IPermissionResponse<Void>() {
-
-                        @Override
-                        public Void permissionGranted() throws Exception {
-                            checkForFinePermission(context, LOCK);
-                            return null;
-                        }
-
-                        @Override
-                        public Void permissionDenied() {
-                            TongDaoSavingTool.setPermissionDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION);
-                            checkForFinePermission(context, LOCK);
-                            return null;
-                        }
-                    });
-            LOCK.acquire();
-        }
-    }
-
-    private static void checkForFinePermission(final Context context, final Semaphore LOCK) {
-        if (!TongDaoPermissionModule.checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
-                !TongDaoSavingTool.getPermissionDenied(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            TongDaoPermissionModule.requestPermission(context, PermissionConstants.REQUEST_CODE_FINE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION, new IPermissionResponse<Void>() {
-
-                        @Override
-                        public Void permissionGranted() throws Exception {
-                            LOCK.release();
-                            return null;
-                        }
-
-                        @Override
-                        public Void permissionDenied() {
-                            LOCK.release();
-                            TongDaoSavingTool.setPermissionDenied(context, Manifest.permission.ACCESS_FINE_LOCATION);
-                            return null;
-                        }
-                    });
-        }
     }
 
     private static double[] getFormattedLocationString(Context c, int accessCoarseLocation, int accessFineLocation) {
@@ -414,33 +356,13 @@ public class TongDaoAppInfoTool {
 //	}
 
     public static void getImeiInfos(final Context appContext, final JSONObject jsonObject) {
-        try {
-            if (!TongDaoPermissionModule.checkPermission(appContext, Manifest.permission.READ_PHONE_STATE) &&
-                    !TongDaoSavingTool.getPermissionDenied(appContext, Manifest.permission.READ_PHONE_STATE)) {
-                TongDaoPermissionModule.requestPermission(appContext, PermissionConstants.REQUEST_CODE_TELEPHONY,
-                        Manifest.permission.READ_PHONE_STATE, new IPermissionResponse<Void>() {
-                            @Override
-                            public Void permissionGranted() throws Exception {
-                                addObject(appContext, jsonObject);
-                                LOCK.release();
-                                return null;
-                            }
+        PackageManager pm = appContext.getPackageManager();
+        String packageName = appContext.getPackageName();
 
-                            @Override
-                            public Void permissionDenied() {
-                                TongDaoSavingTool.setPermissionDenied(appContext, Manifest.permission.READ_PHONE_STATE);
-                                LOCK.release();
-                                return null;
-                            }
-                        });
+        int phoneStatePermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);
 
-                LOCK.acquire();
-            } else if (TongDaoPermissionModule.checkPermission(appContext, Manifest.permission.READ_PHONE_STATE)) {
-                addObject(appContext, jsonObject);
-            }
-        } catch (InterruptedException ex) {
-            LOCK.release();
-            ex.printStackTrace();
+        if (phoneStatePermission == 0) {
+            addObject(appContext, jsonObject);
         }
     }
 
