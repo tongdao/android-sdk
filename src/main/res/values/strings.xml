@@ -1,6 +1,0 @@
-<resources>
-<string name="dialog_title">Permission request</string>
-<string name="notification_title">Permission request</string>
-<string name="system_dialog_title">Permission request</string>
-<string name="settings">Settings</string>
-</resources>
