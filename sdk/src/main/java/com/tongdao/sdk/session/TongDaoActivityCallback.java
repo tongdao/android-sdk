@@ -14,9 +14,6 @@ import com.tongdao.sdk.TongDao;
 
 import java.util.List;
 
-/**
- * Created by kinjal.patel on 16/05/16.
- */
 public class TongDaoActivityCallback implements Application.ActivityLifecycleCallbacks {
     private Context context;
     private boolean isAppBroughtToBackground = false;
