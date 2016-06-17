@@ -45,6 +45,7 @@ public class TongDaoBridge {
     private ArrayList<TdEventBean> waitingList = new ArrayList<TdEventBean>();
     private boolean canRun = true;
     private long startTime = 0;
+    private long startTimeForCloseApp = 0;
     private static final String TD_MESSAGE_IMG_URL = "image_url";
     private static final String TD_MESSAGE = "message";
     private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
@@ -312,23 +313,30 @@ public class TongDaoBridge {
     }
 
     public void onAppSessionEnd() {
-        HashMap<String, Object> values = new HashMap<String, Object>();
-        values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
+        if (this.startTimeForCloseApp == 0) {
+            return;
+        }
 
-        TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_app");
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTimeForCloseApp));
 
         try {
+            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_app", TongDaoDataTool.makeUserProperties(values));
             makeSessionEventJsonString(tempEb, false);
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
+        finally {
+            this.startTimeForCloseApp = 0;
+        }
     }
 
     public void onAppSessionStart() {
-        this.startTime = System.currentTimeMillis();
+        this.startTimeForCloseApp = System.currentTimeMillis();
 
-        HashMap<String, Object> values = new HashMap<String, Object>();
-        values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
+        if (this.startTimeForCloseApp == 0) {
+            return;
+        }
 
         TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!open_app");
 
