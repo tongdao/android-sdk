@@ -162,7 +162,7 @@ public class TongDaoApiTool {
         URL requestUrl = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
         connection.setConnectTimeout(TIME_OUT);
-        connection.setReadTimeout(TIME_OUT);
+        connection.setReadTimeout(TIME_OUT + 15000);
         connection.setRequestMethod("GET");
 
         generateHeaders(connection, appKey, deviceId, false, isPageCall, requestProperties);
@@ -190,7 +190,7 @@ public class TongDaoApiTool {
         } else {
             //success call back
             if (handler != null) {
-                handler.onSuccess(resCode, null);
+                handler.onSuccess(resCode, responseSB.toString());
             }
         }
     }
