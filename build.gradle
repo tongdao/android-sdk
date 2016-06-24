@@ -17,3 +17,24 @@ allprojects {
         jcenter()
     }
 }
+
+task generateEclipseBundle(type: Zip) {
+
+    baseName('tongrd-android-sdk')
+
+    into('sdk-ui'){ from('.eclipse_artifacts/sdk-ui/project.properties') }
+    into('sdk-ui/src'){ from('sdk-ui/src/main/java') }
+    into('sdk-ui/res'){ from('sdk-ui/src/main/res')  }
+    into('sdk-ui/libs'){ from('sdk-ui/libs') }
+    into('sdk-ui'){ from('sdk-ui/src/main/AndroidManifest.xml') }
+    into('demo/src'){ from('demo/src/main/java') }
+    into('demo/res'){ from('demo/src/main/res') }
+    into('demo/libs'){ from('demo/libs') }
+    into('demo'){ from('demo/src/main/AndroidManifest.xml') }
+    into('demo'){ from('.eclipse_artifacts/demo/project.properties') }
+    into('demo/.settings'){ from('.eclipse_artifacts/demo/.settings') }
+    into('demo'){ from('.eclipse_artifacts/demo/.classpath') }
+    into('demo'){ from('.eclipse_artifacts/demo/.factorypath') }
+
+    destinationDir new File('build/', 'release')
+}
