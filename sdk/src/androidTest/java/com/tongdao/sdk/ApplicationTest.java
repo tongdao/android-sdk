@@ -15,6 +15,7 @@ import com.tongdao.sdk.tools.TongDaoSavingTool;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -54,6 +55,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         telephonyPermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
+
     }
 
     @Test
@@ -133,4 +135,5 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     private String generateUserId() {
         return String.valueOf(new Random().nextInt(10));
     }
+
 }
