@@ -23,6 +23,7 @@ import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
 import com.tongdao.sdk.tools.TongDaoUrlTool;
+import com.tongdao.sdk.tools.TongDaoUtils;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -347,6 +348,30 @@ public class TongDaoBridge {
         }
     }
 
+    public TdEventBean onNotificationStatus() {
+        int status = TongDaoUtils.isNotificationEnabled() ? 1 : 0;
+        this.startTime = System.currentTimeMillis();
+
+        if (this.startTime == 0 ||
+                TongDaoSavingTool.getNotificationData(appContext) == status) {
+            return null;
+        }
+
+        TongDaoSavingTool.setNotificationData(appContext, status);
+
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        String strStatus = status == 1 ? "on" : "off";
+        values.put("!status", strStatus);
+
+        try {
+            return new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!push_switch", TongDaoDataTool.makeUserProperties(values));
+        } catch (JSONException e) {
+            Log.e("onSessionStart", "JSONException");
+        }
+        return null;
+    }
+
+
     public void startTrackEvents(final TdEventBean tdEventBean) {
         new Thread(new Runnable() {
             @Override
@@ -370,6 +395,11 @@ public class TongDaoBridge {
             if (isCanRun()) {
                 setCanRun(false);
                 final ArrayList<TdEventBean> tempLqEventBeanArray = addAllLqEventBean(lqEventBean);
+
+                TdEventBean tdEventBean = onNotificationStatus();
+                if( tdEventBean != null ) {
+                    tempLqEventBeanArray.add(tdEventBean);
+                }
                 try {
                     TongDaoApiTool.post(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 

@@ -26,6 +26,7 @@ import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
+import com.tongdao.sdk.tools.TongDaoUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +59,7 @@ public class TongDao {
      */
     public static boolean init(Context appContext, String appKey) {
         String deviceId = TongDao.generateDeviceId(appContext);
+        TongDaoUtils.init(appContext);
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
             lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             lingQianBridge.init();
@@ -766,6 +768,7 @@ public class TongDao {
                 sendOpenMessage("!open_message", messageId, clientId);
             }
         } catch (JSONException e) {
+            e.printStackTrace();
             Log.e("trackOpenMessage", "JSONException");
         }
     }
@@ -890,7 +893,7 @@ public class TongDao {
                 sendOpenMessage("!receive_message", messageId, clientId);
             }
         } catch (JSONException e) {
-            Log.e("trackReceivedInAppMsg", "JSONException");
+            Log.e("trackReceiovedInAppMsg", "JSONException");
         }
     }
 

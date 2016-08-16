@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -51,8 +52,9 @@ public class TongDaoCheckTool {
     }
 
     public static String getTimeStamp(Date date) {
-        SimpleDateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
         m_ISO8601Local.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         return m_ISO8601Local.format(date);
     }
 
