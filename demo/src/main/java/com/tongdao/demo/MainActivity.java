@@ -35,7 +35,9 @@ import com.tongdao.sdk.ui.TongDaoUiCore;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
+import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.UmengRegistrar;
+import com.umeng.message.entity.UMessage;
 
 import org.json.JSONException;
 
@@ -97,6 +99,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.onAppStart();
+        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
+
         if (!mPushAgent.isRegistered()) {
             Log.e("Push", "Not registered...");
             mPushAgent.enable(mRegisterCallback);
@@ -463,6 +467,15 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
                     TongDaoUiCore.identifyPushToken(registrationId);
                 }
             });
+        }
+    };
+
+    public UmengMessageHandler umengMessageHandler = new UmengMessageHandler() {
+        @Override
+        public void dealWithNotificationMessage(Context context, UMessage uMessage) {
+            super.dealWithNotificationMessage(context, uMessage);
+
+            Log.e("UmengMessage", uMessage.extra.toString());
         }
     };
 
