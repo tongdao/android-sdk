@@ -361,7 +361,7 @@ public class TongDaoBridge {
 
         HashMap<String, Object> values = new HashMap<String, Object>();
         String strStatus = status == 1 ? "true" : "false";
-        values.put("!push_switch", strStatus);
+        values.put("!push_enable", strStatus);
 
         try {
             return new TdEventBean(ACTION_TYPE.identify, this.USER_ID, null, TongDaoDataTool.makeUserProperties(values));

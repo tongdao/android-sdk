@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -86,6 +87,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         this.findViewById(R.id.page3_tv).setOnClickListener(this);
         this.findViewById(R.id.page4_tv).setOnClickListener(this);
         this.findViewById(R.id.page5_tv).setOnClickListener(this);
+        this.findViewById(R.id.page6_tv).setOnClickListener(this);
 
         this.loadBtns();
 
@@ -450,6 +452,15 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             case R.id.page5_tv:
                 linkIntent = new Intent(this, DemoPage5.class);
                 break;
+            case R.id.page6_tv:
+                Bundle args = new Bundle();
+                args.putString("price", "100");
+                args.putString("quality", "200");
+                FragmentManager fm = getSupportFragmentManager();
+                PaymentDialog paymentDialog = PaymentDialog.newInstance();
+                paymentDialog.setArguments(args);
+                paymentDialog.show(fm, "frg_payment");
+                return;
         }
 
         this.startActivity(linkIntent);
