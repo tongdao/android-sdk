@@ -204,7 +204,7 @@ public class TongDaoBridge {
         }
 
         eventsObj.put("events", eventsArray);
-        Log.e("event string", eventsObj.toString());
+        Log.i("event string", eventsObj.toString());
         return eventsObj.toString();
     }
 
@@ -228,7 +228,7 @@ public class TongDaoBridge {
         eventArray.put(sessionEvent.getJsonObject());
 
         eventObj.put("events", eventArray);
-        Log.e("session event string", eventObj.toString());
+        Log.i("session event string", eventObj.toString());
 
         TongDaoSavingTool.setAppSessionData(appContext, eventObj.toString());
 
@@ -360,11 +360,11 @@ public class TongDaoBridge {
         TongDaoSavingTool.setNotificationData(appContext, status);
 
         HashMap<String, Object> values = new HashMap<String, Object>();
-        String strStatus = status == 1 ? "on" : "off";
-        values.put("!status", strStatus);
+        String strStatus = status == 1 ? "true" : "false";
+        values.put("!push_switch", strStatus);
 
         try {
-            return new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!push_switch", TongDaoDataTool.makeUserProperties(values));
+            return new TdEventBean(ACTION_TYPE.identify, this.USER_ID, null, TongDaoDataTool.makeUserProperties(values));
         } catch (JSONException e) {
             Log.e("onSessionStart", "JSONException");
         }
