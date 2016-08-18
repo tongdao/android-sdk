@@ -674,6 +674,8 @@ public class TongDao {
             order.setCurrency(currency);
             order.setOrderLines(orderLines);
 
+            Log.i("PlaceOrder", "" + order.getTotal());
+
             JSONObject dataObj = TongDaoDataTool.makeOrderProperties(order);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.track, "!place_order", dataObj);

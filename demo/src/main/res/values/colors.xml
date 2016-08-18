@@ -2,4 +2,8 @@
 <resources>
     <color name="default_color">#5298fc</color>
     <color name="pressed_color">#3b70c1</color>
+
+    <color name="dialog_color">#000000</color>
+    <color name="dialog_txtcolor">#ff81d4fa</color>
+    <color name="dialog_btncolor">#ffffff</color>
 </resources>

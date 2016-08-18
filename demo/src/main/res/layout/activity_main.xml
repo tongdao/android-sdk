@@ -120,5 +120,18 @@
             android:layout_marginTop="5dp"
             android:textColor="#FFFFFF"
             android:text="demo://page5"></TextView>
+
+        <Button
+            android:id="@+id/page6_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@android:color/holo_green_light"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:textColor="#FFFFFF"
+            android:text="Place Order"></Button>
     </LinearLayout>
 </ScrollView>
