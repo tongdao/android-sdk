@@ -254,12 +254,12 @@ public class TongDaoAppInfoTool {
             Looper.prepare();
             this.locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, 0, 0, this);
-            try {
-                lock.acquire();
-            } catch (InterruptedException e) {
-                lock.release();
-                e.printStackTrace();
-            }
+//            try {
+//                lock.acquire();
+//            } catch (InterruptedException e) {
+//                lock.release();
+//                e.printStackTrace();
+//            }
 
             return location;
         }
