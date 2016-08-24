@@ -251,15 +251,22 @@ public class TongDaoAppInfoTool {
 
         public Location getGPSLocation() {
 //            Looper looper = Looper.myLooper();
-            Looper.prepare();
-            this.locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 0, 0, this);
-//            try {
-//                lock.acquire();
-//            } catch (InterruptedException e) {
-//                lock.release();
-//                e.printStackTrace();
-//            }
+
+            // getting GPS status
+            boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            if( isGPSEnabled ) {
+                Looper.prepare();
+                this.locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER, 0, 0, this);
+                try {
+                    lock.acquire();
+                } catch (InterruptedException e) {
+                    lock.release();
+                    e.printStackTrace();
+                }
+            }
 
             return location;
         }
