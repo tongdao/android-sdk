@@ -273,18 +273,20 @@ public class TongDaoAppInfoTool {
 
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
-
+            lock.release();
         }
 
         @Override
         public void onProviderDisabled(String s) {
-
+            lock.release();
         }
 
         @Override
         public void onProviderEnabled(String s) {
-
+            lock.release();
         }
+
+
     }
 
 //	public static boolean isAppExist(Context context, String packageName) {
