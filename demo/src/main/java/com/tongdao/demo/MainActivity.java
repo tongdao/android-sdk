@@ -41,6 +41,7 @@ import com.umeng.message.UmengRegistrar;
 import com.umeng.message.entity.UMessage;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.onAppStart();
-        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
+//        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
 
         if (!mPushAgent.isRegistered()) {
             Log.e("Push", "Not registered...");
@@ -481,13 +482,16 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         }
     };
 
-    public UmengMessageHandler umengMessageHandler = new UmengMessageHandler() {
-        @Override
-        public void dealWithNotificationMessage(Context context, UMessage uMessage) {
-            super.dealWithNotificationMessage(context, uMessage);
-
-            Log.e("UmengMessage", uMessage.extra.toString());
-        }
-    };
+    public MessageHandler umengMessageHandler = new MessageHandler();
+//    {
+//        @Override
+//        public void dealWithNotificationMessage(Context context, UMessage uMessage) {
+//            super.dealWithNotificationMessage(context, uMessage);
+//
+////            {tongrd_value=http://www.baidu.com, tongrd_type=url, tongrd_mid=2166, tongrd_cid=1160}
+////            {tongrd_value=demo://page1, tongrd_type=deeplink, tongrd_mid=2174, tongrd_cid=1164}
+//
+//        }
+//    };
 
 }

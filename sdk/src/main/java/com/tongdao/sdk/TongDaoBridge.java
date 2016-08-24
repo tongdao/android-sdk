@@ -2,6 +2,7 @@ package com.tongdao.sdk;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -156,6 +157,7 @@ public class TongDaoBridge {
                         if (USER_ID != null) {
                             TdEventBean tempLqEventBean = null;
                             PREVIOUS_ID = previousId;
+
                             if (actionType == ACTION_TYPE.merge) {
                                 tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, null, null);
                             } else {
@@ -349,7 +351,7 @@ public class TongDaoBridge {
     }
 
     public TdEventBean onNotificationStatus() {
-        int status = TongDaoUtils.isNotificationEnabled() ? 1 : 0;
+        int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || TongDaoUtils.isNotificationEnabled()) ? 1 : 0;
         this.startTime = System.currentTimeMillis();
 
         if (this.startTime == 0 ||

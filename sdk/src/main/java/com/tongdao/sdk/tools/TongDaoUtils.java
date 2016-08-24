@@ -15,18 +15,19 @@ public class TongDaoUtils {
 
     private static final String CHECK_OP_NO_THROW = "checkOpNoThrow";
     private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
-    private static AppOpsManager mAppOps;
+    private static Context cxt;
     private static ApplicationInfo appInfo;
     private static String pkg;
 
     public static void init(Context context) {
-        mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        cxt = context;
         appInfo = context.getApplicationInfo();
         pkg = context.getApplicationContext().getPackageName();
     }
 
     @SuppressWarnings("unchecked")
     public static boolean isNotificationEnabled() {
+        AppOpsManager mAppOps = (AppOpsManager) cxt.getSystemService(Context.APP_OPS_SERVICE);
         int uid = appInfo.uid;
 
         Class appOpsClass = null; /* Context.APP_OPS_MANAGER */
