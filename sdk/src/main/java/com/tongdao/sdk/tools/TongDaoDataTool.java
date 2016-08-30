@@ -328,7 +328,7 @@ public class TongDaoDataTool {
             propertiesObj.put("!order_lines", orderlinesArray);
         }
 
-        Log.i("PlaceOrder from JSON", "" + propertiesObj.get("!total"));
+        Log.i("PlaceOrder from JSON->", "" + propertiesObj.get("!total"));
 
         return propertiesObj;
     }
