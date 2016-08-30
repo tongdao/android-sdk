@@ -49,7 +49,7 @@ public class TdEventBean {
             tempJsonObj.put("user_id", this.userId);
         }
 
-        if (this.event != null) {
+        if (this.event != null && action != ACTION_TYPE.identify) {
             tempJsonObj.put("event", this.event);
         }
 

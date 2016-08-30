@@ -2,6 +2,7 @@ package com.tongdao.sdk;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
 import com.tongdao.sdk.tools.TongDaoUrlTool;
+import com.tongdao.sdk.tools.TongDaoUtils;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -155,6 +157,7 @@ public class TongDaoBridge {
                         if (USER_ID != null) {
                             TdEventBean tempLqEventBean = null;
                             PREVIOUS_ID = previousId;
+
                             if (actionType == ACTION_TYPE.merge) {
                                 tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, null, null);
                             } else {
@@ -203,7 +206,7 @@ public class TongDaoBridge {
         }
 
         eventsObj.put("events", eventsArray);
-        Log.e("event string", eventsObj.toString());
+        Log.i("event string", eventsObj.toString());
         return eventsObj.toString();
     }
 
@@ -227,7 +230,7 @@ public class TongDaoBridge {
         eventArray.put(sessionEvent.getJsonObject());
 
         eventObj.put("events", eventArray);
-        Log.e("session event string", eventObj.toString());
+        Log.i("session event string", eventObj.toString());
 
         TongDaoSavingTool.setAppSessionData(appContext, eventObj.toString());
 
@@ -347,6 +350,30 @@ public class TongDaoBridge {
         }
     }
 
+    public TdEventBean onNotificationStatus() {
+        int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || TongDaoUtils.isNotificationEnabled()) ? 1 : 0;
+        this.startTime = System.currentTimeMillis();
+
+        if (this.startTime == 0 ||
+                TongDaoSavingTool.getNotificationData(appContext) == status) {
+            return null;
+        }
+
+        TongDaoSavingTool.setNotificationData(appContext, status);
+
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        String strStatus = status == 1 ? "true" : "false";
+        values.put("!push_enable", strStatus);
+
+        try {
+            return new TdEventBean(ACTION_TYPE.identify, this.USER_ID, null, TongDaoDataTool.makeUserProperties(values));
+        } catch (JSONException e) {
+            Log.e("onSessionStart", "JSONException");
+        }
+        return null;
+    }
+
+
     public void startTrackEvents(final TdEventBean tdEventBean) {
         new Thread(new Runnable() {
             @Override
@@ -370,6 +397,11 @@ public class TongDaoBridge {
             if (isCanRun()) {
                 setCanRun(false);
                 final ArrayList<TdEventBean> tempLqEventBeanArray = addAllLqEventBean(lqEventBean);
+
+                TdEventBean tdEventBean = onNotificationStatus();
+                if( tdEventBean != null ) {
+                    tempLqEventBeanArray.add(tdEventBean);
+                }
                 try {
                     TongDaoApiTool.post(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 

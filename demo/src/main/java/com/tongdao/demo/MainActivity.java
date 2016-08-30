@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,9 +36,12 @@ import com.tongdao.sdk.ui.TongDaoUiCore;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
+import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.UmengRegistrar;
+import com.umeng.message.entity.UMessage;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -84,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         this.findViewById(R.id.page3_tv).setOnClickListener(this);
         this.findViewById(R.id.page4_tv).setOnClickListener(this);
         this.findViewById(R.id.page5_tv).setOnClickListener(this);
+        this.findViewById(R.id.page6_tv).setOnClickListener(this);
 
         this.loadBtns();
 
@@ -97,6 +102,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.onAppStart();
+//        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
+
         if (!mPushAgent.isRegistered()) {
             Log.e("Push", "Not registered...");
             mPushAgent.enable(mRegisterCallback);
@@ -446,6 +453,15 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             case R.id.page5_tv:
                 linkIntent = new Intent(this, DemoPage5.class);
                 break;
+            case R.id.page6_tv:
+                Bundle args = new Bundle();
+                args.putString("price", "100");
+                args.putString("quality", "200");
+                FragmentManager fm = getSupportFragmentManager();
+                PaymentDialog paymentDialog = PaymentDialog.newInstance();
+                paymentDialog.setArguments(args);
+                paymentDialog.show(fm, "frg_payment");
+                return;
         }
 
         this.startActivity(linkIntent);
@@ -465,5 +481,17 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             });
         }
     };
+
+    public MessageHandler umengMessageHandler = new MessageHandler();
+//    {
+//        @Override
+//        public void dealWithNotificationMessage(Context context, UMessage uMessage) {
+//            super.dealWithNotificationMessage(context, uMessage);
+//
+////            {tongrd_value=http://www.baidu.com, tongrd_type=url, tongrd_mid=2166, tongrd_cid=1160}
+////            {tongrd_value=demo://page1, tongrd_type=deeplink, tongrd_mid=2174, tongrd_cid=1164}
+//
+//        }
+//    };
 
 }

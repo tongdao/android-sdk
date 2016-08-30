@@ -2,6 +2,7 @@ package com.tongdao.sdk.tools;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
@@ -232,7 +233,7 @@ public class TongDaoDataTool {
                 productObj.put("!name", product.getName());
             }
 
-            productObj.put("!price", product.getPrice());
+            productObj.put("!price", Float.valueOf(product.getPrice()));
 
             if (product.getCurrency() != null) {
                 productObj.put("!currency", product.getCurrency().getCurrencyCode());
@@ -307,7 +308,7 @@ public class TongDaoDataTool {
             propertiesObj.put("!order_id", orderId);
         }
 
-        propertiesObj.put("!total", order.getTotal());
+        propertiesObj.put("!total", Float.valueOf(order.getTotal()));
         propertiesObj.put("!revenue", order.getRevenue());
         propertiesObj.put("!shipping", order.getShipping());
         propertiesObj.put("!tax", order.getTax());
@@ -326,6 +327,8 @@ public class TongDaoDataTool {
         if (orderlinesArray != null) {
             propertiesObj.put("!order_lines", orderlinesArray);
         }
+
+        Log.i("PlaceOrder from JSON", "" + propertiesObj.get("!total"));
 
         return propertiesObj;
     }
