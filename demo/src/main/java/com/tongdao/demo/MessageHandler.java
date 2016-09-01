@@ -58,6 +58,8 @@ public class MessageHandler implements UHandler {
 
         JSONObject jsonObject = new JSONObject();
 
+        jsonObject.put("tongrd_type", type);
+        jsonObject.put("tongrd_value", value);
         jsonObject.put("tongrd_mid", Long.parseLong(mid));
         jsonObject.put("tongrd_cid", Long.parseLong(cid));
 

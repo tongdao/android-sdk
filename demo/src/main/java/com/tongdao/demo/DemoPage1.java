@@ -36,31 +36,12 @@ public class DemoPage1 extends ActionBarActivity {
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-//                String type = "url";
-//
-//                Intent intent = new Intent();
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                intent.putExtra("value", "http://www.baidu.com");
-//
-//                JSONObject jsonObject = new JSONObject();
-//
+//                MessageHandler receiver = new MessageHandler();
 //                try {
-//                    jsonObject.put("tongrd_mid", Long.parseLong("456748"));
-//                    jsonObject.put("tongrd_cid", Long.parseLong("38563489"));
-//                } catch (Exception e) {
-//                    e.printStackTrace();
+//                    receiver.redirectPage(DemoPage1.this, "app", "http://www.baidu.com", "72837", "8263762");
 //                }
-//
-//                String extraData = jsonObject.toString();
-//
-//                intent.putExtra("NotificationMessage", extraData);
-//
-//                if (type.equalsIgnoreCase("url")) {
-//                    intent.setAction(UmengPushMessageReceiver.OPEN_URL);
-//                    sendBroadcast(intent);
-//                } else {
-//                    intent.setClass(DemoPage1.this, MainActivity.class);
-//                    startActivity(intent);
+//                catch (Exception e) {
+//                    e.printStackTrace();
 //                }
 //            }
 //        }, 3000);
