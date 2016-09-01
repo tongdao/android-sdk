@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.umeng.message.UHandler;
 import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.entity.UMessage;
 
@@ -20,73 +21,41 @@ import java.util.Set;
 /**
  * Created by kinjal.patel on 23/08/16.
  */
-public class MessageHandler extends UmengMessageHandler {
+public class MessageHandler implements UHandler {
 
     private Context cxt = null;
     private String TAG = "";
 
-    MessageHandler() {
-        super();
-    }
-
     @Override
-    public void dealWithNotificationMessage(Context context, UMessage uMessage) {
-        super.dealWithNotificationMessage(context, uMessage);
-
+    public void handleMessage(Context context, UMessage uMessage) {
         this.cxt = context;
 
         Log.e("UmengMessage", uMessage.extra.toString());
-//        try {
-//            JSONObject jsonObject = new JSONObject(uMessage.extra.toString());
 
-            String type = uMessage.extra.get("tongrd_type"); //jsonObject.getString("tongrd_type");
-            String value = uMessage.extra.get("tongrd_value"); //jsonObject.getString("tongrd_value");
+        String type = uMessage.extra.get("tongrd_type");
+        String value = uMessage.extra.get("tongrd_value");
 
-            String message = uMessage.extra.get("message"); //jsonObject.getString("message");
+        String message = uMessage.extra.get("message");
 
-            String extraData = uMessage.extra.toString();
-            Log.e(TAG, "Message: " + message);
+        String extraData = uMessage.extra.toString();
+        Log.e(TAG, "Message: " + message);
 
-            sendNotification(message, type, value, extraData);
-
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+        redirectPage(message, type, value, extraData);
     }
 
-    private void sendNotification(String message, String type, String value, String extraData) {
-
+    private void redirectPage(String message, String type, String value, String extraData) {
         Intent intent = new Intent();
-
-        PendingIntent pendingIntent;
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("value", value);
         intent.putExtra("NotificationMessage", extraData);
 
         if (type.equalsIgnoreCase("url")) {
             intent.setAction(UmengPushMessageReceiver.OPEN_URL);
-            pendingIntent = PendingIntent.getBroadcast(cxt, 0 /* Request code */, intent,
-                    PendingIntent.FLAG_ONE_SHOT);
-        } else {
-            intent.setClass(cxt, MainActivity.class);
-            pendingIntent = PendingIntent.getActivity(cxt, 0 /* Request code */, intent,
-                    PendingIntent.FLAG_ONE_SHOT);
-
+            cxt.sendBroadcast(intent);
         }
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(cxt)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("GCM Message")
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) cxt.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        else {
+            intent.setClass(cxt, MainActivity.class);
+            cxt.startActivity(intent);
+        }
     }
 }
