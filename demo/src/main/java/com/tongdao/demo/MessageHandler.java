@@ -34,19 +34,34 @@ public class MessageHandler implements UHandler {
 
         String type = uMessage.extra.get("tongrd_type");
         String value = uMessage.extra.get("tongrd_value");
+        String mid = uMessage.extra.get("tongrd_mid");
+        String cid = uMessage.extra.get("tongrd_cid");
 
         String message = uMessage.extra.get("message");
 
-        String extraData = uMessage.extra.toString();
+//        String extraData = uMessage.extra.toString();
         Log.e(TAG, "Message: " + message);
 
-        redirectPage(message, type, value, extraData);
+        try {
+            redirectPage(type, value, mid, cid);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void redirectPage(String message, String type, String value, String extraData) {
+    private void redirectPage(String type, String value, String mid, String cid) throws JSONException{
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("value", value);
+
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("tongrd_mid", Long.parseLong(mid));
+        jsonObject.put("tongrd_cid", Long.parseLong(cid));
+
+        String extraData = jsonObject.toString();
+
         intent.putExtra("NotificationMessage", extraData);
 
         if (type.equalsIgnoreCase("url")) {

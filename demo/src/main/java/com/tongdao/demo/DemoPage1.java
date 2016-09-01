@@ -1,6 +1,8 @@
 package com.tongdao.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
 
@@ -11,6 +13,7 @@ import com.tongdao.sdk.interfaces.ui.OnRewardUnlockedListener;
 import com.tongdao.sdk.ui.TongDaoUiCore;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,39 @@ public class DemoPage1 extends ActionBarActivity {
         this.registerListeners();
         TongDaoUiCore.displayAdvertisement(this);
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, DataTool.BAIDU_API_KEY);
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                String type = "url";
+//
+//                Intent intent = new Intent();
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                intent.putExtra("value", "http://www.baidu.com");
+//
+//                JSONObject jsonObject = new JSONObject();
+//
+//                try {
+//                    jsonObject.put("tongrd_mid", Long.parseLong("456748"));
+//                    jsonObject.put("tongrd_cid", Long.parseLong("38563489"));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//                String extraData = jsonObject.toString();
+//
+//                intent.putExtra("NotificationMessage", extraData);
+//
+//                if (type.equalsIgnoreCase("url")) {
+//                    intent.setAction(UmengPushMessageReceiver.OPEN_URL);
+//                    sendBroadcast(intent);
+//                } else {
+//                    intent.setClass(DemoPage1.this, MainActivity.class);
+//                    startActivity(intent);
+//                }
+//            }
+//        }, 3000);
+
     }
 
     @Override
