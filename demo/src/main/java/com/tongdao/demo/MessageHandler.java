@@ -53,6 +53,7 @@ public class MessageHandler implements UHandler {
     private void redirectPage(String type, String value, String mid, String cid) throws JSONException{
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("value", value);
 
         JSONObject jsonObject = new JSONObject();
