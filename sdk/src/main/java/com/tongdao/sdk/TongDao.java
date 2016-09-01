@@ -670,7 +670,7 @@ public class TongDao {
             orderLines.add(tempTdOrderLine);
 
             TdOrder order = new TdOrder();
-            order.setTotal(price * quantity);
+            order.setTotal(Float.valueOf(price * quantity));
             order.setCurrency(currency);
             order.setOrderLines(orderLines);
 

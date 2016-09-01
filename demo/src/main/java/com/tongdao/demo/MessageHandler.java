@@ -36,22 +36,22 @@ public class MessageHandler extends UmengMessageHandler {
         this.cxt = context;
 
         Log.e("UmengMessage", uMessage.extra.toString());
-        try {
-            JSONObject jsonObject = new JSONObject(uMessage.extra.toString());
+//        try {
+//            JSONObject jsonObject = new JSONObject(uMessage.extra.toString());
 
-            String type = jsonObject.getString("tongrd_type");
-            String value = jsonObject.getString("tongrd_value");
+            String type = uMessage.extra.get("tongrd_type"); //jsonObject.getString("tongrd_type");
+            String value = uMessage.extra.get("tongrd_value"); //jsonObject.getString("tongrd_value");
 
-            String message = jsonObject.getString("message");
+            String message = uMessage.extra.get("message"); //jsonObject.getString("message");
 
-            String extraData = jsonObject.toString();
+            String extraData = uMessage.extra.toString();
             Log.e(TAG, "Message: " + message);
 
             sendNotification(message, type, value, extraData);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void sendNotification(String message, String type, String value, String extraData) {
