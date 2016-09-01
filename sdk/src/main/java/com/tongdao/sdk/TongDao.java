@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
@@ -659,7 +660,7 @@ public class TongDao {
      * @param quantity 产品个数
      */
     public static void trackPlaceOrder(String name, float price, Currency currency, int quantity) {
-        if (name == null || name.trim().equals("") || currency == null || price <= 0 || quantity <= 0) {
+        if (name == null || name.trim().equals("") || currency == null || price<=0 || quantity <= 0) {
             return;
         }
 
@@ -669,8 +670,10 @@ public class TongDao {
             ArrayList<TdOrderLine> orderLines = new ArrayList<TdOrderLine>();
             orderLines.add(tempTdOrderLine);
 
+            float total = new BigDecimal(String.valueOf(price)).multiply(new BigDecimal(String.valueOf(quantity))).floatValue();
+
             TdOrder order = new TdOrder();
-            order.setTotal(Float.valueOf(price * quantity));
+            order.setTotal(total);
             order.setCurrency(currency);
             order.setOrderLines(orderLines);
 
