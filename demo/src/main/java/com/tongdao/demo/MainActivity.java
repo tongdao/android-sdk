@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.onAppStart();
-//        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
+        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
 
         if (!mPushAgent.isRegistered()) {
             Log.e("Push", "Not registered...");
