@@ -36,6 +36,7 @@ import com.tongdao.sdk.ui.TongDaoUiCore;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
+import com.umeng.message.UHandler;
 import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.UmengRegistrar;
 import com.umeng.message.entity.UMessage;
@@ -102,7 +103,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.onAppStart();
-        PushAgent.getInstance(this).setMessageHandler(umengMessageHandler);
+        PushAgent.getInstance(this).setNotificationClickHandler(umengMessageHandler);
 
         if (!mPushAgent.isRegistered()) {
             Log.e("Push", "Not registered...");
@@ -121,6 +122,25 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
         if (phoneStatePermission != 0) {
             this.requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
+        }
+
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+
+        Log.i("Umeng", "NotificationMessage - ");
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.containsKey("NotificationMessage")) {
+                // extract the extra-data in the Notification
+                String msg = extras.getString("NotificationMessage");
+                Log.i("Umeng", "NotificationMessage - " + msg);
+                TongDaoUiCore.trackOpenPushMessage(msg);
+                TongDaoUiCore.openPage(this, msg);
+
+            }
         }
     }
 
@@ -483,15 +503,5 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     };
 
     public MessageHandler umengMessageHandler = new MessageHandler();
-//    {
-//        @Override
-//        public void dealWithNotificationMessage(Context context, UMessage uMessage) {
-//            super.dealWithNotificationMessage(context, uMessage);
-//
-////            {tongrd_value=http://www.baidu.com, tongrd_type=url, tongrd_mid=2166, tongrd_cid=1160}
-////            {tongrd_value=demo://page1, tongrd_type=deeplink, tongrd_mid=2174, tongrd_cid=1164}
-//
-//        }
-//    };
 
 }

@@ -12,7 +12,7 @@ import com.tongdao.sdk.ui.TongDaoUiCore;
  * Created by kinjal.patel on 23/08/16.
  */
 public class UmengPushMessageReceiver extends BroadcastReceiver {
-    public static String OPEN_URL = "com.gcm.message.OPEN_URL";
+    public static String OPEN_URL = "com.umeng.message.OPEN_URL";
     private static String TAG = UmengPushMessageReceiver.class.getSimpleName();
 
     @Override
@@ -20,7 +20,10 @@ public class UmengPushMessageReceiver extends BroadcastReceiver {
         if (intent.getAction().equalsIgnoreCase(OPEN_URL)) {
             Intent newIntent = new Intent();
             newIntent.setAction(Intent.ACTION_VIEW);
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             newIntent.setData(Uri.parse(intent.getStringExtra("value")));
+
+            context.startActivity(newIntent);
 
             if (intent.getStringExtra("NotificationMessage") != null) {
                 // extract the extra-data in the Notification

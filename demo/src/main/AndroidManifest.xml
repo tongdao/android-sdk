@@ -194,6 +194,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name="com.tongdao.demo.UmengPushMessageReceiver">
+            <intent-filter>
+                <action android:name="com.umeng.message.OPEN_URL" />
+                <category android:name="com.example.gcm" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.baidu.android.pushservice.PushService"
             android:exported="true"
