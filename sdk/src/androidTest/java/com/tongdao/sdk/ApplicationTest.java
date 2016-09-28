@@ -13,6 +13,7 @@ import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
 
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -21,6 +22,7 @@ import java.util.Random;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
+@Ignore
 public class ApplicationTest extends ApplicationTestCase<Application> {
 
     private final String APP_KEY = "de89454e930e2257ddd96d6b4d0f48b5";

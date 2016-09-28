@@ -10,6 +10,13 @@ import org.json.JSONObject;
 
 public class TdEventBean {
 
+    public static final String KEY_ACTION = "action";
+    public static final String KEY_USER_ID = "user_id";
+    public static final String KEY_EVENT = "event";
+    public static final String KEY_PREVIOUS_ID = "previous_id";
+    public static final String KEY_PROPERTIES = "properties";
+    public static final String KEY_TIMESTAMP = "timestamp";
+
     public enum ACTION_TYPE {
         merge, identify, track
     }
@@ -47,24 +54,24 @@ public class TdEventBean {
 
     public JSONObject getJsonObject() throws JSONException {
         JSONObject tempJsonObj = new JSONObject();
-        tempJsonObj.put("action", this.action.toString());
+        tempJsonObj.put(KEY_ACTION, this.action.toString());
         if (this.userId != null) {
-            tempJsonObj.put("user_id", this.userId);
+            tempJsonObj.put(KEY_USER_ID, this.userId);
         }
 
         if (this.event != null && action != ACTION_TYPE.identify) {
-            tempJsonObj.put("event", this.event);
+            tempJsonObj.put(KEY_EVENT, this.event);
         }
 
         if (this.previousId != null && ACTION_TYPE.merge == action) {
-            tempJsonObj.put("previous_id", this.previousId);
+            tempJsonObj.put(KEY_PREVIOUS_ID, this.previousId);
         }
 
         if (this.properties != null) {
-            tempJsonObj.put("properties", this.properties);
+            tempJsonObj.put(KEY_PROPERTIES, this.properties);
         }
 
-        tempJsonObj.put("timestamp", this.timestamp);
+        tempJsonObj.put(KEY_TIMESTAMP, this.timestamp);
 
         return tempJsonObj;
     }
