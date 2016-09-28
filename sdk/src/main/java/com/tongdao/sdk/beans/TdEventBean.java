@@ -1,6 +1,9 @@
 package com.tongdao.sdk.beans;
 
+import android.support.annotation.NonNull;
+
 import com.tongdao.sdk.tools.TongDaoCheckTool;
+import com.tongdao.sdk.tools.TongDaoClockTool;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,28 +21,28 @@ public class TdEventBean {
     private JSONObject properties;
     private String timestamp;
 
-    public TdEventBean(ACTION_TYPE action, String userId, String event, JSONObject properties) {
+    public TdEventBean(@NonNull ACTION_TYPE action, String userId, String event, JSONObject properties) {
         this.action = action;
         this.userId = userId;
         this.event = event;
         this.properties = properties;
-        this.timestamp = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+        this.timestamp = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
     }
 
-    public TdEventBean(ACTION_TYPE action, String userId, String event) {
+    public TdEventBean(@NonNull ACTION_TYPE action, String userId, String event) {
         this.action = action;
         this.userId = userId;
         this.event = event;
-        this.timestamp = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+        this.timestamp = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
     }
 
-    public TdEventBean(ACTION_TYPE action, String userId, String previousId, String event, JSONObject properties) {
+    public TdEventBean(@NonNull ACTION_TYPE action, String userId, String previousId, String event, JSONObject properties) {
         this.action = action;
         this.previousId = previousId;
         this.userId = userId;
         this.event = event;
         this.properties = properties;
-        this.timestamp = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+        this.timestamp = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
     }
 
     public JSONObject getJsonObject() throws JSONException {

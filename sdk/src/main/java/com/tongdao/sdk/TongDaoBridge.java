@@ -20,6 +20,7 @@ import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 import com.tongdao.sdk.tools.TongDaoApiTool;
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
+import com.tongdao.sdk.tools.TongDaoClockTool;
 import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
@@ -273,7 +274,7 @@ public class TongDaoBridge {
 
     public void onSessionStart(String pageName) {
         this.pageNameStart = pageName;
-        this.startTime = System.currentTimeMillis();
+        this.startTime = TongDaoClockTool.currentTimeMillis();
 
         if (this.pageNameStart == null || this.startTime == 0) {
             return;
@@ -335,7 +336,7 @@ public class TongDaoBridge {
     }
 
     public void onAppSessionStart() {
-        this.startTimeForCloseApp = System.currentTimeMillis();
+        this.startTimeForCloseApp = TongDaoClockTool.currentTimeMillis();
 
         if (this.startTimeForCloseApp == 0) {
             return;
@@ -352,7 +353,7 @@ public class TongDaoBridge {
 
     public TdEventBean onNotificationStatus() {
         int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || TongDaoUtils.isNotificationEnabled()) ? 1 : 0;
-        this.startTime = System.currentTimeMillis();
+        this.startTime = TongDaoClockTool.currentTimeMillis();
 
         if (this.startTime == 0 ||
                 TongDaoSavingTool.getNotificationData(appContext) == status) {

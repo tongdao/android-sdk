@@ -200,7 +200,7 @@ public class TongDaoDataTool {
     public static JSONObject makeRegisterProperties(Date date) throws JSONException {
         String timeString;
         if (date == null) {
-            timeString = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+            timeString = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
         } else {
             timeString = TongDaoCheckTool.getTimeStamp(date);
         }

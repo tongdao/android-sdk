@@ -56,7 +56,7 @@ public class TongDaoApiTool {
         allRequestProperties.add(new String[]{ACCEPT_NAME, ACCEPT_VALUE});
         allRequestProperties.add(new String[]{X_DEVICE_KEY, deviceId});
         //add the local session time to head
-        allRequestProperties.add(new String[]{X_LOCAL_TIME, TongDaoCheckTool.getTimeStamp(System.currentTimeMillis())});
+        allRequestProperties.add(new String[]{X_LOCAL_TIME, TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis())});
 
         if (!isGet) {
             allRequestProperties.add(new String[]{CONTENT_TYPE_NAME, CONTENT_TYPE_VALUE});
