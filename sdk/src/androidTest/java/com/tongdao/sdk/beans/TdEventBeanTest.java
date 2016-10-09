@@ -41,7 +41,6 @@ public class TdEventBeanTest {
         TdEventBean emptyBean = new TdEventBean(null,null,null);
         try {
             JSONObject emptyObject = emptyBean.getJsonObject();
-            System.out.println("JSON: " + emptyObject.toString());
         } catch (JSONException e) {
             System.out.println(e.getMessage());
         }
@@ -53,7 +52,6 @@ public class TdEventBeanTest {
         TdEventBean emptyBean = new TdEventBean(TdEventBean.ACTION_TYPE.identify,null,null);
         try{
             JSONObject result = emptyBean.getJsonObject();
-            System.out.println("JSON: " + result.toString());
             assertThat("Key action is missing",result.has(TdEventBean.KEY_ACTION),is(true));
             assertThat("Key user_id shouldn't be here",result.has(TdEventBean.KEY_USER_ID),is(false));
             assertThat("Key timestamp is missing",result.has(TdEventBean.KEY_TIMESTAMP),is(true));

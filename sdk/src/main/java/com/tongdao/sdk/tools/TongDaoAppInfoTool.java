@@ -16,6 +16,7 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings.Secure;
+import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -57,7 +58,7 @@ public class TongDaoAppInfoTool {
 
     public static final Semaphore LOCK = new Semaphore(0);
 
-    public static Object[] getDeviceInfo(Context c) {
+    public static Object[] getDeviceInfo(@NonNull Context c) {
         String model = Build.MODEL;
         String brand = Build.MANUFACTURER;
         String product_id = Build.PRODUCT;
@@ -72,7 +73,7 @@ public class TongDaoAppInfoTool {
                 OS_NAME, os_version, language};
     }
 
-    public static Object[] getVersionCodeOsName(Context appContext) {
+    public static Object[] getVersionCodeOsName(@NonNull Context appContext) {
         try {
             PackageInfo pi = appContext.getPackageManager().getPackageInfo(appContext.getPackageName(), 0);
             int versionCode = pi.versionCode;
@@ -87,7 +88,7 @@ public class TongDaoAppInfoTool {
         return null;
     }
 
-    public static Object[] getNetworkInfo(Context c) {
+    public static Object[] getNetworkInfo(@NonNull Context c) {
         PackageManager pm = c.getPackageManager();
         int accessNetworkState = pm.checkPermission("android.permission.ACCESS_NETWORK_STATE", c.getPackageName());
         String connectionType = UNKNOWN;
@@ -114,7 +115,7 @@ public class TongDaoAppInfoTool {
                 realCarrierCode};
     }
 
-    private static String getConnectionType(Context context) {
+    private static String getConnectionType(@NonNull Context context) {
         int networkStatePermission = context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
         if (networkStatePermission == PackageManager.PERMISSION_GRANTED) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -126,7 +127,7 @@ public class TongDaoAppInfoTool {
             int netSubtype = info.getSubtype();
             if (netType == ConnectivityManager.TYPE_WIFI) {
                 return CONNECTION_TYPE_WIFI;
-            } else if (netType == 6) {
+            } else if (netType == ConnectivityManager.TYPE_WIMAX) {
                 return CONNECTION_TYPE_WIMAX;
             } else if (netType == ConnectivityManager.TYPE_MOBILE) {
                 switch (netSubtype) {
@@ -171,7 +172,7 @@ public class TongDaoAppInfoTool {
         return ary.toString();
     }
 
-    public static Object[] getCurrentLocation(final Context context) {
+    public static Object[] getCurrentLocation(@NonNull final Context context) {
         double latitude = 0;
         double longitude = 0;
         String source = UNKNOWN;
@@ -204,7 +205,8 @@ public class TongDaoAppInfoTool {
         return new Object[]{latitude, longitude, source};
     }
 
-    private static double[] getFormattedLocationString(Context c, int accessCoarseLocation, int accessFineLocation) {
+
+    private static double[] getFormattedLocationString(@NonNull Context c, int accessCoarseLocation, int accessFineLocation) {
 
         double[] ary = new double[2];
         LocationManager localLocationManager = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
@@ -244,6 +246,7 @@ public class TongDaoAppInfoTool {
         Semaphore lock = new Semaphore(0);
         LocationManager locationManager;
         Location location;
+        Context mContext;
 
         MyLocationListener(LocationManager locManager) {
             this.locationManager = locManager;
@@ -258,8 +261,13 @@ public class TongDaoAppInfoTool {
 
             if( isGPSEnabled ) {
                 Looper.prepare();
-                this.locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER, 0, 0, this);
+                try{
+                    this.locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, 0, 0, this);
+                }catch (SecurityException e){
+                    e.printStackTrace();
+                }
+
 //                try {
 //                    lock.acquire();
 //                } catch (InterruptedException e) {
@@ -274,7 +282,11 @@ public class TongDaoAppInfoTool {
         @Override
         public void onLocationChanged(Location location) {
             this.location = location;
-            locationManager.removeUpdates(this);
+            try{
+                locationManager.removeUpdates(this);
+            }catch(SecurityException e){
+                e.printStackTrace();
+            }
             lock.release();
         }
 
@@ -293,7 +305,9 @@ public class TongDaoAppInfoTool {
             lock.release();
         }
 
-
+        public void setContext(Context mContext){
+            this.mContext = mContext;
+        }
     }
 
 //	public static boolean isAppExist(Context context, String packageName) {
@@ -364,7 +378,7 @@ public class TongDaoAppInfoTool {
 //		return isRunning;
 //	}
 
-    public static void getImeiInfos(final Context appContext, final JSONObject jsonObject) {
+    public static void getImeiInfos(@NonNull final Context appContext, final JSONObject jsonObject) {
         PackageManager pm = appContext.getPackageManager();
         String packageName = appContext.getPackageName();
 
@@ -375,7 +389,7 @@ public class TongDaoAppInfoTool {
         }
     }
 
-    private static void addObject(final Context appContext, final JSONObject jsonObject) {
+    private static void addObject(@NonNull final Context appContext, final JSONObject jsonObject) {
         try {
             TelephonyManager telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
             String imei = telephonyManager.getDeviceId();

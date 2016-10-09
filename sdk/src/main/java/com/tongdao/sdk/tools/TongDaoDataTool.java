@@ -1,6 +1,7 @@
 package com.tongdao.sdk.tools;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -24,7 +25,7 @@ public class TongDaoDataTool {
 
     public static Boolean mAnonymous = true;
 
-    public static JSONObject makeInfoProperties(Context appContext, String gaid) throws JSONException {
+    public static JSONObject makeInfoProperties(@NonNull Context appContext, String gaid) throws JSONException {
         JSONObject propertiesObj = new JSONObject();
         //application
         Object[] versioObjs = TongDaoAppInfoTool.getVersionCodeOsName(appContext);
