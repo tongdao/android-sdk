@@ -266,22 +266,22 @@ public class TongDaoDataToolTest extends android.test.ApplicationTestCase<Applic
         JSONObject expected = new JSONObject("{\"!order_id\":\"testid\",\"!total\":1,\"!revenue\":1,\"!shipping\":1,\"!tax\":1,\"!discount\":1,\"!coupon_id\":\"testcouponid\",\"!currency\":\"USD\",\"!order_lines\":[{\"!product\":{\"!id\":\"testid\",\"!sku\":\"testsku\",\"!name\":\"testname\",\"!price\":1,\"!currency\":\"USD\",\"!category\":\"testcategory\"},\"!quantity\":2}]}");
 
         JSONObject result = TongDaoDataTool.makeOrderProperties(order);
-        assertThat("Objects not equal",result.toString(),equalTo(expected.toString()));
+        assertThat("Objects not equal. Result: " + result.toString() + "\nExpected: " + expected.toString(),result.toString(),equalTo(expected.toString()));
 
         order = new TdOrder(null,1,1,1,1,1,"testcouponid",Currency.getInstance("usd"),orderLines);
         expected = new JSONObject("{\"!total\":1,\"!revenue\":1,\"!shipping\":1,\"!tax\":1,\"!discount\":1,\"!coupon_id\":\"testcouponid\",\"!currency\":\"USD\",\"!order_lines\":[{\"!product\":{\"!id\":\"testid\",\"!sku\":\"testsku\",\"!name\":\"testname\",\"!price\":1,\"!currency\":\"USD\",\"!category\":\"testcategory\"},\"!quantity\":2}]}");
         result = TongDaoDataTool.makeOrderProperties(order);
-        assertThat("Objects not equal",result.toString(),equalTo(expected.toString()));
+        assertThat("Objects not equal. Result: " + result.toString() + "\nExpected: " + expected.toString(),result.toString(),equalTo(expected.toString()));
 
         order = new TdOrder("testid",1,1,1,1,1,null,Currency.getInstance("usd"),orderLines);
         expected = new JSONObject("{\"!order_id\":\"testid\",\"!total\":1,\"!revenue\":1,\"!shipping\":1,\"!tax\":1,\"!discount\":1,\"!currency\":\"USD\",\"!order_lines\":[{\"!product\":{\"!id\":\"testid\",\"!sku\":\"testsku\",\"!name\":\"testname\",\"!price\":1,\"!currency\":\"USD\",\"!category\":\"testcategory\"},\"!quantity\":2}]}");
         result = TongDaoDataTool.makeOrderProperties(order);
-        assertThat("Objects not equal",result.toString(),equalTo(expected.toString()));
+        assertThat("Objects not equal. Result: " + result.toString() + "\nExpected: " + expected.toString(),result.toString(),equalTo(expected.toString()));
 
         order = new TdOrder("testid",1,1,1,1,1,"testcouponid",Currency.getInstance("usd"),null);
         expected = new JSONObject("{\"!order_id\":\"testid\",\"!total\":1,\"!revenue\":1,\"!shipping\":1,\"!tax\":1,\"!discount\":1,\"!coupon_id\":\"testcouponid\",\"!currency\":\"USD\"}");
         result = TongDaoDataTool.makeOrderProperties(order);
-        assertThat("Objects not equal",result.toString(),equalTo(expected.toString()));
+        assertThat("Objects not equal. Result: " + result.toString() + "\nExpected: " + expected.toString(),result.toString(),equalTo(expected.toString()));
 
         order = new TdOrder("testid",1,1,1,1,1,null,null,orderLines);
         result = TongDaoDataTool.makeOrderProperties(order);
