@@ -1,6 +1,6 @@
 package com.tongdao.sdk.tools;
 
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.config.Constants;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
@@ -75,7 +75,7 @@ public class TongDaoApiTool {
 //        httpPost.setHeaders(generateHeaders(appKey, deviceId, false, false, requestProperties));
 //        httpPost.setEntity(new StringEntity(content, "UTF-8"));
 //        if(null != requestProperties){
-//            android.util.Log.v("requestProperties == ", requestProperties.toString());
+//            com.tongdao.sdk.tools.Log.v("requestProperties == ", requestProperties.toString());
 //        }
 //
 //        HttpResponse httpResponse = httpClient.execute(httpPost);

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdEventBean;

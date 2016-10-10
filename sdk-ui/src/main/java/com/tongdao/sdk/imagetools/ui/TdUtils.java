@@ -34,7 +34,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 
 import javax.net.ssl.HttpsURLConnection;

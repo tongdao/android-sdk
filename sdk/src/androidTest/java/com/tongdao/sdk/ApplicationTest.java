@@ -6,7 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.test.ApplicationTestCase;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 import com.tongdao.sdk.tools.TongDaoDataTool;

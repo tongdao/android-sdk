@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
