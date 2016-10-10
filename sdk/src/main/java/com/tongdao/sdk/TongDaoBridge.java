@@ -146,7 +146,7 @@ public class TongDaoBridge {
     /**
      * @param actionType 用户动作类型
      * @param previousId device
-     * @param userIdid   用户设置的id
+     * @param userId   用户设置的id
      */
     public void changePropertiesAndUserId(final ACTION_TYPE actionType, final String previousId, final String userId) {
         new Thread(new Runnable() {
@@ -408,6 +408,7 @@ public class TongDaoBridge {
 
                         @Override
                         public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
+                            Log.i("Event response", "" + statusCode);
                             setCanRun(true);
                             if (isNeedRun()) {
                                 trackEvents(null);
@@ -416,6 +417,7 @@ public class TongDaoBridge {
 
                         @Override
                         public void onFailure(int statusCode, String responseBody) throws JSONException {
+                            Log.e("Event response","Error: " + statusCode + ", " + responseBody);
                             setEventList(tempLqEventBeanArray);
                             setCanRun(true);
                             if (responseBody != null) {
@@ -450,13 +452,13 @@ public class TongDaoBridge {
 
                             @Override
                             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
-                                Log.e("Session event response", "" + statusCode);
+                                Log.i("Session event response", "" + statusCode);
                                 TongDaoSavingTool.setAppSessionData(appContext, null);
                             }
 
                             @Override
                             public void onFailure(int statusCode, String responseBody) throws JSONException {
-
+                                Log.e("Session event response","Error: " + statusCode + ", " + responseBody);
                             }
                         });
                     }

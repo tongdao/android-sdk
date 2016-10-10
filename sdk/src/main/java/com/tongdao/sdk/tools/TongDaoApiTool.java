@@ -6,7 +6,6 @@ import com.tongdao.sdk.config.Constants;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -14,22 +13,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 public class TongDaoApiTool {
 
@@ -117,7 +104,6 @@ public class TongDaoApiTool {
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
 
-        TdSSLTrustManager.addSSLManagerForConnection(connection);
 
         generateHeaders(connection, appKey, deviceId, false, false, requestProperties);
 
@@ -243,60 +229,5 @@ public class TongDaoApiTool {
 //        return jsonString;
 //    }
 
-    public static class TdSSLTrustManager implements X509TrustManager {
-        public TdSSLTrustManager() {
-        }
 
-        public void checkClientTrusted(X509Certificate chain[], String authType) throws CertificateException {
-        }
-
-        public void checkServerTrusted(X509Certificate chain[], String authType) throws CertificateException {
-        }
-
-        public X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
-//
-        public static void addSSLManagerForConnection(HttpsURLConnection conn) {
-
-            X509TrustManager xtm = new TdSSLTrustManager();
-            TrustManager[] trustAllCerts = new TrustManager[]{xtm};
-
-            try {
-                SSLContext sc = SSLContext.getInstance("TLS");
-
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-
-                conn.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static class LingQianSSLSocketFactory extends SSLSocketFactory {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-
-        public LingQianSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-            super(truststore);
-            sslContext.init(null, new TrustManager[]{new TdSSLTrustManager()}, null);
-        }
-
-        public LingQianSSLSocketFactory(SSLContext context) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-            super(null);
-            sslContext = context;
-        }
-
-        @Override
-        public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
-            return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
-        }
-
-        @Override
-        public Socket createSocket() throws IOException {
-            return sslContext.getSocketFactory().createSocket();
-        }
-    }
 }
