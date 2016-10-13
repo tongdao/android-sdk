@@ -5,7 +5,7 @@ package com.tongdao.sdk.tools;
  */
 
 public class Log {
-    static boolean isDebug = false;
+    static boolean isDebug = true;
 
     public static void i(String tag, String message){
         if (isDebug)

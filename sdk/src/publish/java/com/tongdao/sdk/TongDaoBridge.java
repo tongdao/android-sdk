@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
-import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdEventBean;
@@ -17,6 +16,7 @@ import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
+import com.tongdao.sdk.tools.Log;
 import com.tongdao.sdk.tools.TongDaoApiTool;
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
@@ -52,7 +52,7 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_IMG_URL = "image_url";
     private static final String TD_MESSAGE = "message";
     private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
-    private static final String TD_MESSAGE_LAYOUT = "layout";
+    private static final String TD_MESSAGE_LAYOUT = "build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/res/layout";
     private static final String TD_MESSAGE_ACTION = "action";
     private static final String TD_MESSAGE_ACTION_TYPE = "type";
     private static final String TD_MESSAGE_ACTION_VALUE = "value";
@@ -64,6 +64,7 @@ public class TongDaoBridge {
     private String pageNameStart;
     private String pageNameEnd;
     private final String LOCK = "lock";
+    private TongDaoApiTool apiTool;
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -78,6 +79,7 @@ public class TongDaoBridge {
         this.APP_KEY = appKey;
         this.USER_ID = userId;
         this.DEVICE_ID = deviceId;
+        this.apiTool = new TongDaoApiTool();
         TongDaoSavingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
@@ -88,6 +90,7 @@ public class TongDaoBridge {
         this.DEVICE_ID = deviceId;
         this.PREVIOUS_ID = previousId;
         this.ANONYMOUS = anonymous;
+        this.apiTool = new TongDaoApiTool();
         TongDaoSavingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
@@ -404,7 +407,7 @@ public class TongDaoBridge {
                     tempLqEventBeanArray.add(tdEventBean);
                 }
                 try {
-                    TongDaoApiTool.post(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
+                    apiTool.post(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 
                         @Override
                         public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -448,7 +451,7 @@ public class TongDaoBridge {
             public void run() {
                 try {
                     synchronized (LOCK) {
-                        TongDaoApiTool.post(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
+                        apiTool.post(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
 
                             @Override
                             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -532,7 +535,7 @@ public class TongDaoBridge {
         }
 
         String url = TongDaoUrlTool.getLandingPageUrl(pageId, USER_ID);
-        TongDaoApiTool.get(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
+        apiTool.get(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -580,7 +583,7 @@ public class TongDaoBridge {
         }
 
         String url = TongDaoUrlTool.getInAppMessageUrl(USER_ID);
-        TongDaoApiTool.get(APP_KEY, DEVICE_ID, false, url, null, new TdHttpResponseHandler() {
+        apiTool.get(APP_KEY, DEVICE_ID, false, url, null, new TdHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
                 if (responseBody != null) {

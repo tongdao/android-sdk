@@ -1,7 +1,5 @@
 package com.tongdao.sdk.tools;
 
-import com.tongdao.sdk.tools.Log;
-
 import com.tongdao.sdk.config.Constants;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 
@@ -94,7 +92,7 @@ public class TongDaoApiTool {
 //        }
 //    }
 
-    public static void post(String appKey, String deviceId, String url, ArrayList<String[]> requestProperties, String content, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
+    public void post(String appKey, String deviceId, String url, ArrayList<String[]> requestProperties, String content, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
         int resCode = 0;
 
         URL requestUrl = new URL(url);
@@ -142,7 +140,7 @@ public class TongDaoApiTool {
         }
     }
 
-    public static void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
+    public void get(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
         int resCode = 0;
 
         URL requestUrl = new URL(url);

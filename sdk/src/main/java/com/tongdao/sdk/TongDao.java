@@ -41,7 +41,7 @@ import java.util.List;
 
 public class TongDao {
 
-    private static TongDaoBridge lingQianBridge;
+    private static TongDaoBridge tongDaoBridge;
     //	scheme://any_deeplink?0Qpage=page_id
     private static final String ENDING_PAGE_STRING = "0Qpage=";
 
@@ -62,8 +62,8 @@ public class TongDao {
         String deviceId = TongDao.generateDeviceId(appContext);
         TongDaoUtils.init(appContext);
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
-            lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
-            lingQianBridge.init();
+            tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
+            tongDaoBridge.init();
             TongDao.onAppSessionStart();
             return true;
         } else {
@@ -83,9 +83,9 @@ public class TongDao {
         String deviceId = TongDao.generateDeviceId(appContext);
         if(null == userId){
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
+                tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
                 TongDaoSavingTool.setAnonymous(appContext, true);
-                lingQianBridge.init();
+                tongDaoBridge.init();
                 TongDao.onAppSessionStart();
                 return true;
             } else {
@@ -93,9 +93,9 @@ public class TongDao {
             }
         }else {
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-                lingQianBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
+                tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
                 TongDaoSavingTool.setAnonymous(appContext, false);
-                lingQianBridge.init();
+                tongDaoBridge.init();
                 TongDao.onAppSessionStart();
                 return true;
             } else {
@@ -108,8 +108,8 @@ public class TongDao {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if( lingQianBridge != null ) {
-                    lingQianBridge.trackIdentify();
+                if( tongDaoBridge != null ) {
+                    tongDaoBridge.trackIdentify();
                 }
             }
         }).start();
@@ -124,15 +124,15 @@ public class TongDao {
         if(null == userId){
             if(!TongDaoSavingTool.getAnonymous(appContext)){
                 TongDaoSavingTool.saveUserInfoData(appContext, TongDao.generateDeviceId(appContext), TongDao.generateDeviceId(appContext), true);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, TongDao.generateDeviceId(appContext));
+                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, TongDao.generateDeviceId(appContext));
             }
         }else{
             if(TongDaoSavingTool.getAnonymous(appContext)){
                 TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateDeviceId(appContext), false);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateDeviceId(appContext), userId);
+                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateDeviceId(appContext), userId);
             }else{
                 TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateDeviceId(appContext), false);
-                lingQianBridge.changePropertiesAndUserId(ACTION_TYPE.identify, TongDao.generateDeviceId(appContext), userId);
+                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, TongDao.generateDeviceId(appContext), userId);
             }
         }
     }
@@ -188,8 +188,8 @@ public class TongDao {
      * @param activity 当前应用程序的Activity
      */
     public static void onSessionStart(Activity activity) {
-        if (lingQianBridge != null && lingQianBridge.getUserId() != null && activity != null) {
-            lingQianBridge.onSessionStart(activity);
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && activity != null) {
+            tongDaoBridge.onSessionStart(activity);
         }
     }
 
@@ -199,8 +199,8 @@ public class TongDao {
      * @param pageName 用户定义的页面名称
      */
     public static void onSessionStart(String pageName) {
-        if (lingQianBridge != null && lingQianBridge.getUserId() != null && pageName != null) {
-            lingQianBridge.onSessionStart(pageName);
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
+            tongDaoBridge.onSessionStart(pageName);
         }
     }
 
@@ -212,8 +212,8 @@ public class TongDao {
      * @param activity 当前应用程序的Activity
      */
     public static void onSessionEnd(Activity activity) {
-        if (lingQianBridge != null && lingQianBridge.getUserId() != null && activity != null) {
-            lingQianBridge.onSessionEnd(activity);
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && activity != null) {
+            tongDaoBridge.onSessionEnd(activity);
         }
     }
 
@@ -223,24 +223,24 @@ public class TongDao {
      * @param pageName 用户定义的页面名称
      */
     public static void onSessionEnd(String pageName) {
-        if (lingQianBridge != null && lingQianBridge.getUserId() != null && pageName != null) {
-            lingQianBridge.onSessionEnd(pageName);
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
+            tongDaoBridge.onSessionEnd(pageName);
         }
     }
 
     public static void onAppSessionStart() {
         Log.e("session event track bf", "Start" + 0);
-        if (lingQianBridge != null && lingQianBridge.getUserId() != null) {
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
             Log.e("session event track", "Start" + 0);
-            lingQianBridge.onAppSessionStart();
+            tongDaoBridge.onAppSessionStart();
         }
     }
 
     public static void onAppSessionEnd() {
         Log.e("session event track bf", "Emd" + 0);
-        if (lingQianBridge != null && lingQianBridge.getUserId() != null) {
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
             Log.e("session event track", "Emd" + 0);
-            lingQianBridge.onAppSessionEnd();
+            tongDaoBridge.onAppSessionEnd();
         }
     }
 
@@ -701,9 +701,9 @@ public class TongDao {
 
     private static void sendEvent(ACTION_TYPE action, String event, JSONObject properties) {
         String userId = null;
-        if (lingQianBridge != null && (userId = lingQianBridge.getUserId()) != null) {
+        if (tongDaoBridge != null && (userId = tongDaoBridge.getUserId()) != null) {
             TdEventBean tempEb = new TdEventBean(action, userId, event, properties);
-            lingQianBridge.startTrackEvents(tempEb);
+            tongDaoBridge.startTrackEvents(tempEb);
         }
     }
 
@@ -715,8 +715,8 @@ public class TongDao {
      * @param onErrorListener               下载失败的回调接口函数
      */
     public static void downloadLandingPage(String pageId, OnDownloadLandingPageListener onDownloadLandingPageListener, OnErrorListener onErrorListener) {
-        if (lingQianBridge != null) {
-            lingQianBridge.startDownloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
+        if (tongDaoBridge != null) {
+            tongDaoBridge.startDownloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
         }
     }
 
@@ -727,8 +727,8 @@ public class TongDao {
      * @param onErrorListener                下载失败的回调接口函数
      */
     public static void downloadInAppMessages(OnDownloadInAppMessageListener onDownloadInAppMessageListener, OnErrorListener onErrorListener) {
-        if (lingQianBridge != null) {
-            lingQianBridge.startDownloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
+        if (tongDaoBridge != null) {
+            tongDaoBridge.startDownloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
         }
     }
 
