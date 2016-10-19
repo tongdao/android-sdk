@@ -34,9 +34,8 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
-import com.tongdao.sdk.tools.TongDaoApiTool.TdSSLTrustManager;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -62,7 +61,6 @@ public class TdUtils {
         try {
             URL url = new URL(urlString);
             urlConnection = (HttpsURLConnection) url.openConnection();
-            TdSSLTrustManager.addSSLManagerForConnection(urlConnection);
             in = new BufferedInputStream(urlConnection.getInputStream());
             out = new BufferedOutputStream(outputStream);
             int b;

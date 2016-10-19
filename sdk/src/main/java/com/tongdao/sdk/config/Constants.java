@@ -9,6 +9,7 @@ public class Constants {
     public final static String API_URI_PAGE_QS = "page_id=%s&user_id=%s";
     public final static String API_URI_MESSAGES = "messages";
     public final static String API_URI_MESSAGES_QS = "user_id=%s";
+    public final static String API_URI_USER_ID = "user_id={user}";
 
     public final static int SDK_VERSION = 30101;
 }

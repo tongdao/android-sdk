@@ -14,7 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory.Options;
 import android.support.v4.util.LruCache;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 public class TdImageCache {
     // Default memory cache size

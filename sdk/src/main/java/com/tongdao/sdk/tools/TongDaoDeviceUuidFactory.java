@@ -32,7 +32,7 @@ public class TongDaoDeviceUuidFactory {
      *
      * @return a UUID that may be used to uniquely identify your device for most purposes.
      * @throws UnsupportedEncodingException
-     * @see http://code.google.com/p/android/issues/detail?id=10603
+     * @see <a href="http://code.google.com/p/android/issues/detail?id=10603">http://code.google.com/p/android/issues/detail?id=10603</a>
      */
     public static UUID getDeviceUuid(Context context) throws UnsupportedEncodingException {
         if (uuid == null) {

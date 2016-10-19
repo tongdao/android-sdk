@@ -1,8 +1,9 @@
 package com.tongdao.sdk.tools;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
@@ -24,7 +25,7 @@ public class TongDaoDataTool {
 
     public static Boolean mAnonymous = true;
 
-    public static JSONObject makeInfoProperties(Context appContext, String gaid) throws JSONException {
+    public static JSONObject makeInfoProperties(@NonNull Context appContext, String gaid) throws JSONException {
         JSONObject propertiesObj = new JSONObject();
         //application
         Object[] versioObjs = TongDaoAppInfoTool.getVersionCodeOsName(appContext);
@@ -200,7 +201,7 @@ public class TongDaoDataTool {
     public static JSONObject makeRegisterProperties(Date date) throws JSONException {
         String timeString;
         if (date == null) {
-            timeString = TongDaoCheckTool.getTimeStamp(System.currentTimeMillis());
+            timeString = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
         } else {
             timeString = TongDaoCheckTool.getTimeStamp(date);
         }
