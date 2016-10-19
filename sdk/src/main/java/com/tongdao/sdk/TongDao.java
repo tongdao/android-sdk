@@ -7,10 +7,20 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import com.tongdao.sdk.tools.Log;
+import android.widget.Toast;
 
+import com.tongdao.sdk.activities.TdDialogActivity;
+import com.tongdao.sdk.activities.TdMessageDialogActivity;
 import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
+import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
+import com.tongdao.sdk.session.TongDaoActivityCallback;
+import com.tongdao.sdk.tools.Log;
+import com.tongdao.sdk.tools.TongDaoDataTool;
+import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
+import com.tongdao.sdk.tools.TongDaoJsonTool;
+import com.tongdao.sdk.tools.TongDaoSavingTool;
+import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
@@ -18,14 +28,9 @@ import com.tongdao.sdk.beans.TdProduct;
 import com.tongdao.sdk.beans.TdSource;
 import com.tongdao.sdk.enums.TdGender;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
-import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
-import com.tongdao.sdk.session.TongDaoActivityCallback;
+import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
-import com.tongdao.sdk.tools.TongDaoDataTool;
-import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
-import com.tongdao.sdk.tools.TongDaoJsonTool;
-import com.tongdao.sdk.tools.TongDaoSavingTool;
 import com.tongdao.sdk.tools.TongDaoUtils;
 
 import org.json.JSONException;
@@ -39,8 +44,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class TongDao {
 
+    private static final String PAGE_ID = "pageId";
+    private static final String MESSAGE = "td_message";
+    private static OnRewardUnlockedListener rewardUnlockedListener;
     private static TongDaoBridge tongDaoBridge;
     //	scheme://any_deeplink?0Qpage=page_id
     private static final String ENDING_PAGE_STRING = "0Qpage=";
@@ -50,7 +59,6 @@ public class TongDao {
     private static final String TYPE_TAG = "tongrd_type";
     private static final String VALUE_TAG = "tongrd_value";
 
-
     /**
      * 初始化同道服务,请在onCreate方法中调用
      *
@@ -59,12 +67,12 @@ public class TongDao {
      * @return boolean 同道服务的初始化结果
      */
     public static boolean init(Context appContext, String appKey) {
-        String deviceId = TongDao.generateDeviceId(appContext);
+        String deviceId = generateDeviceId(appContext);
         TongDaoUtils.init(appContext);
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
             tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             tongDaoBridge.init();
-            TongDao.onAppSessionStart();
+            onAppSessionStart();
             return true;
         } else {
             return false;
@@ -76,17 +84,17 @@ public class TongDao {
      *
      * @param appContext 应用程序的上下文
      * @param appKey     开发者从同道平台获得的AppKey
-     * @param userId     用户自定义
+     *
      * @return boolean 同道服务的初始化结果
      */
-    public static boolean init(Context appContext, String appKey, String userId){
-        String deviceId = TongDao.generateDeviceId(appContext);
+    public static boolean init(Context appContext, String appKey, String userId) {
+        String deviceId = generateDeviceId(appContext);
         if(null == userId){
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
                 tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
                 TongDaoSavingTool.setAnonymous(appContext, true);
                 tongDaoBridge.init();
-                TongDao.onAppSessionStart();
+                onAppSessionStart();
                 return true;
             } else {
                 return false;
@@ -96,7 +104,7 @@ public class TongDao {
                 tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
                 TongDaoSavingTool.setAnonymous(appContext, false);
                 tongDaoBridge.init();
-                TongDao.onAppSessionStart();
+                onAppSessionStart();
                 return true;
             } else {
                 return false;
@@ -104,16 +112,6 @@ public class TongDao {
         }
     }
 
-    public static void trackEvent() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if( tongDaoBridge != null ) {
-                    tongDaoBridge.trackIdentify();
-                }
-            }
-        }).start();
-    }
     /**
      * 使用用户自定义userid
      *
@@ -123,45 +121,44 @@ public class TongDao {
     public static void setUserId(Context appContext, String userId){
         if(null == userId){
             if(!TongDaoSavingTool.getAnonymous(appContext)){
-                TongDaoSavingTool.saveUserInfoData(appContext, TongDao.generateDeviceId(appContext), TongDao.generateDeviceId(appContext), true);
-                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, TongDao.generateDeviceId(appContext));
+                TongDaoSavingTool.saveUserInfoData(appContext, generateDeviceId(appContext), generateDeviceId(appContext), true);
+                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, generateDeviceId(appContext));
             }
         }else{
             if(TongDaoSavingTool.getAnonymous(appContext)){
-                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateDeviceId(appContext), false);
-                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.merge, TongDao.generateDeviceId(appContext), userId);
+                TongDaoSavingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
+                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.merge, generateDeviceId(appContext), userId);
             }else{
-                TongDaoSavingTool.saveUserInfoData(appContext, userId, TongDao.generateDeviceId(appContext), false);
-                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, TongDao.generateDeviceId(appContext), userId);
+                TongDaoSavingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
+                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, generateDeviceId(appContext), userId);
             }
         }
     }
+
     /**
      * 使用同道SDK生成userId
      *
      * @param appContext 应用程序的上下文
      * @return String 生成userId
      */
-    public static String generateDeviceId(Context appContext) {
-        try {
-            return TongDaoDeviceUuidFactory.getDeviceUuid(appContext).toString();
-        } catch (UnsupportedEncodingException e) {
-            Log.e("TongRd SDK", "UnsupportedEncodingException");
-        }
-        return null;
+    public static String generateUserId(Context appContext) {
+        return generateDeviceId(appContext);
     }
 
     /**
-     * 跟踪用户自定义事件
+     * 注册获得奖品的回调接口
      *
-     * @param eventName 用户自定义事件名称(不能以!打头)
+     * @param onRewardUnlockedListener 奖品的回调接口
      */
-    public static void track(String eventName) {
-        if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
-            Log.e("TongRd SDK", "event starting with ! are reserved");
-        } else {
-            sendEvent(ACTION_TYPE.track, eventName, null);
-        }
+    public static void registerOnRewardUnlockedListener(OnRewardUnlockedListener onRewardUnlockedListener) {
+        rewardUnlockedListener = onRewardUnlockedListener;
+    }
+
+    /**
+     * 同道内部调用,不建议使用
+     */
+    public static OnRewardUnlockedListener getRewardUnlockedListener() {
+        return rewardUnlockedListener;
     }
 
     /**
@@ -204,8 +201,6 @@ public class TongDao {
         }
     }
 
-
-
     /**
      * 终止记录用户的使用时长
      *
@@ -225,22 +220,6 @@ public class TongDao {
     public static void onSessionEnd(String pageName) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
             tongDaoBridge.onSessionEnd(pageName);
-        }
-    }
-
-    public static void onAppSessionStart() {
-        Log.e("session event track bf", "Start" + 0);
-        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
-            Log.e("session event track", "Start" + 0);
-            tongDaoBridge.onAppSessionStart();
-        }
-    }
-
-    public static void onAppSessionEnd() {
-        Log.e("session event track bf", "Emd" + 0);
-        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
-            Log.e("session event track", "Emd" + 0);
-            tongDaoBridge.onAppSessionEnd();
         }
     }
 
@@ -278,6 +257,41 @@ public class TongDao {
     }
 
     /**
+     * 保存用户的推送Token到同道平台，同道将根据用户Token推送信息
+     *
+     * @param push_token 用户的推送Token
+     *                   (百度:onBind返回的channelId,
+     *                   JPUSH:JPushInterface.EXTRA_REGISTRATION_ID,
+     *                   GETUI:bundle.getString("clientid"))
+     */
+    public static void identifyPushToken(String push_token) {
+        if (push_token == null || push_token.trim().equals("")) {
+            return;
+        } else {
+            HashMap<String, Object> values = new HashMap<String, Object>();
+            values.put("!push_token", push_token);
+            try {
+                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+            } catch (JSONException e) {
+                Log.e("identifyPushToken", "JSONException");
+            }
+        }
+    }
+
+    /**
+     * 跟踪用户自定义事件
+     *
+     * @param eventName 用户自定义事件名称(不能以!打头)
+     */
+    public static void track(String eventName) {
+        if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
+            Log.e("TongRd SDK", "event starting with ! are reserved");
+        } else {
+            sendEvent(ACTION_TYPE.track, eventName, null);
+        }
+    }
+
+    /**
      * 保存用户名字属性
      *
      * @param firstName 名
@@ -300,29 +314,7 @@ public class TongDao {
             try {
                 sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
             } catch (JSONException e) {
-                Log.e("identifyFullName", "JSONException");
-            }
-        }
-    }
-
-    /**
-     * 保存用户的推送Token到同道平台，同道将根据用户Token推送信息
-     *
-     * @param push_token 用户的推送Token
-     *                   (百度:onBind返回的channelId,
-     *                   JPUSH:JPushInterface.EXTRA_REGISTRATION_ID,
-     *                   GETUI:bundle.getString("clientid"))
-     */
-    public static void identifyPushToken(String push_token) {
-        if (push_token == null || push_token.trim().equals("")) {
-            return;
-        } else {
-            HashMap<String, Object> values = new HashMap<String, Object>();
-            values.put("!push_token", push_token);
-            try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
-            } catch (JSONException e) {
-                Log.e("identifyPushToken", "JSONException");
+                com.tongdao.sdk.tools.Log.e("identifyFullName", "JSONException");
             }
         }
     }
@@ -497,17 +489,24 @@ public class TongDao {
     /**
      * 保存用户应用源信息
      *
-     * @param lqSource 用户应用源信息对象
+     * @param source 用户应用源信息对象
      */
-    public static void identifySource(TdSource lqSource) {
+    public static void identifySource(TdSource source) {
         try {
-            JSONObject dataObj = TongDaoDataTool.makeSourceProperties(lqSource);
+            JSONObject dataObj = TongDaoDataTool.makeSourceProperties(source);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.identify, null, dataObj);
             }
         } catch (JSONException e) {
             Log.e("identifySource", "JSONException");
         }
+    }
+
+    /**
+     * 跟踪应用注册日期(使用当前系统时间,无日期参数)
+     */
+    public static void trackRegistration() {
+        trackRegistration(null);
     }
 
     /**
@@ -521,13 +520,6 @@ public class TongDao {
         } catch (JSONException e) {
             Log.e("trackRegistration", "JSONException");
         }
-    }
-
-    /**
-     * 跟踪应用注册日期(使用当前系统时间,无日期参数)
-     */
-    public static void trackRegistration() {
-        trackRegistration(null);
     }
 
     /**
@@ -650,7 +642,6 @@ public class TongDao {
         }
     }
 
-
     /**
      * 跟踪提交的交易信息
      *
@@ -699,60 +690,54 @@ public class TongDao {
         trackPlaceOrder(name, price, currency, 1);
     }
 
-    private static void sendEvent(ACTION_TYPE action, String event, JSONObject properties) {
-        String userId = null;
-        if (tongDaoBridge != null && (userId = tongDaoBridge.getUserId()) != null) {
-            TdEventBean tempEb = new TdEventBean(action, userId, event, properties);
-            tongDaoBridge.startTrackEvents(tempEb);
+    /**
+     * 显示广告(Intent含有附加信息：广告页面id,可直接显示广告信息)
+     * 该方法建议在设置了Deeplink的Activity的onCreate方法下调用
+     *
+     * @param activity 设置了Deeplink的Activity
+     */
+    public static void displayAdvertisement(Activity activity) {
+        String pageId = getPageId(activity.getIntent());
+        if (pageId != null) {
+            Intent startIntent = new Intent(activity, TdDialogActivity.class);
+            startIntent.putExtra(PAGE_ID, pageId);
+            activity.startActivity(startIntent);
         }
     }
 
     /**
-     * 下载应用广告页面信息
+     * 显示应用最新的In App Message页面信息
      *
-     * @param pageId                        广告页面的pageId
-     * @param onDownloadLandingPageListener 下载成功的回调接口函数，可以得到广告页面信息
-     * @param onErrorListener               下载失败的回调接口函数
+     * @param activity 需要显示In App Message页面信息的Activity
      */
-    public static void downloadLandingPage(String pageId, OnDownloadLandingPageListener onDownloadLandingPageListener, OnErrorListener onErrorListener) {
-        if (tongDaoBridge != null) {
-            tongDaoBridge.startDownloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
-        }
-    }
-
-    /**
-     * 下载应用In App Message页面信息
-     *
-     * @param onDownloadInAppMessageListener 下载成功的回调接口函数，可以得到In App Message列表
-     * @param onErrorListener                下载失败的回调接口函数
-     */
-    public static void downloadInAppMessages(OnDownloadInAppMessageListener onDownloadInAppMessageListener, OnErrorListener onErrorListener) {
-        if (tongDaoBridge != null) {
-            tongDaoBridge.startDownloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
-        }
-    }
-
-    /**
-     * 通过包含Deeplink的Intent取得广告的PageId
-     *
-     * @param deepLinkIntent 包含Deeplink的Intent
-     * @return String 广告的PageId
-     */
-    public static String getPageId(Intent deepLinkIntent) {
-        if (deepLinkIntent != null && deepLinkIntent.getDataString() != null) {
-            String deeplink = deepLinkIntent.getDataString();
-            int indexOfPage = deeplink.indexOf(ENDING_PAGE_STRING);
-            if (indexOfPage != -1) {
-                return getDataId(deeplink);
+    public static void displayInAppMessage(final Activity activity) {
+        downloadInAppMessages(new OnDownloadInAppMessageListener() {
+            @Override
+            public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
+                if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent startIntent = new Intent(activity, TdMessageDialogActivity.class);
+                            startIntent.putExtra(MESSAGE, tdMessageBeanList.get(0));
+                            activity.startActivity(startIntent);
+                        }
+                    });
+                }
             }
-        }
-        return null;
-    }
-
-    private static String getDataId(String deeplink) {
-        int lastIndexS = deeplink.lastIndexOf("=");
-        String id = deeplink.substring(lastIndexS + 1);
-        return id;
+        }, new OnErrorListener() {
+            @Override
+            public void onError(final TdErrorBean errorBean) {
+                if (activity != null && !activity.isFinishing()) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(activity.getApplicationContext(), "" + errorBean.getErrorCode() + ":" + errorBean.getErrorMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -827,6 +812,107 @@ public class TongDao {
         }
     }
 
+    /**
+     * 跟踪用户点击了应用内消息
+     *
+     * @param tdMessageBean 同道返回的TdMessageBean
+     */
+    public static void trackOpenInAppMessage(TdMessageBean tdMessageBean) {
+        trackOpenInAppMessage(tdMessageBean);
+    }
+
+    /**
+     * 跟踪用户收到了应用内消息
+     *
+     * @param tdMessageBean 同道返回的TdMessageBean
+     */
+    public static void trackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+        trackReceivedInAppMessage(tdMessageBean);
+    }
+
+    /**
+     * 使用同道SDK生成userId
+     *
+     * @param appContext 应用程序的上下文
+     * @return String 生成userId
+     */
+    public static String generateDeviceId(Context appContext) {
+        try {
+            return TongDaoDeviceUuidFactory.getDeviceUuid(appContext).toString();
+        } catch (UnsupportedEncodingException e) {
+            Log.e("TongRd SDK", "UnsupportedEncodingException");
+        }
+        return null;
+    }
+
+    public static void onAppSessionStart() {
+        Log.e("session event track bf", "Start" + 0);
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
+            Log.e("session event track", "Start" + 0);
+            tongDaoBridge.onAppSessionStart();
+        }
+    }
+
+    public static void onAppSessionEnd() {
+        Log.e("session event track bf", "Emd" + 0);
+        if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
+            Log.e("session event track", "Emd" + 0);
+            tongDaoBridge.onAppSessionEnd();
+        }
+    }
+
+    private static void sendEvent(ACTION_TYPE action, String event, JSONObject properties) {
+        String userId = null;
+        if (tongDaoBridge != null && (userId = tongDaoBridge.getUserId()) != null) {
+            TdEventBean tempEb = new TdEventBean(action, userId, event, properties);
+            tongDaoBridge.startTrackEvents(tempEb);
+        }
+    }
+
+    /**
+     * 通过包含Deeplink的Intent取得广告的PageId
+     *
+     * @param deepLinkIntent 包含Deeplink的Intent
+     * @return String 广告的PageId
+     */
+    public static String getPageId(Intent deepLinkIntent) {
+        if (deepLinkIntent != null && deepLinkIntent.getDataString() != null) {
+            String deeplink = deepLinkIntent.getDataString();
+            int indexOfPage = deeplink.indexOf(ENDING_PAGE_STRING);
+            if (indexOfPage != -1) {
+                return getDataId(deeplink);
+            }
+        }
+        return null;
+    }
+
+    private static String getDataId(String deeplink) {
+        int lastIndexS = deeplink.lastIndexOf("=");
+        String id = deeplink.substring(lastIndexS + 1);
+        return id;
+    }
+
+
+
+    /**
+     * 下载应用In App Message页面信息
+     *
+     * @param onDownloadInAppMessageListener 下载成功的回调接口函数，可以得到In App Message列表
+     * @param onErrorListener                下载失败的回调接口函数
+     */
+    public static void downloadInAppMessages(OnDownloadInAppMessageListener onDownloadInAppMessageListener, OnErrorListener onErrorListener) {
+        if (tongDaoBridge != null) {
+            tongDaoBridge.startDownloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
+        }
+    }
+
+    private static void sendOpenMessage(String eventName, long mid, long cid) throws JSONException {
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        values.put("!message_id", mid);
+        values.put("!campaign_id", cid);
+        sendEvent(ACTION_TYPE.track, eventName, TongDaoDataTool.makeUserProperties(values));
+    }
+
     private static boolean isIntentCallable(Context context, Intent intent) {
         return context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
@@ -852,57 +938,31 @@ public class TongDao {
         }
     }
 
-    private static void sendOpenMessage(String eventName, long mid, long cid) throws JSONException {
-        HashMap<String, Object> values = new HashMap<String, Object>();
-        values.put("!message_id", mid);
-        values.put("!campaign_id", cid);
-        sendEvent(ACTION_TYPE.track, eventName, TongDaoDataTool.makeUserProperties(values));
-    }
-
-    /**
-     * 跟踪用户点击了应用内消息
-     *
-     * @param tdMessageBean 同道返回的TdMessageBean
-     */
-    public static void trackOpenInAppMessage(TdMessageBean tdMessageBean) {
-        if (tdMessageBean == null) {
-            return;
-        }
-
-        try {
-            long messageId = tdMessageBean.getMid();
-            long clientId = tdMessageBean.getCid();
-            if (messageId != 0 && clientId != 0) {
-                sendOpenMessage("!open_message", messageId, clientId);
-            }
-        } catch (JSONException e) {
-            Log.e("trackOpenInAppMessage", "JSONException");
-        }
-    }
-
-
-    /**
-     * 跟踪用户收到了应用内消息
-     *
-     * @param tdMessageBean 同道返回的TdMessageBean
-     */
-    public static void trackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-        if (tdMessageBean == null) {
-            return;
-        }
-
-        try {
-            long messageId = tdMessageBean.getMid();
-            long clientId = tdMessageBean.getCid();
-            if (messageId != 0 && clientId != 0) {
-                sendOpenMessage("!receive_message", messageId, clientId);
-            }
-        } catch (JSONException e) {
-            Log.e("trackReceiovedInAppMsg", "JSONException");
-        }
-    }
-
     public static void registerApplication(Application application) {
         application.registerActivityLifecycleCallbacks(new TongDaoActivityCallback(application.getApplicationContext()));
+    }
+
+    public static void trackEvent() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if( tongDaoBridge != null ) {
+                    tongDaoBridge.trackIdentify();
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 下载应用广告页面信息
+     *
+     * @param pageId                        广告页面的pageId
+     * @param onDownloadLandingPageListener 下载成功的回调接口函数，可以得到广告页面信息
+     * @param onErrorListener               下载失败的回调接口函数
+     */
+    public static void downloadLandingPage(String pageId, OnDownloadLandingPageListener onDownloadLandingPageListener, OnErrorListener onErrorListener) {
+        if (tongDaoBridge != null) {
+            tongDaoBridge.startDownloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
+        }
     }
 }

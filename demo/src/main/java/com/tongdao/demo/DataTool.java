@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.tongdao.newsdk.beans.TdRewardBean;
+import com.tongdao.sdk.beans.TdRewardBean;
 
 import android.content.Context;
 import android.net.Uri;
@@ -18,7 +18,7 @@ import android.net.Uri;
 public class DataTool {
 //    public static final String APP_KEY = "de89454e930e2257ddd96d6b4d0f48b5";
 //public static final String APP_KEY = "2cc1c88798b3a350d16b6800dc6d3612";
-    public static final String APP_KEY = "004e61d208cb2308dcc6105116cb292a";
+    public static final String APP_KEY = "ee7b9cf0a11d3cc6762097a28f1a6886";
 //    public static final String APP_KEY = "bc4d604fdc143433683af34b5693f444";
     public static final String BAIDU_API_KEY = "QGLHVuaavhBgygVCNVlDyRYB";
     private static ArrayList<TransferBean> transferBeanList;

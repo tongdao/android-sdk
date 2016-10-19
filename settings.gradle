@@ -1,1 +1,1 @@
-include ':sdk', ':sdk-ui', ':demo', ':Pushlib'
+include ':sdk', ':demo', ':Pushlib'

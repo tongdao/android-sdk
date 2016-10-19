@@ -1,4 +1,4 @@
-package com.tongdao.newsdk.retrofit;
+package com.tongdao.sdk.retrofit;
 
 
 import java.io.IOException;

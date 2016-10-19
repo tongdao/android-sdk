@@ -4,8 +4,7 @@ import java.io.FileNotFoundException;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.newsdk.TongDao;
-import com.tongdao.demo.R;
+import com.tongdao.sdk.TongDao;
 
 import android.content.ContentResolver;
 import android.content.Intent;

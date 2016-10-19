@@ -1,5 +1,5 @@
 
-package com.tongdao.newsdk.retrofit;
+package com.tongdao.sdk.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

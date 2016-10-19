@@ -13,7 +13,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -29,24 +28,18 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.newsdk.TongDao;
-import com.tongdao.newsdk.beans.TdRewardBean;
-import com.tongdao.newsdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.beans.TdRewardBean;
+import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
-import com.umeng.message.UHandler;
-import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.UmengRegistrar;
-import com.umeng.message.entity.UMessage;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends ActionBarActivity implements OnClickListener {
 

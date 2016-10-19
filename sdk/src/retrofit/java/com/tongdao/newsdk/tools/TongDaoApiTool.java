@@ -1,12 +1,12 @@
-package com.tongdao.newsdk.tools;
+package com.tongdao.sdk.tools;
 
 import com.google.gson.Gson;
-import com.tongdao.newsdk.retrofit.Events;
-import com.tongdao.newsdk.retrofit.Message;
-import com.tongdao.newsdk.retrofit.MockNetworkIntercepter;
-import com.tongdao.newsdk.retrofit.TongDaoApi;
-import com.tongdao.newsdk.config.Constants;
-import com.tongdao.newsdk.interfaces.TdHttpResponseHandler;
+import com.tongdao.sdk.retrofit.Events;
+import com.tongdao.sdk.retrofit.Message;
+import com.tongdao.sdk.retrofit.MockNetworkIntercepter;
+import com.tongdao.sdk.retrofit.TongDaoApi;
+import com.tongdao.sdk.config.Constants;
+import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;

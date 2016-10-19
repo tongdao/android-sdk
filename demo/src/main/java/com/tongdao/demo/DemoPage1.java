@@ -1,19 +1,16 @@
 package com.tongdao.demo;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.newsdk.beans.TdRewardBean;
-import com.tongdao.newsdk.interfaces.OnRewardUnlockedListener;
-import com.tongdao.newsdk.TongDao;
+import com.tongdao.sdk.beans.TdRewardBean;
+import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.sdk.TongDao;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 

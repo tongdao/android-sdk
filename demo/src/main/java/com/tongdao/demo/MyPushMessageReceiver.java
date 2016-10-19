@@ -6,7 +6,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.baidu.frontia.api.FrontiaPushMessageReceiver;
-import com.tongdao.newsdk.TongDao;
+import com.tongdao.sdk.TongDao;
 
 /**
  * Push消息处理receiver。请编写您需要的回调函数， 一般来说： onBind是必须的，用来处理startWork返回值；

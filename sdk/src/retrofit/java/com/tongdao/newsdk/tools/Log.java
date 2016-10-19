@@ -1,4 +1,4 @@
-package com.tongdao.newsdk.tools;
+package com.tongdao.sdk.tools;
 
 /**
  * Created by agonch on 10/10/16.

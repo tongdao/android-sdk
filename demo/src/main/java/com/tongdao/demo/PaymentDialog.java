@@ -16,7 +16,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.tongdao.newsdk.TongDao;
+import com.tongdao.sdk.TongDao;
 
 import java.util.Currency;
 import java.util.Locale;

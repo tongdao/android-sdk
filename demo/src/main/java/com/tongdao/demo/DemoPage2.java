@@ -10,10 +10,9 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.newsdk.beans.TdRewardBean;
-import com.tongdao.newsdk.interfaces.OnRewardUnlockedListener;
-import com.tongdao.newsdk.TongDao;
-import com.tongdao.demo.R;
+import com.tongdao.sdk.beans.TdRewardBean;
+import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.sdk.TongDao;
 
 public class DemoPage2 extends ActionBarActivity {
     @Override

@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.newsdk.TongDao;
+import com.tongdao.sdk.TongDao;
 
 public class BtnDefineActivity extends ActionBarActivity {
     private RadioButton eventRadio;

@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.tongdao.newsdk.TongDao;
+import com.tongdao.sdk.TongDao;
 
 /**
  * Created by kinjal.patel on 23/08/16.

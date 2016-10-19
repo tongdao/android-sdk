@@ -1,13 +1,8 @@
 package com.tongdao.sdk.tools;
 
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.support.v4.app.NotificationManagerCompat;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Created by kinjal.patel on 15/08/16.

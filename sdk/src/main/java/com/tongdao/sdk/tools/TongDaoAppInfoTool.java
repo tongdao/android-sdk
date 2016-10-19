@@ -18,7 +18,6 @@ import android.os.Looper;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
-import com.tongdao.sdk.tools.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;

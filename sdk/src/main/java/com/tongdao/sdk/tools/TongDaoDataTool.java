@@ -3,7 +3,6 @@ package com.tongdao.sdk.tools;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
-import com.tongdao.sdk.tools.Log;
 
 import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
