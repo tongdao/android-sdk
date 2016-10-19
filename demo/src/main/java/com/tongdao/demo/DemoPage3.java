@@ -6,9 +6,9 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.beans.TdRewardBean;
-import com.tongdao.sdk.interfaces.ui.OnRewardUnlockedListener;
-import com.tongdao.sdk.ui.TongDaoUiCore;
+import com.tongdao.newsdk.beans.TdRewardBean;
+import com.tongdao.newsdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.newsdk.TongDao;
 
 import org.json.JSONException;
 
@@ -28,25 +28,25 @@ public class DemoPage3 extends ActionBarActivity {
         ((TextView) this.findViewById(R.id.link_tv)).setText("demo://page3");
 
         this.registerListeners();
-        TongDaoUiCore.displayAdvertisement(this);
+        TongDao.displayAdvertisement(this);
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, DataTool.BAIDU_API_KEY);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        TongDaoUiCore.onSessionStart(this);
-        TongDaoUiCore.displayInAppMessage(this);
+        TongDao.onSessionStart(this);
+        TongDao.displayInAppMessage(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        TongDaoUiCore.onSessionEnd(this);
+        TongDao.onSessionEnd(this);
     }
 
     private void registerListeners() {
-        TongDaoUiCore
+        TongDao
                 .registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
                     @Override
                     public void onSuccess(ArrayList<TdRewardBean> rewards) {

@@ -6,7 +6,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.baidu.frontia.api.FrontiaPushMessageReceiver;
-import com.tongdao.sdk.ui.TongDaoUiCore;
+import com.tongdao.newsdk.TongDao;
 
 /**
  * Push消息处理receiver。请编写您需要的回调函数， 一般来说： onBind是必须的，用来处理startWork返回值；
@@ -52,7 +52,7 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
         // updateContent(context, responseString);
 
         if (channelId != null) {
-            TongDaoUiCore.identifyPushToken(channelId);
+            TongDao.identifyPushToken(channelId);
             Log.e("Channel id", channelId);
         }
     }
@@ -89,8 +89,8 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
 //				+ description + "\" customContent=" + customContentString;
 //		Log.d(TAG, notifyString);
 
-        TongDaoUiCore.trackOpenPushMessage(customContentString);
-        TongDaoUiCore.openPage(context, customContentString);
+        TongDao.trackOpenPushMessage(customContentString);
+        TongDao.openPage(context, customContentString);
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         // updateContent(context, notifyString);
     }

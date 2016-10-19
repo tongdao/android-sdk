@@ -7,7 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.tongdao.sdk.ui.TongDaoUiCore;
+import com.tongdao.newsdk.TongDao;
+
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -53,13 +54,13 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user1_longin:
-                TongDaoUiCore.setUserId(LogInActivity.this, "John");
+                TongDao.setUserId(LogInActivity.this, "John");
                 break;
             case R.id.user2_longin:
-                TongDaoUiCore.setUserId(LogInActivity.this, "Adrien");
+                TongDao.setUserId(LogInActivity.this, "Adrien");
                 break;
             case R.id.logout:
-                TongDaoUiCore.setUserId(LogInActivity.this, null);
+                TongDao.setUserId(LogInActivity.this, null);
                 break;
         }
     }

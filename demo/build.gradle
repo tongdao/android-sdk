@@ -5,12 +5,12 @@ android {
         config {
         }
     }
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '24.0.2'
     defaultConfig {
         applicationId "com.tongdao.demo"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
@@ -20,8 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-
-            testCoverageEnabled = true
         }
     }
     lintOptions {
@@ -36,6 +34,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':sdk-ui')
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile project(path:':sdk', configuration: 'publishDebug')
     compile project(':Pushlib')
 }

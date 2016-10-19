@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.tongdao.sdk.beans.TdRewardBean;
+import com.tongdao.newsdk.beans.TdRewardBean;
 
 import android.content.Context;
 import android.net.Uri;

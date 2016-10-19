@@ -21,8 +21,7 @@ import android.widget.Toast;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.ui.TongDaoUiCore;
-import com.tongdao.demo.R;
+import com.tongdao.newsdk.TongDao;
 
 public class BtnDefineActivity extends ActionBarActivity {
     private RadioButton eventRadio;
@@ -142,7 +141,7 @@ public class BtnDefineActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDaoUiCore.displayInAppMessage(this);
+        TongDao.displayInAppMessage(this);
     }
 
     @Override

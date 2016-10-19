@@ -29,10 +29,9 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDao;
-import com.tongdao.sdk.beans.TdRewardBean;
-import com.tongdao.sdk.interfaces.ui.OnRewardUnlockedListener;
-import com.tongdao.sdk.ui.TongDaoUiCore;
+import com.tongdao.newsdk.TongDao;
+import com.tongdao.newsdk.beans.TdRewardBean;
+import com.tongdao.newsdk.interfaces.OnRewardUnlockedListener;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
@@ -70,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TongDaoUiCore.init(this, DataTool.APP_KEY);
+        TongDao.init(this, DataTool.APP_KEY);
 
         this.getSupportActionBar().setIcon(R.drawable.ic_launcher);
         this.getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -94,7 +93,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         this.loadBtns();
 
         this.registerListeners();
-        TongDaoUiCore.displayAdvertisement(this);
+        TongDao.displayAdvertisement(this);
 
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, DataTool.BAIDU_API_KEY);
 
@@ -111,7 +110,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         }
         else {
             String device_token = UmengRegistrar.getRegistrationId(this);
-            TongDaoUiCore.identifyPushToken(device_token);
+            TongDao.identifyPushToken(device_token);
             Log.e("Push", device_token);
         }
 
@@ -137,8 +136,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
                 // extract the extra-data in the Notification
                 String msg = extras.getString("NotificationMessage");
                 Log.i("Umeng", "NotificationMessage - " + msg);
-                TongDaoUiCore.trackOpenPushMessage(msg);
-                TongDaoUiCore.openPage(this, msg);
+                TongDao.trackOpenPushMessage(msg);
+                TongDao.openPage(this, msg);
 
             }
         }
@@ -147,14 +146,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDaoUiCore.onSessionStart(this);
+        TongDao.onSessionStart(this);
         this.registerListeners();
         try {
             refreshReward();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        TongDaoUiCore.displayInAppMessage(this);
+        TongDao.displayInAppMessage(this);
     }
 
     @Override
@@ -185,7 +184,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        TongDaoUiCore.onSessionEnd(this);
+        TongDao.onSessionEnd(this);
     }
 
     private void refreshReward() throws JSONException {
@@ -220,7 +219,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     }
 
     private void registerListeners() {
-        TongDaoUiCore.registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
+        TongDao.registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
             @Override
             public void onSuccess(ArrayList<TdRewardBean> rewards) {
                 if (rewards != null && rewards.size() > 0) {
@@ -291,13 +290,13 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
                 TransferBean sendTransferBean = DataTool.getAllBeans().get(index);
                 if (sendTransferBean.getType() == Type.EVENT) {
                     if (sendTransferBean.getDatas().isEmpty()) {
-                        TongDaoUiCore.track(sendTransferBean.getEventName());
+                        TongDao.track(sendTransferBean.getEventName());
                     } else {
-                        TongDaoUiCore.track(sendTransferBean.getEventName(), sendTransferBean.getDatas());
+                        TongDao.track(sendTransferBean.getEventName(), sendTransferBean.getDatas());
                     }
                 } else if (sendTransferBean.getType() == Type.ATTRIBUTE) {
                     if (!sendTransferBean.getDatas().isEmpty()) {
-                        TongDaoUiCore.identify(sendTransferBean.getDatas());
+                        TongDao.identify(sendTransferBean.getDatas());
                     }
                 }
             }
@@ -496,7 +495,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
                 @Override
                 public void run() {
-                    TongDaoUiCore.identifyPushToken(registrationId);
+                    TongDao.identifyPushToken(registrationId);
                 }
             });
         }
