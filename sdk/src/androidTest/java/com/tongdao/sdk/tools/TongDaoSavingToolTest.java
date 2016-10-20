@@ -45,6 +45,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
 
     Context mContext;
     SharedPreferences sharedPreferences;
+    TongDaoSavingTool savingTool;
 
     public TongDaoSavingToolTest() {
         super(Application.class);
@@ -55,8 +56,10 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         super.setUp();
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         sharedPreferences = mContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
+        savingTool = new TongDaoSavingTool();
         assertNotNull(mContext);
         assertNotNull(sharedPreferences);
+        assertNotNull(savingTool);
     }
 
     @Override @After
@@ -78,7 +81,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String appKey = null;
         String userId = null;
         String expectedResult = "ERR";
-        TongDaoSavingTool.saveAppKeyAndUserId(mContext, appKey, userId);
+        savingTool.saveAppKeyAndUserId(mContext, appKey, userId);
         String resultAppKey = sharedPreferences.getString(APP_KEY, expectedResult);
         String resultUserId = sharedPreferences.getString(USER_ID, expectedResult);
         assertThat("Keys not the same", resultAppKey, equalTo(expectedResult));
@@ -92,7 +95,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
 
         String appKey = "someAppKey";
         String userId = "someUID";
-        TongDaoSavingTool.saveAppKeyAndUserId(mContext, appKey, userId);
+        savingTool.saveAppKeyAndUserId(mContext, appKey, userId);
         String resultAppKey = sharedPreferences.getString(APP_KEY, "ERR");
         String resultUserId = sharedPreferences.getString(USER_ID, "ERR");
         assertThat("Keys not the same", appKey, equalTo(resultAppKey));
@@ -110,7 +113,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         Boolean anonymous = new Boolean(false);
         String expectedResult = "ERR";
 
-        TongDaoSavingTool.saveUserInfoData(mContext, appKey, userId, previousId, anonymous);
+        savingTool.saveUserInfoData(mContext, appKey, userId, previousId, anonymous);
         String resultAppKey = sharedPreferences.getString(APP_KEY, expectedResult);
         String resultUserId = sharedPreferences.getString(USER_ID, expectedResult);
         String resultPreviousId = sharedPreferences.getString(PREVIOUS_ID, expectedResult);
@@ -119,7 +122,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         assertThat("Keys don't match", resultUserId, equalTo(expectedResult));
         assertThat("Keys don't match", resultPreviousId, equalTo(expectedResult));
 
-        TongDaoSavingTool.saveUserInfoData(mContext, userId, previousId, anonymous);
+        savingTool.saveUserInfoData(mContext, userId, previousId, anonymous);
         resultUserId = sharedPreferences.getString(USER_ID, expectedResult);
         resultPreviousId = sharedPreferences.getString(PREVIOUS_ID, expectedResult);
 
@@ -138,7 +141,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         Boolean anonymous = new Boolean(true);
         String errorResult = "ERR";
 
-        TongDaoSavingTool.saveUserInfoData(mContext, appKey, userId, previousId, anonymous);
+        savingTool.saveUserInfoData(mContext, appKey, userId, previousId, anonymous);
         String resultAppKey = sharedPreferences.getString(APP_KEY, errorResult);
         String resultUserId = sharedPreferences.getString(USER_ID, errorResult);
         String resultPreviousId = sharedPreferences.getString(PREVIOUS_ID, errorResult);
@@ -150,7 +153,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         assertThat("Keys don't match", resultPreviousId, equalTo(previousId));
         assertThat("Keys don't match", resultAnonymous, equalTo(anonymous));
 
-        TongDaoSavingTool.saveUserInfoData(mContext, userId, previousId, anonymous);
+        savingTool.saveUserInfoData(mContext, userId, previousId, anonymous);
         resultUserId = sharedPreferences.getString(USER_ID, errorResult);
         resultPreviousId = sharedPreferences.getString(PREVIOUS_ID, errorResult);
         resultAnonymous = sharedPreferences.getBoolean(ANONYMOUS, false);
@@ -165,7 +168,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         assertNotNull(mContext);
         clearSharedPreferences();
 
-        TongDaoSavingTool.isAnonymousSet(mContext);
+        savingTool.isAnonymousSet(mContext);
 
         Boolean isAnonymous = sharedPreferences.getBoolean(ANONYMOUS_SET, false);
 
@@ -178,7 +181,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         sharedPreferences.edit().putBoolean(ANONYMOUS_SET, true).commit();
 
-        Boolean anonymousSet = TongDaoSavingTool.getAnonymousSet(mContext);
+        Boolean anonymousSet = savingTool.getAnonymousSet(mContext);
 
         assertThat("Should be true", anonymousSet, equalTo(true));
     }
@@ -188,7 +191,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         assertNotNull(mContext);
         clearSharedPreferences();
 
-        Boolean anonymous = TongDaoSavingTool.getAnonymous(mContext);
+        Boolean anonymous = savingTool.getAnonymous(mContext);
 
         assertThat("Should be true", anonymous, equalTo(true));
     }
@@ -199,7 +202,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String permission = "testPermission";
 
-        TongDaoSavingTool.setPermissionDenied(mContext, permission);
+        savingTool.setPermissionDenied(mContext, permission);
 
         Boolean permissionResult = sharedPreferences.getBoolean(permission, false);
 
@@ -213,7 +216,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String permission = "testPermission";
 
         sharedPreferences.edit().putBoolean(permission,true).commit();
-        Boolean permissionResult = TongDaoSavingTool.getPermissionDenied(mContext, permission);
+        Boolean permissionResult = savingTool.getPermissionDenied(mContext, permission);
 
         assertThat("Should be true", permissionResult, equalTo(true));
     }
@@ -224,7 +227,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String applicationData = "testdata";
 
-        TongDaoSavingTool.setApplicationInfoData(mContext,applicationData);
+        savingTool.setApplicationInfoData(mContext,applicationData);
         String resultData = sharedPreferences.getString(APPLICATION_DATA,"ERR");
 
         assertThat("Wrong result",resultData,equalTo(applicationData));
@@ -237,7 +240,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String applicationData = "testdata";
 
         sharedPreferences.edit().putString(APPLICATION_DATA,applicationData).commit();
-        String resultData = TongDaoSavingTool.getApplicationInfoData(mContext);
+        String resultData = savingTool.getApplicationInfoData(mContext);
 
         assertThat("Wrong result",resultData,equalTo(applicationData));
     }
@@ -248,7 +251,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String data = "testdata";
 
-        TongDaoSavingTool.setConnectionInfoData(mContext,data);
+        savingTool.setConnectionInfoData(mContext,data);
         String result = sharedPreferences.getString(CONNECTION_DATA,"ERR");
 
         assertThat("Wrong result",result,equalTo(data));
@@ -261,7 +264,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String data = "testdata";
 
         sharedPreferences.edit().putString(CONNECTION_DATA,data).commit();
-        String result = TongDaoSavingTool.getConnectionInfoData(mContext);
+        String result = savingTool.getConnectionInfoData(mContext);
 
         assertThat("Wrong result",result,equalTo(data));
     }
@@ -272,7 +275,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String data = "testdata";
 
-        TongDaoSavingTool.setLocationInfoData(mContext,data);
+        savingTool.setLocationInfoData(mContext,data);
         String result = sharedPreferences.getString(LOCATION_DATA,"ERR");
 
         assertThat("Wrong result",result,equalTo(data));
@@ -285,7 +288,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String data = "testdata";
 
         sharedPreferences.edit().putString(LOCATION_DATA,data).commit();
-        String result = TongDaoSavingTool.getLocationInfoData(mContext);
+        String result = savingTool.getLocationInfoData(mContext);
 
         assertThat("Wrong result",result,equalTo(data));
     }
@@ -296,7 +299,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String data = "testdata";
 
-        TongDaoSavingTool.setDeviceInfoData(mContext,data);
+        savingTool.setDeviceInfoData(mContext,data);
         String result = sharedPreferences.getString(DEVICE_DATA,"ERR");
 
         assertThat("Wrong result",result,equalTo(data));
@@ -309,7 +312,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String data = "testdata";
 
         sharedPreferences.edit().putString(DEVICE_DATA,data).commit();
-        String result = TongDaoSavingTool.getDeviceInfoData(mContext);
+        String result = savingTool.getDeviceInfoData(mContext);
 
         assertThat("Wrong result",result,equalTo(data));
     }
@@ -320,7 +323,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String data = "testdata";
 
-        TongDaoSavingTool.setFingerprintInfoData(mContext,data);
+        savingTool.setFingerprintInfoData(mContext,data);
         String result = sharedPreferences.getString(FINGERPRINT_DATA,"ERR");
 
         assertThat("Wrong result",result,equalTo(data));
@@ -333,7 +336,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String data = "testdata";
 
         sharedPreferences.edit().putString(FINGERPRINT_DATA,data).commit();
-        String result = TongDaoSavingTool.getFingerprintInfoData(mContext);
+        String result = savingTool.getFingerprintInfoData(mContext);
 
         assertThat("Wrong result",result,equalTo(data));
     }
@@ -344,7 +347,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         String data = "testdata";
 
-        TongDaoSavingTool.setAppSessionData(mContext,data);
+        savingTool.setAppSessionData(mContext,data);
         String result = sharedPreferences.getString(APP_SESSION_DATA,"ERR");
 
         assertThat("Wrong result",result,equalTo(data));
@@ -357,7 +360,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         String data = "testdata";
 
         sharedPreferences.edit().putString(APP_SESSION_DATA,data).commit();
-        String result = TongDaoSavingTool.getAppSessionData(mContext);
+        String result = savingTool.getAppSessionData(mContext);
 
         assertThat("Wrong result",result,equalTo(data));
     }
@@ -368,7 +371,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         clearSharedPreferences();
         int data = 2343;
 
-        TongDaoSavingTool.setNotificationData(mContext,data);
+        savingTool.setNotificationData(mContext,data);
         int result = sharedPreferences.getInt(NOTIFICATION_DATA,-1);
 
         assertThat("Wrong result",result,equalTo(data));
@@ -381,7 +384,7 @@ public class TongDaoSavingToolTest extends ApplicationTestCase<Application> {
         int data = 2343;
 
         sharedPreferences.edit().putInt(NOTIFICATION_DATA,data).commit();
-        int result = TongDaoSavingTool.getNotificationData(mContext);
+        int result = savingTool.getNotificationData(mContext);
 
         assertThat("Wrong result",result,equalTo(data));
     }

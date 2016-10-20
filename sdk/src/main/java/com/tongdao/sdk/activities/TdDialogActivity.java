@@ -16,7 +16,7 @@ import com.tongdao.sdk.TongDao;
 import com.tongdao.sdk.tools.TdDisplayTool;
 import com.tongdao.sdk.tools.TdImageManager;
 import com.tongdao.sdk.tools.TdUtils;
-import com.tongdao.sdk.ui.TdFragmentPagerAdapter;
+import com.tongdao.sdk.ui.TongDaoFragmentPagerAdapter;
 import com.tongdao.sdk.ui.TdPageFragment;
 import com.tongdao.sdk.R;
 import com.tongdao.sdk.beans.TdErrorBean;
@@ -129,7 +129,7 @@ public class TdDialogActivity extends FragmentActivity {
             fragmentList.add(new TdPageFragment(this.display_out_w, this.display_in_w, this.close_wh, pageBean, imageManager));
         }
 
-        promotionViewPager.setAdapter(new TdFragmentPagerAdapter(getSupportFragmentManager(), fragmentList));
+        promotionViewPager.setAdapter(new TongDaoFragmentPagerAdapter(getSupportFragmentManager(), fragmentList));
     }
 
     private void closeImageManager() {

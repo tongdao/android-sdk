@@ -31,7 +31,6 @@ import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
-import com.tongdao.sdk.tools.TongDaoUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;

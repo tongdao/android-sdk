@@ -75,6 +75,8 @@ public class TongDaoBridge {
     private TongDaoUtils utils;
     private TongDaoUrlTool urlTool;
     private TongDaoAppInfoTool appInfoTool;
+    private TongDaoSavingTool savingTool;
+    private TongDaoDataTool dataTool;
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -93,7 +95,9 @@ public class TongDaoBridge {
         this.utils = new TongDaoUtils(appContext);
         this.urlTool = new TongDaoUrlTool();
         this.appInfoTool = new TongDaoAppInfoTool();
-        TongDaoSavingTool.saveAppKeyAndUserId(appContext, appKey, userId);
+        this.savingTool = new TongDaoSavingTool();
+        this.dataTool = new TongDaoDataTool();
+        savingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
     private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId, String previousId, boolean anonymous) {
@@ -107,7 +111,9 @@ public class TongDaoBridge {
         this.utils = new TongDaoUtils(appContext);
         this.urlTool = new TongDaoUrlTool();
         this.appInfoTool = new TongDaoAppInfoTool();
-        TongDaoSavingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
+        this.savingTool = new TongDaoSavingTool();
+        this.dataTool = new TongDaoDataTool();
+        savingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
     public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID) {
@@ -132,7 +138,7 @@ public class TongDaoBridge {
                     String gaid = appInfoTool.getGaid(appContext);
                     if (appContext != null) {
                         try {
-                            JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
+                            JSONObject properties = dataTool.makeInfoProperties(appContext, gaid);
                             System.out.println("Properties ->" + properties.toString());
                             if (properties != null && properties.keys().hasNext() && USER_ID != null) {
                                 TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
@@ -151,7 +157,7 @@ public class TongDaoBridge {
         if (appContext != null) {
             try {
                 String gaid = appInfoTool.getGaid(appContext);
-                JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
+                JSONObject properties = dataTool.makeInfoProperties(appContext, gaid);
                 if (properties != null && properties.keys().hasNext() && USER_ID != null) {
                     TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
                     trackEvents(tempLqEventBean);
@@ -186,7 +192,7 @@ public class TongDaoBridge {
                                     trackEvents(tempLqEventBean);
                                 }
                                 String gaid = appInfoTool.getGaid(appContext);
-                                JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
+                                JSONObject properties = dataTool.makeInfoProperties(appContext, gaid);
                                 tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, properties);
 
                             }
@@ -237,7 +243,7 @@ public class TongDaoBridge {
 
         JSONObject eventObj;
 
-        String appSessionData = TongDaoSavingTool.getAppSessionData(appContext);
+        String appSessionData = savingTool.getAppSessionData(appContext);
         if (TextUtils.isEmpty(appSessionData)) {
             eventObj = new JSONObject();
         } else {
@@ -252,7 +258,7 @@ public class TongDaoBridge {
         eventObj.put("events", eventArray);
         Log.i("session event string", eventObj.toString());
 
-        TongDaoSavingTool.setAppSessionData(appContext, eventObj.toString());
+        savingTool.setAppSessionData(appContext, eventObj.toString());
 
         if (isNeedToSendRequest) {
             trackAppSessionEvent();
@@ -303,7 +309,7 @@ public class TongDaoBridge {
         values.put("!name", pageName);
 
         try {
-            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!open_page", TongDaoDataTool.makeUserProperties(values));
+            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!open_page", dataTool.makeUserProperties(values));
             startTrackEvents(tempEb);
         } catch (JSONException e) {
             Log.e("onSessionStart", "JSONException");
@@ -324,7 +330,7 @@ public class TongDaoBridge {
         values.put("!name", pageName);
         values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTime));
         try {
-            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_page", TongDaoDataTool.makeUserProperties(values));
+            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_page", dataTool.makeUserProperties(values));
             startTrackEvents(tempEb);
         } catch (JSONException e) {
             Log.e("onSessionEnd", "JSONException");
@@ -344,7 +350,7 @@ public class TongDaoBridge {
         values.put("!started_at", TongDaoCheckTool.getTimeStamp(this.startTimeForCloseApp));
 
         try {
-            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_app", TongDaoDataTool.makeUserProperties(values));
+            TdEventBean tempEb = new TdEventBean(ACTION_TYPE.track, this.USER_ID, "!close_app", dataTool.makeUserProperties(values));
             makeSessionEventJsonString(tempEb, false);
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -375,18 +381,18 @@ public class TongDaoBridge {
         this.startTime = TongDaoClockTool.currentTimeMillis();
 
         if (this.startTime == 0 ||
-                TongDaoSavingTool.getNotificationData(appContext) == status) {
+                savingTool.getNotificationData(appContext) == status) {
             return null;
         }
 
-        TongDaoSavingTool.setNotificationData(appContext, status);
+        savingTool.setNotificationData(appContext, status);
 
         HashMap<String, Object> values = new HashMap<String, Object>();
         String strStatus = status == 1 ? "true" : "false";
         values.put("!push_enable", strStatus);
 
         try {
-            return new TdEventBean(ACTION_TYPE.identify, this.USER_ID, null, TongDaoDataTool.makeUserProperties(values));
+            return new TdEventBean(ACTION_TYPE.identify, this.USER_ID, null, dataTool.makeUserProperties(values));
         } catch (JSONException e) {
             Log.e("onSessionStart", "JSONException");
         }
@@ -467,12 +473,12 @@ public class TongDaoBridge {
             public void run() {
                 try {
                     synchronized (LOCK) {
-                        apiTool.postRetrofit(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
+                        apiTool.postRetrofit(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, savingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
 
                             @Override
                             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
                                 Log.i("Session event response", "" + statusCode);
-                                TongDaoSavingTool.setAppSessionData(appContext, null);
+                                savingTool.setAppSessionData(appContext, null);
                             }
 
                             @Override
