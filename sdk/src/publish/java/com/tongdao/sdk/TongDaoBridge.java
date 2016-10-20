@@ -37,18 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TongDaoBridge {
-    private static TongDaoBridge uniqueInstance = null;
-    private String APP_KEY;
-    private String USER_ID;
-    private String PREVIOUS_ID;
-    private String DEVICE_ID;
-    private boolean ANONYMOUS;
-    private Context appContext;
-    private ArrayList<TdEventBean> eventList = new ArrayList<TdEventBean>();
-    private ArrayList<TdEventBean> waitingList = new ArrayList<TdEventBean>();
-    private boolean canRun = true;
-    private long startTime = 0;
-    private long startTimeForCloseApp = 0;
+    //constants
     private static final String TD_MESSAGE_IMG_URL = "image_url";
     private static final String TD_MESSAGE = "message";
     private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
@@ -61,10 +50,30 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_CLOSE_BUTTON = "close_btn";
     private static final String TD_MESSAGE_CID = "cid";
     private static final String TD_MESSAGE_MID = "mid";
+    private final String LOCK = "lock";
+
+    //unique instance of bridge
+    private static TongDaoBridge uniqueInstance = null;
+
+    //instance variables
+    private String APP_KEY;
+    private String USER_ID;
+    private String PREVIOUS_ID;
+    private String DEVICE_ID;
+    private boolean ANONYMOUS;
+    private Context appContext;
+    private ArrayList<TdEventBean> eventList = new ArrayList<TdEventBean>();
+    private ArrayList<TdEventBean> waitingList = new ArrayList<TdEventBean>();
+    private boolean canRun = true;
+    private long startTime = 0;
+    private long startTimeForCloseApp = 0;
     private String pageNameStart;
     private String pageNameEnd;
-    private final String LOCK = "lock";
+
+    //dependent classes
     private TongDaoApiTool apiTool;
+    private TongDaoUtils utils;
+    private TongDaoUrlTool urlTool;
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -80,6 +89,8 @@ public class TongDaoBridge {
         this.USER_ID = userId;
         this.DEVICE_ID = deviceId;
         this.apiTool = new TongDaoApiTool();
+        this.utils = new TongDaoUtils(appContext);
+        this.urlTool = new TongDaoUrlTool();
         TongDaoSavingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
@@ -91,6 +102,8 @@ public class TongDaoBridge {
         this.PREVIOUS_ID = previousId;
         this.ANONYMOUS = anonymous;
         this.apiTool = new TongDaoApiTool();
+        this.utils = new TongDaoUtils(appContext);
+        this.urlTool = new TongDaoUrlTool();
         TongDaoSavingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
@@ -355,7 +368,7 @@ public class TongDaoBridge {
     }
 
     public TdEventBean onNotificationStatus() {
-        int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || TongDaoUtils.isNotificationEnabled()) ? 1 : 0;
+        int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || utils.isNotificationEnabled()) ? 1 : 0;
         this.startTime = TongDaoClockTool.currentTimeMillis();
 
         if (this.startTime == 0 ||
@@ -407,7 +420,7 @@ public class TongDaoBridge {
                     tempLqEventBeanArray.add(tdEventBean);
                 }
                 try {
-                    apiTool.post(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
+                    apiTool.post(this.APP_KEY, this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 
                         @Override
                         public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -451,7 +464,7 @@ public class TongDaoBridge {
             public void run() {
                 try {
                     synchronized (LOCK) {
-                        apiTool.post(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
+                        apiTool.post(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
 
                             @Override
                             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -534,7 +547,7 @@ public class TongDaoBridge {
             return;
         }
 
-        String url = TongDaoUrlTool.getLandingPageUrl(pageId, USER_ID);
+        String url = urlTool.getLandingPageUrl(pageId, USER_ID);
         apiTool.get(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
 
             @Override
@@ -582,7 +595,7 @@ public class TongDaoBridge {
             return;
         }
 
-        String url = TongDaoUrlTool.getInAppMessageUrl(USER_ID);
+        String url = urlTool.getInAppMessageUrl(USER_ID);
         apiTool.get(APP_KEY, DEVICE_ID, false, url, null, new TdHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {

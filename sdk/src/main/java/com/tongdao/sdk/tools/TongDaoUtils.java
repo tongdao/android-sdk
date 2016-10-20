@@ -9,16 +9,10 @@ import android.support.v4.app.NotificationManagerCompat;
  */
 public class TongDaoUtils {
 
-    private static final String CHECK_OP_NO_THROW = "checkOpNoThrow";
-    private static final String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
     private static Context cxt;
-    private static ApplicationInfo appInfo;
-    private static String pkg;
 
-    public static void init(Context context) {
+    public TongDaoUtils(Context context) {
         cxt = context;
-        appInfo = context.getApplicationInfo();
-        pkg = context.getApplicationContext().getPackageName();
     }
 
     /**
@@ -27,7 +21,7 @@ public class TongDaoUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static boolean isNotificationEnabled() {
+    public boolean isNotificationEnabled() {
         return NotificationManagerCompat.from(cxt).areNotificationsEnabled();
     }
 }

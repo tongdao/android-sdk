@@ -44,20 +44,28 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-
+/**
+ * Main Class for the Tongdao SDK. All calls to the SDK go through here.
+ * Deeplink formatting:
+ * scheme://any_deeplink?0Qpage=page_id
+ */
 public class TongDao {
-
+    //constants
     private static final String PAGE_ID = "pageId";
     private static final String MESSAGE = "td_message";
-    private static OnRewardUnlockedListener rewardUnlockedListener;
-    private static TongDaoBridge tongDaoBridge;
-    //	scheme://any_deeplink?0Qpage=page_id
     private static final String ENDING_PAGE_STRING = "0Qpage=";
-
     private static final String MESSAGE_TAG = "tongrd_mid";
     private static final String CLIENT_TAG = "tongrd_cid";
     private static final String TYPE_TAG = "tongrd_type";
     private static final String VALUE_TAG = "tongrd_value";
+
+    //SDK components, dependencies
+    private static OnRewardUnlockedListener rewardUnlockedListener;
+    private static TongDaoBridge tongDaoBridge;
+
+
+
+
 
     /**
      * 初始化同道服务,请在onCreate方法中调用
@@ -68,7 +76,6 @@ public class TongDao {
      */
     public static boolean init(Context appContext, String appKey) {
         String deviceId = generateDeviceId(appContext);
-        TongDaoUtils.init(appContext);
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
             tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             tongDaoBridge.init();
