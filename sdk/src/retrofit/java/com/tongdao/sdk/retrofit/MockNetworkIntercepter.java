@@ -1,11 +1,7 @@
 package com.tongdao.sdk.retrofit;
 
 
-import android.support.v7.appcompat.BuildConfig;
-import android.util.Log;
-
 import java.io.IOException;
-import java.net.URI;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;

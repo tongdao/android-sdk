@@ -62,7 +62,8 @@ public class TongDao {
     //SDK components, dependencies
     private static OnRewardUnlockedListener rewardUnlockedListener;
     private static TongDaoBridge tongDaoBridge;
-
+    private static TongDaoDataTool dataTool;
+    private static TongDaoSavingTool savingTool;
 
 
 
@@ -76,6 +77,8 @@ public class TongDao {
      */
     public static boolean init(Context appContext, String appKey) {
         String deviceId = generateDeviceId(appContext);
+        dataTool = new TongDaoDataTool();
+        savingTool = new TongDaoSavingTool();
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
             tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             tongDaoBridge.init();
@@ -96,10 +99,12 @@ public class TongDao {
      */
     public static boolean init(Context appContext, String appKey, String userId) {
         String deviceId = generateDeviceId(appContext);
+        dataTool = new TongDaoDataTool();
+        savingTool = new TongDaoSavingTool();
         if(null == userId){
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
                 tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
-                TongDaoSavingTool.setAnonymous(appContext, true);
+                savingTool.setAnonymous(appContext, true);
                 tongDaoBridge.init();
                 onAppSessionStart();
                 return true;
@@ -109,7 +114,7 @@ public class TongDao {
         }else {
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
                 tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
-                TongDaoSavingTool.setAnonymous(appContext, false);
+                savingTool.setAnonymous(appContext, false);
                 tongDaoBridge.init();
                 onAppSessionStart();
                 return true;
@@ -127,16 +132,16 @@ public class TongDao {
      */
     public static void setUserId(Context appContext, String userId){
         if(null == userId){
-            if(!TongDaoSavingTool.getAnonymous(appContext)){
-                TongDaoSavingTool.saveUserInfoData(appContext, generateDeviceId(appContext), generateDeviceId(appContext), true);
+            if(!savingTool.getAnonymous(appContext)){
+                savingTool.saveUserInfoData(appContext, generateDeviceId(appContext), generateDeviceId(appContext), true);
                 tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, generateDeviceId(appContext));
             }
         }else{
-            if(TongDaoSavingTool.getAnonymous(appContext)){
-                TongDaoSavingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
+            if(savingTool.getAnonymous(appContext)){
+                savingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
                 tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.merge, generateDeviceId(appContext), userId);
             }else{
-                TongDaoSavingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
+                savingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
                 tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, generateDeviceId(appContext), userId);
             }
         }
@@ -179,7 +184,7 @@ public class TongDao {
             Log.e("TongRd SDK", "event starting with ! are reserved");
         } else {
             try {
-                sendEvent(ACTION_TYPE.track, eventName, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.track, eventName, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("track", "JSONException");
             }
@@ -238,7 +243,7 @@ public class TongDao {
     public static void identify(HashMap<String, Object> values) {
         if (values != null && !values.isEmpty()) {
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identify", "JSONException");
             }
@@ -256,7 +261,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put(name, value);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identify", "JSONException");
             }
@@ -278,7 +283,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!push_token", push_token);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyPushToken", "JSONException");
             }
@@ -319,7 +324,7 @@ public class TongDao {
             }
 
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 com.tongdao.sdk.tools.Log.e("identifyFullName", "JSONException");
             }
@@ -338,7 +343,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!name", fullName);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyFullName", "JSONException");
             }
@@ -357,7 +362,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!username", userName);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyUserName", "JSONException");
             }
@@ -376,7 +381,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!email", email);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyEmail", "JSONException");
             }
@@ -395,7 +400,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!phone", phoneNumber);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyPhone", "JSONException");
             }
@@ -414,7 +419,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!gender", gender.toString());
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyGender", "JSONException");
             }
@@ -431,7 +436,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!age", age);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyAge", "JSONException");
             }
@@ -450,7 +455,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!avatar", url);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyAvatar", "JSONException");
             }
@@ -469,7 +474,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!address", address);
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyAddress", "JSONException");
             }
@@ -486,7 +491,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!birthday", TongDaoCheckTool.getTimeStamp(date));
             try {
-                sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("identifyBirthday", "JSONException");
             }
@@ -500,7 +505,7 @@ public class TongDao {
      */
     public static void identifySource(TdSource source) {
         try {
-            JSONObject dataObj = TongDaoDataTool.makeSourceProperties(source);
+            JSONObject dataObj = dataTool.makeSourceProperties(source);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.identify, null, dataObj);
             }
@@ -523,7 +528,7 @@ public class TongDao {
      */
     public static void trackRegistration(Date date) {
         try {
-            sendEvent(ACTION_TYPE.track, "!registration", TongDaoDataTool.makeRegisterProperties(date));
+            sendEvent(ACTION_TYPE.track, "!registration", dataTool.makeRegisterProperties(date));
         } catch (JSONException e) {
             Log.e("trackRegistration", "JSONException");
         }
@@ -536,7 +541,7 @@ public class TongDao {
      */
     public static void identifyRating(int rating) {
         try {
-            sendEvent(ACTION_TYPE.identify, null, TongDaoDataTool.makeRatingProperties(rating));
+            sendEvent(ACTION_TYPE.identify, null, dataTool.makeRatingProperties(rating));
         } catch (JSONException e) {
             Log.e("trackRate", "JSONException");
         }
@@ -552,7 +557,7 @@ public class TongDao {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!category", category);
             try {
-                sendEvent(ACTION_TYPE.track, "!view_product_category", TongDaoDataTool.makeUserProperties(values));
+                sendEvent(ACTION_TYPE.track, "!view_product_category", dataTool.makeUserProperties(values));
             } catch (JSONException e) {
                 Log.e("trackViewProductCategory", "JSONException");
             }
@@ -566,7 +571,7 @@ public class TongDao {
      */
     public static void trackViewProduct(TdProduct product) {
         try {
-            JSONObject dataObj = TongDaoDataTool.makeProductProperties(product);
+            JSONObject dataObj = dataTool.makeProductProperties(product);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.track, "!view_product", dataObj);
             }
@@ -582,7 +587,7 @@ public class TongDao {
      */
     public static void trackAddCart(ArrayList<TdOrderLine> orderLines) {
         try {
-            JSONObject dataObj = TongDaoDataTool.makeOrderLinesProperties(orderLines);
+            JSONObject dataObj = dataTool.makeOrderLinesProperties(orderLines);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.track, "!add_cart", dataObj);
             }
@@ -611,7 +616,7 @@ public class TongDao {
      */
     public static void trackRemoveCart(ArrayList<TdOrderLine> orderLines) {
         try {
-            JSONObject dataObj = TongDaoDataTool.makeOrderLinesProperties(orderLines);
+            JSONObject dataObj = dataTool.makeOrderLinesProperties(orderLines);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.track, "!remove_cart", dataObj);
             }
@@ -640,7 +645,7 @@ public class TongDao {
      */
     public static void trackPlaceOrder(TdOrder order) {
         try {
-            JSONObject dataObj = TongDaoDataTool.makeOrderProperties(order);
+            JSONObject dataObj = dataTool.makeOrderProperties(order);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.track, "!place_order", dataObj);
             }
@@ -677,7 +682,7 @@ public class TongDao {
 
             Log.i("PlaceOrder", "" + order.getTotal());
 
-            JSONObject dataObj = TongDaoDataTool.makeOrderProperties(order);
+            JSONObject dataObj = dataTool.makeOrderProperties(order);
             if (dataObj != null) {
                 sendEvent(ACTION_TYPE.track, "!place_order", dataObj);
             }
@@ -917,7 +922,7 @@ public class TongDao {
         HashMap<String, Object> values = new HashMap<String, Object>();
         values.put("!message_id", mid);
         values.put("!campaign_id", cid);
-        sendEvent(ACTION_TYPE.track, eventName, TongDaoDataTool.makeUserProperties(values));
+        sendEvent(ACTION_TYPE.track, eventName, dataTool.makeUserProperties(values));
     }
 
     private static boolean isIntentCallable(Context context, Intent intent) {

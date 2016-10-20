@@ -34,20 +34,23 @@ public class TongDaoAppInfoToolTest {
     }
     @Test
     public void getDeviceInfo() throws Exception {
+        TongDaoAppInfoTool appInfoTool = new TongDaoAppInfoTool();
         Object[] expected = {Build.MODEL, Build.MANUFACTURER, Build.PRODUCT, Build.DISPLAY, Build.DEVICE, "android", Build.VERSION.RELEASE, Locale.getDefault().toString()};
-        Object[] result = TongDaoAppInfoTool.getDeviceInfo(mContext);
+        Object[] result = appInfoTool.getDeviceInfo();
         assertArrayEquals(result,expected);
     }
 
     @Test
     public void getVersionCodeOsName() throws Exception {
-        Object[] result = TongDaoAppInfoTool.getVersionCodeOsName(mContext);
+        TongDaoAppInfoTool appInfoTool = new TongDaoAppInfoTool();
+        Object[] result = appInfoTool.getVersionCodeOsName(mContext);
         assertNotNull(result);
     }
 
     @Test
     public void getNetworkInfo() throws Exception {
-        Object[] result = TongDaoAppInfoTool.getNetworkInfo(mContext);
+        TongDaoAppInfoTool appInfoTool = new TongDaoAppInfoTool();
+        Object[] result = appInfoTool.getNetworkInfo(mContext);
         assertNotNull(result);
     }
 

@@ -10,7 +10,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
@@ -28,10 +27,10 @@ public interface TongDaoApi {
     @Headers({"Accept:application/json","Content-type:application/json","X-APP-USE:Retrofit"})
     @POST(Constants.API_URI_EVENTS)
     Call<Void> postEvent(@Header(X_SDK_VERSION) String sdkVersion,
-                           @Header(X_APP_KEY) String appKey,
-                           @Header(X_DEVICE_KEY) String deviceKey,
-                           @Header(X_LOCAL_TIME) String localTime,
-                           @Body Events events);
+                         @Header(X_APP_KEY) String appKey,
+                         @Header(X_DEVICE_KEY) String deviceKey,
+                         @Header(X_LOCAL_TIME) String localTime,
+                         @Body Events events);
 
     @Headers({"Accept:application/json","Content-type:application/json","X-APP-USE:Retrofit"})
     @GET(Constants.API_URI_MESSAGES)
@@ -45,9 +44,9 @@ public interface TongDaoApi {
     @Headers({"Accept:application/json","Content-type:application/json","X-APP-USE:Retrofit"})
     @GET(Constants.API_URI_PAGE)
     Call<List<Message>> getLandingPage(@Header(X_SDK_VERSION) String sdkVersion,
-                                         @Header(X_APP_KEY) String appKey,
-                                         @Header(X_DEVICE_KEY) String deviceKey,
-                                         @Header(X_LOCAL_TIME) String localTime,
-                                         @Header(X_AUTO_CLAIM) String autoClaim,
-                                         @Query("user_id") String userId);
+                                       @Header(X_APP_KEY) String appKey,
+                                       @Header(X_DEVICE_KEY) String deviceKey,
+                                       @Header(X_LOCAL_TIME) String localTime,
+                                       @Header(X_AUTO_CLAIM) String autoClaim,
+                                       @Query("user_id") String userId);
 }

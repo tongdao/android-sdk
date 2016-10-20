@@ -61,7 +61,7 @@ public class Properties {
     private Fingerprint fingerprint;
 
     /**
-     * 
+     *
      * @return
      *     The email
      */
@@ -70,7 +70,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param email
      *     The !email
      */
@@ -79,7 +79,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The firstName
      */
@@ -88,7 +88,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param firstName
      *     The !first_name
      */
@@ -97,7 +97,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The lastName
      */
@@ -106,7 +106,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param lastName
      *     The !last_name
      */
@@ -115,7 +115,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The name
      */
@@ -124,7 +124,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param name
      *     The !name
      */
@@ -133,7 +133,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The username
      */
@@ -142,7 +142,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param username
      *     The !username
      */
@@ -151,7 +151,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The phone
      */
@@ -160,7 +160,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param phone
      *     The !phone
      */
@@ -169,7 +169,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The gender
      */
@@ -178,7 +178,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param gender
      *     The !gender
      */
@@ -187,7 +187,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The age
      */
@@ -196,7 +196,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param age
      *     The !age
      */
@@ -205,7 +205,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The avatar
      */
@@ -214,7 +214,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param avatar
      *     The !avatar
      */
@@ -223,7 +223,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The address
      */
@@ -232,7 +232,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param address
      *     The !address
      */
@@ -241,7 +241,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The birthday
      */
@@ -250,7 +250,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param birthday
      *     The !birthday
      */
@@ -259,7 +259,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The source
      */
@@ -268,7 +268,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param source
      *     The !source
      */
@@ -277,7 +277,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The application
      */
@@ -286,7 +286,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param application
      *     The !application
      */
@@ -295,7 +295,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The connection
      */
@@ -304,7 +304,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param connection
      *     The !connection
      */
@@ -313,7 +313,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The location
      */
@@ -322,7 +322,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param location
      *     The !location
      */
@@ -331,7 +331,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @return
      *     The device
      */
@@ -340,7 +340,7 @@ public class Properties {
     }
 
     /**
-     * 
+     *
      * @param device
      *     The !device
      */

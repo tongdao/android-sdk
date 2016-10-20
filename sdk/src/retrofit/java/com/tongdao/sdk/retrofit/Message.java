@@ -29,7 +29,7 @@ public class Message {
     private Action action;
 
     /**
-     * 
+     *
      * @return
      *     The cid
      */
@@ -38,7 +38,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param cid
      *     The cid
      */
@@ -47,7 +47,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @return
      *     The mid
      */
@@ -56,7 +56,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param mid
      *     The mid
      */
@@ -65,7 +65,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @return
      *     The message
      */
@@ -74,7 +74,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param message
      *     The message
      */
@@ -83,7 +83,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @return
      *     The imageUrl
      */
@@ -92,7 +92,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param imageUrl
      *     The image_url
      */
@@ -101,7 +101,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @return
      *     The displayTime
      */
@@ -110,7 +110,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param displayTime
      *     The display_time
      */
@@ -119,7 +119,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @return
      *     The layout
      */
@@ -128,7 +128,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param layout
      *     The layout
      */
@@ -137,7 +137,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @return
      *     The action
      */
@@ -146,7 +146,7 @@ public class Message {
     }
 
     /**
-     * 
+     *
      * @param action
      *     The action
      */

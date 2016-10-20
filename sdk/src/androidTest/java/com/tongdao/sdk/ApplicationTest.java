@@ -36,6 +36,8 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     int accessFineLocation;
     int telephonyPermission;
 
+    TongDaoSavingTool savingTool;
+
     public ApplicationTest() {
         super(Application.class);
     }
@@ -58,6 +60,8 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         telephonyPermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
+        savingTool = new TongDaoSavingTool();
+        assertNotNull(savingTool);
     }
 
     @Test
@@ -79,7 +83,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
-        TongDaoSavingTool.setApplicationInfoData(appContext, "DummyApplicationData");
+        savingTool.setApplicationInfoData(appContext, "DummyApplicationData");
         TongDao.init(appContext, APP_KEY);
     }
 
@@ -91,7 +95,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
-        TongDaoSavingTool.setConnectionInfoData(appContext, "DummyConnectionData");
+        savingTool.setConnectionInfoData(appContext, "DummyConnectionData");
         TongDao.init(appContext, APP_KEY);
     }
 
@@ -103,7 +107,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
-        TongDaoSavingTool.setLocationInfoData(appContext, "DummyLocationData");
+        savingTool.setLocationInfoData(appContext, "DummyLocationData");
 
         TongDao.init(appContext, APP_KEY);
     }
@@ -116,7 +120,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
-        TongDaoSavingTool.setFingerprintInfoData(appContext, "DummyFingerPrintData");
+        savingTool.setFingerprintInfoData(appContext, "DummyFingerPrintData");
 
         TongDao.init(appContext, APP_KEY);
     }
@@ -129,7 +133,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
-        TongDaoSavingTool.setDeviceInfoData(appContext, "DummyDeviceData");
+        savingTool.setDeviceInfoData(appContext, "DummyDeviceData");
 
         TongDao.init(appContext, APP_KEY);
     }

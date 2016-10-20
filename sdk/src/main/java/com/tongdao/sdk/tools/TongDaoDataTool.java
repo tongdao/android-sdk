@@ -22,26 +22,28 @@ import java.util.Map.Entry;
 
 public class TongDaoDataTool {
 
-    public static Boolean mAnonymous = true;
+    public Boolean mAnonymous = true;
 
-    public static JSONObject makeInfoProperties(@NonNull Context appContext, String gaid) throws JSONException {
+    public JSONObject makeInfoProperties(@NonNull Context appContext, String gaid) throws JSONException {
+        TongDaoAppInfoTool appInfoTool = new TongDaoAppInfoTool();
+        TongDaoSavingTool savingTool = new TongDaoSavingTool();
         JSONObject propertiesObj = new JSONObject();
         //application
-        Object[] versioObjs = TongDaoAppInfoTool.getVersionCodeOsName(appContext);
+        Object[] versioObjs = appInfoTool.getVersionCodeOsName(appContext);
         if (versioObjs != null) {
             JSONObject applicationObj = new JSONObject();
             applicationObj.put("!version_code", (int) versioObjs[0]);
             applicationObj.put("!version_name", versioObjs[1] == null ? "" : (String) (versioObjs[1]));
 
-            String appData = TongDaoSavingTool.getApplicationInfoData(appContext);
+            String appData = savingTool.getApplicationInfoData(appContext);
             if (appData == null || !appData.equalsIgnoreCase(applicationObj.toString())) {
                 propertiesObj.put("!application", applicationObj);
-                TongDaoSavingTool.setApplicationInfoData(appContext, applicationObj.toString());
+                savingTool.setApplicationInfoData(appContext, applicationObj.toString());
             }
         }
 
         //connection
-        Object[] networkObjs = TongDaoAppInfoTool.getNetworkInfo(appContext);
+        Object[] networkObjs = appInfoTool.getNetworkInfo(appContext);
         JSONObject connectionObj = new JSONObject();
         connectionObj.put("!carrier_name", (String) networkObjs[2]);
         if (networkObjs[3] instanceof Integer) {
@@ -53,28 +55,28 @@ public class TongDaoDataTool {
         connectionObj.put("!connection_type", (String) networkObjs[0]);
         connectionObj.put("!connection_quality", (String) networkObjs[1]);
 
-        String connectionData = TongDaoSavingTool.getConnectionInfoData(appContext);
+        String connectionData = savingTool.getConnectionInfoData(appContext);
         if (connectionData == null || !connectionData.equalsIgnoreCase(connectionObj.toString())) {
             propertiesObj.put("!connection", connectionObj);
-            TongDaoSavingTool.setConnectionInfoData(appContext, connectionObj.toString());
+            savingTool.setConnectionInfoData(appContext, connectionObj.toString());
         }
 
         //location
 
-        Object[] locationObjs = TongDaoAppInfoTool.getCurrentLocation(appContext);
+        Object[] locationObjs = appInfoTool.getCurrentLocation(appContext);
         JSONObject locationObj = new JSONObject();
         locationObj.put("!latitude", (double) locationObjs[0]);
         locationObj.put("!longitude", (double) locationObjs[1]);
         locationObj.put("!source", (String) locationObjs[2]);
 
-        String locationData = TongDaoSavingTool.getLocationInfoData(appContext);
+        String locationData = savingTool.getLocationInfoData(appContext);
         if (locationData == null || !locationData.equalsIgnoreCase(locationObj.toString())) {
             propertiesObj.put("!location", locationObj);
-            TongDaoSavingTool.setLocationInfoData(appContext, locationObj.toString());
+            savingTool.setLocationInfoData(appContext, locationObj.toString());
         }
 
         //device
-        Object[] devicesObjs = TongDaoAppInfoTool.getDeviceInfo(appContext);
+        Object[] devicesObjs = appInfoTool.getDeviceInfo();
         JSONObject deviceObj = new JSONObject();
         deviceObj.put("!model", devicesObjs[0] == null ? "" : (String) (devicesObjs[0]));
         deviceObj.put("!brand", devicesObjs[1] == null ? "" : (String) (devicesObjs[1]));
@@ -91,21 +93,21 @@ public class TongDaoDataTool {
         deviceObj.put("!width", resolution_width);
         deviceObj.put("!height", resolution_height);
 
-        String deviceData = TongDaoSavingTool.getDeviceInfoData(appContext);
+        String deviceData = savingTool.getDeviceInfoData(appContext);
         if (deviceData == null || !deviceData.equalsIgnoreCase(deviceObj.toString())) {
             propertiesObj.put("!device", deviceObj);
-            TongDaoSavingTool.setDeviceInfoData(appContext, deviceObj.toString());
+            savingTool.setDeviceInfoData(appContext, deviceObj.toString());
         }
 
         //fingerprint
         JSONObject fingerprintObj = new JSONObject();
-        TongDaoAppInfoTool.getImeiInfos(appContext, fingerprintObj);
-        String[] macInfos = TongDaoAppInfoTool.getMacInfos();
+        appInfoTool.getImeiInfos(appContext, fingerprintObj);
+        String[] macInfos = appInfoTool.getMacInfos();
         fingerprintObj.put("!mac", macInfos[0]);
         fingerprintObj.put("!mac_md5", macInfos[1]);
         fingerprintObj.put("!mac_sha1", macInfos[2]);
 
-        String[] udidInfos = TongDaoAppInfoTool.getUdidInfos(appContext);
+        String[] udidInfos = appInfoTool.getUdidInfos(appContext);
         fingerprintObj.put("!udid", udidInfos[0]);
         fingerprintObj.put("!udid_md5", udidInfos[1]);
         fingerprintObj.put("!udid_sha1", udidInfos[2]);
@@ -114,22 +116,22 @@ public class TongDaoDataTool {
             fingerprintObj.put("!gaid", gaid);
         }
 
-        String fingerPrintInfoData = TongDaoSavingTool.getFingerprintInfoData(appContext);
+        String fingerPrintInfoData = savingTool.getFingerprintInfoData(appContext);
         if (fingerPrintInfoData == null || !fingerPrintInfoData.equalsIgnoreCase(fingerprintObj.toString())) {
             propertiesObj.put("!fingerprint", fingerprintObj);
-            TongDaoSavingTool.setFingerprintInfoData(appContext, fingerprintObj.toString());
+            savingTool.setFingerprintInfoData(appContext, fingerprintObj.toString());
         }
 
-        boolean anonymousSet = TongDaoSavingTool.getAnonymousSet(appContext);
+        boolean anonymousSet = savingTool.getAnonymousSet(appContext);
         if (!anonymousSet) {
             propertiesObj.put("!anonymous", mAnonymous);
-            TongDaoSavingTool.isAnonymousSet(appContext);
-            TongDaoSavingTool.setAnonymous(appContext, mAnonymous);
+            savingTool.isAnonymousSet(appContext);
+            savingTool.setAnonymous(appContext, mAnonymous);
         } else {
-            boolean anonymousData = TongDaoSavingTool.getAnonymous(appContext);
+            boolean anonymousData = savingTool.getAnonymous(appContext);
             if (mAnonymous != anonymousData) {
                 propertiesObj.put("!anonymous", mAnonymous);
-                TongDaoSavingTool.setAnonymous(appContext, mAnonymous);
+                savingTool.setAnonymous(appContext, mAnonymous);
             }
         }
 
@@ -137,7 +139,7 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
-    public static JSONObject makeRatingProperties(int rating) throws JSONException {
+    public JSONObject makeRatingProperties(int rating) throws JSONException {
         JSONObject appObj = new JSONObject();
         appObj.put("!rating", rating);
         JSONObject propertiesObj = new JSONObject();
@@ -145,7 +147,7 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
-    public static JSONObject makeUserProperties(HashMap<String, Object> values) throws JSONException {
+    public JSONObject makeUserProperties(HashMap<String, Object> values) throws JSONException {
         if (values == null || values.isEmpty()) {
             return null;
         }
@@ -160,7 +162,7 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
-    public static JSONObject makeSourceProperties(TdSource lqSource) throws JSONException {
+    public JSONObject makeSourceProperties(TdSource lqSource) throws JSONException {
         if (lqSource == null) {
             return null;
         }
@@ -197,7 +199,7 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
-    public static JSONObject makeRegisterProperties(Date date) throws JSONException {
+    public JSONObject makeRegisterProperties(Date date) throws JSONException {
         String timeString;
         if (date == null) {
             timeString = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
@@ -211,7 +213,7 @@ public class TongDaoDataTool {
     }
 
 
-    public static JSONObject makeProductProperties(TdProduct product) throws JSONException {
+    public JSONObject makeProductProperties(TdProduct product) throws JSONException {
         if (product == null) {
             return null;
         }
@@ -247,7 +249,7 @@ public class TongDaoDataTool {
         return productObj;
     }
 
-    public static JSONArray makeOrderLinesArrayProperties(ArrayList<TdOrderLine> orderLines) throws JSONException {
+    public JSONArray makeOrderLinesArrayProperties(ArrayList<TdOrderLine> orderLines) throws JSONException {
         if (orderLines == null || orderLines.isEmpty()) {
             return null;
         }
@@ -275,7 +277,7 @@ public class TongDaoDataTool {
         return tempOrderLinesArray;
     }
 
-    public static JSONObject makeOrderLinesProperties(ArrayList<TdOrderLine> orderLines) throws JSONException {
+    public JSONObject makeOrderLinesProperties(ArrayList<TdOrderLine> orderLines) throws JSONException {
         JSONArray tempOrderLinesArray = makeOrderLinesArrayProperties(orderLines);
         JSONObject propertiesObj = null;
         if (tempOrderLinesArray != null) {
@@ -287,7 +289,7 @@ public class TongDaoDataTool {
     }
 
 
-    public static JSONObject makeOrderProperties(TdOrder order) throws JSONException {
+    public JSONObject makeOrderProperties(TdOrder order) throws JSONException {
         if (order == null) {
             return null;
         }
@@ -333,11 +335,11 @@ public class TongDaoDataTool {
         return propertiesObj;
     }
 
-    public static void setAnonymous(Boolean anonymous) {
+    public void setAnonymous(Boolean anonymous) {
         mAnonymous = anonymous;
     }
 
-    public static Boolean getAnonymous() {
+    public Boolean getAnonymous() {
         return mAnonymous;
     }
 }

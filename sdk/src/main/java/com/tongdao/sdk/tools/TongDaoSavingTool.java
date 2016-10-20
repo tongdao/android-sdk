@@ -19,15 +19,16 @@ public class TongDaoSavingTool {
     private static final String APP_SESSION_DATA = "APP_SESSION";
     private static final String NOTIFICATION_DATA = "NOTIFICATION_DATA";
 
-    public static void saveAppKeyAndUserId(Context appContext, String appKey, String userId) {
+    public void saveAppKeyAndUserId(Context appContext, String appKey, String userId) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(APP_KEY, appKey);
         editor.putString(USER_ID, userId);
         editor.commit();
     }
-    public static void saveUserInfoData(Context appContext, String appKey, String userId, String previousId, Boolean anonymous) {
-        TongDaoDataTool.setAnonymous(anonymous);
+    public void saveUserInfoData(Context appContext, String appKey, String userId, String previousId, Boolean anonymous) {
+        TongDaoDataTool dataTool = new TongDaoDataTool();
+        dataTool.setAnonymous(anonymous);
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(APP_KEY, appKey);
@@ -37,8 +38,9 @@ public class TongDaoSavingTool {
         editor.commit();
     }
 
-    public static void saveUserInfoData(Context appContext, String userId, String previousId, Boolean anonymous) {
-        TongDaoDataTool.setAnonymous(anonymous);
+    public void saveUserInfoData(Context appContext, String userId, String previousId, Boolean anonymous) {
+        TongDaoDataTool dataTool = new TongDaoDataTool();
+        dataTool.setAnonymous(anonymous);
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(USER_ID, userId);
@@ -47,46 +49,48 @@ public class TongDaoSavingTool {
         editor.commit();
     }
 
-    public static void isAnonymousSet(Context appContext){
+    public void isAnonymousSet(Context appContext){
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(ANONYMOUS_SET, true);
         editor.commit();
     }
 
-    public static boolean getAnonymousSet(Context appContext){
+    public boolean getAnonymousSet(Context appContext){
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getBoolean(ANONYMOUS_SET, false);
     }
 
-    public static Boolean getAnonymous(Context appContext){
+    public Boolean getAnonymous(Context appContext){
+        TongDaoDataTool dataTool = new TongDaoDataTool();
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         boolean anonymous = sp.getBoolean(ANONYMOUS, true);
-        TongDaoDataTool.setAnonymous(anonymous);
+        dataTool.setAnonymous(anonymous);
         return anonymous;
     }
 
-    public static void setAnonymous(Context appContext, boolean anonymous){
-        TongDaoDataTool.setAnonymous(anonymous);
+    public void setAnonymous(Context appContext, boolean anonymous){
+        TongDaoDataTool dataTool = new TongDaoDataTool();
+        dataTool.setAnonymous(anonymous);
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(ANONYMOUS, anonymous);
         editor.commit();
     }
 
-    public static void setPermissionDenied(Context appContext, String permission) {
+    public void setPermissionDenied(Context appContext, String permission) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(permission, true);
         editor.commit();
     }
 
-    public static boolean getPermissionDenied(Context appContext, String permission) {
+    public boolean getPermissionDenied(Context appContext, String permission) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getBoolean(permission, false);
     }
 
-    public static void setApplicationInfoData(Context appContext, String appData) {
+    public void setApplicationInfoData(Context appContext, String appData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(APPLICATION_DATA, appData);
@@ -94,12 +98,12 @@ public class TongDaoSavingTool {
 
     }
 
-    public static String getApplicationInfoData(Context appContext) {
+    public String getApplicationInfoData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(APPLICATION_DATA, null);
     }
 
-    public static void setConnectionInfoData(Context appContext, String connectionData) {
+    public void setConnectionInfoData(Context appContext, String connectionData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(CONNECTION_DATA, connectionData);
@@ -107,12 +111,12 @@ public class TongDaoSavingTool {
 
     }
 
-    public static String getConnectionInfoData(Context appContext) {
+    public String getConnectionInfoData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(CONNECTION_DATA, null);
     }
 
-    public static void setLocationInfoData(Context appContext, String locationData) {
+    public void setLocationInfoData(Context appContext, String locationData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(LOCATION_DATA, locationData);
@@ -120,12 +124,12 @@ public class TongDaoSavingTool {
 
     }
 
-    public static String getLocationInfoData(Context appContext) {
+    public String getLocationInfoData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(LOCATION_DATA, null);
     }
 
-    public static void setDeviceInfoData(Context appContext, String deviceData) {
+    public void setDeviceInfoData(Context appContext, String deviceData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(DEVICE_DATA, deviceData);
@@ -133,12 +137,12 @@ public class TongDaoSavingTool {
 
     }
 
-    public static String getDeviceInfoData(Context appContext) {
+    public String getDeviceInfoData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(DEVICE_DATA, null);
     }
 
-    public static void setFingerprintInfoData(Context appContext, String fingerPrintData) {
+    public void setFingerprintInfoData(Context appContext, String fingerPrintData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(FINGERPRINT_DATA, fingerPrintData);
@@ -146,31 +150,31 @@ public class TongDaoSavingTool {
 
     }
 
-    public static String getFingerprintInfoData(Context appContext) {
+    public String getFingerprintInfoData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(FINGERPRINT_DATA, null);
     }
 
-    public static void setAppSessionData(Context appContext, String sessionData) {
+    public void setAppSessionData(Context appContext, String sessionData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(APP_SESSION_DATA, sessionData);
         editor.commit();
     }
 
-    public static String getAppSessionData(Context appContext) {
+    public String getAppSessionData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getString(APP_SESSION_DATA, null);
     }
 
-    public static void setNotificationData(Context appContext, int notificationData) {
+    public void setNotificationData(Context appContext, int notificationData) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(NOTIFICATION_DATA, notificationData);
         editor.commit();
     }
 
-    public static int getNotificationData(Context appContext) {
+    public int getNotificationData(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         return sp.getInt(NOTIFICATION_DATA, -1);
     }

@@ -22,7 +22,7 @@ public class Event {
     private String timestamp;
 
     /**
-     * 
+     *
      * @return
      *     The action
      */
@@ -31,7 +31,7 @@ public class Event {
     }
 
     /**
-     * 
+     *
      * @param action
      *     The action
      */
@@ -40,7 +40,7 @@ public class Event {
     }
 
     /**
-     * 
+     *
      * @return
      *     The userId
      */
@@ -49,7 +49,7 @@ public class Event {
     }
 
     /**
-     * 
+     *
      * @param userId
      *     The user_id
      */
@@ -58,7 +58,7 @@ public class Event {
     }
 
     /**
-     * 
+     *
      * @return
      *     The properties
      */
@@ -67,7 +67,7 @@ public class Event {
     }
 
     /**
-     * 
+     *
      * @param properties
      *     The properties
      */

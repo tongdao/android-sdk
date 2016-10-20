@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.tongdao.sdk.tools.Log;
+import com.tongdao.sdk.tools.TongDaoApiTool;
 import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
@@ -16,8 +18,6 @@ import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
-import com.tongdao.sdk.tools.Log;
-import com.tongdao.sdk.tools.TongDaoApiTool;
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
 import com.tongdao.sdk.tools.TongDaoClockTool;
@@ -37,7 +37,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TongDaoBridge {
+    //constants
+    private static final String TD_MESSAGE_IMG_URL = "image_url";
+    private static final String TD_MESSAGE = "message";
+    private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
+    private static final String TD_MESSAGE_LAYOUT = "build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/res/layout";
+    private static final String TD_MESSAGE_ACTION = "action";
+    private static final String TD_MESSAGE_ACTION_TYPE = "type";
+    private static final String TD_MESSAGE_ACTION_VALUE = "value";
+    private static final String TD_MESSAGE_IS_PORTRAIT = "is_portrait";
+    private static final String TD_MESSAGE_BUTTONS = "buttons";
+    private static final String TD_MESSAGE_CLOSE_BUTTON = "close_btn";
+    private static final String TD_MESSAGE_CID = "cid";
+    private static final String TD_MESSAGE_MID = "mid";
+    private final String LOCK = "lock";
+
+    //unique instance of bridge
     private static TongDaoBridge uniqueInstance = null;
+
+    //instance variables
     private String APP_KEY;
     private String USER_ID;
     private String PREVIOUS_ID;
@@ -49,22 +67,14 @@ public class TongDaoBridge {
     private boolean canRun = true;
     private long startTime = 0;
     private long startTimeForCloseApp = 0;
-    private static final String TD_MESSAGE_IMG_URL = "image_url";
-    private static final String TD_MESSAGE = "message";
-    private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
-    private static final String TD_MESSAGE_LAYOUT = "layout";
-    private static final String TD_MESSAGE_ACTION = "action";
-    private static final String TD_MESSAGE_ACTION_TYPE = "type";
-    private static final String TD_MESSAGE_ACTION_VALUE = "value";
-    private static final String TD_MESSAGE_IS_PORTRAIT = "is_portrait";
-    private static final String TD_MESSAGE_BUTTONS = "buttons";
-    private static final String TD_MESSAGE_CLOSE_BUTTON = "close_btn";
-    private static final String TD_MESSAGE_CID = "cid";
-    private static final String TD_MESSAGE_MID = "mid";
     private String pageNameStart;
     private String pageNameEnd;
-    private final String LOCK = "lock";
+
+    //dependent classes
     private TongDaoApiTool apiTool;
+    private TongDaoUtils utils;
+    private TongDaoUrlTool urlTool;
+    private TongDaoAppInfoTool appInfoTool;
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -80,6 +90,9 @@ public class TongDaoBridge {
         this.USER_ID = userId;
         this.DEVICE_ID = deviceId;
         this.apiTool = new TongDaoApiTool();
+        this.utils = new TongDaoUtils(appContext);
+        this.urlTool = new TongDaoUrlTool();
+        this.appInfoTool = new TongDaoAppInfoTool();
         TongDaoSavingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
@@ -91,6 +104,9 @@ public class TongDaoBridge {
         this.PREVIOUS_ID = previousId;
         this.ANONYMOUS = anonymous;
         this.apiTool = new TongDaoApiTool();
+        this.utils = new TongDaoUtils(appContext);
+        this.urlTool = new TongDaoUrlTool();
+        this.appInfoTool = new TongDaoAppInfoTool();
         TongDaoSavingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
@@ -113,7 +129,7 @@ public class TongDaoBridge {
             @Override
             public void run() {
                 if (appContext != null) {
-                    String gaid = TongDaoAppInfoTool.getGaid(appContext);
+                    String gaid = appInfoTool.getGaid(appContext);
                     if (appContext != null) {
                         try {
                             JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
@@ -134,7 +150,7 @@ public class TongDaoBridge {
     public void trackIdentify() {
         if (appContext != null) {
             try {
-                String gaid = TongDaoAppInfoTool.getGaid(appContext);
+                String gaid = appInfoTool.getGaid(appContext);
                 JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
                 if (properties != null && properties.keys().hasNext() && USER_ID != null) {
                     TdEventBean tempLqEventBean = new TdEventBean(ACTION_TYPE.identify, USER_ID, null, properties);
@@ -169,7 +185,7 @@ public class TongDaoBridge {
                                     tempLqEventBean = new TdEventBean(ACTION_TYPE.merge, USER_ID, PREVIOUS_ID, null, null);
                                     trackEvents(tempLqEventBean);
                                 }
-                                String gaid = TongDaoAppInfoTool.getGaid(appContext);
+                                String gaid = appInfoTool.getGaid(appContext);
                                 JSONObject properties = TongDaoDataTool.makeInfoProperties(appContext, gaid);
                                 tempLqEventBean = new TdEventBean(actionType, USER_ID, PREVIOUS_ID, properties);
 
@@ -355,7 +371,7 @@ public class TongDaoBridge {
     }
 
     public TdEventBean onNotificationStatus() {
-        int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || TongDaoUtils.isNotificationEnabled()) ? 1 : 0;
+        int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || utils.isNotificationEnabled()) ? 1 : 0;
         this.startTime = TongDaoClockTool.currentTimeMillis();
 
         if (this.startTime == 0 ||
@@ -407,7 +423,7 @@ public class TongDaoBridge {
                     tempLqEventBeanArray.add(tdEventBean);
                 }
                 try {
-                    apiTool.postRetrofit(this.APP_KEY, this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
+                    apiTool.postRetrofit(this.APP_KEY, this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 
                         @Override
                         public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -451,7 +467,7 @@ public class TongDaoBridge {
             public void run() {
                 try {
                     synchronized (LOCK) {
-                        apiTool.postRetrofit(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, TongDaoUrlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
+                        apiTool.postRetrofit(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, TongDaoSavingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
 
                             @Override
                             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
@@ -534,7 +550,7 @@ public class TongDaoBridge {
             return;
         }
 
-        String url = TongDaoUrlTool.getLandingPageUrl(pageId, USER_ID);
+        String url = urlTool.getLandingPageUrl(pageId, USER_ID);
         apiTool.getLandingPageRetrofit(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
 
             @Override
@@ -582,7 +598,7 @@ public class TongDaoBridge {
             return;
         }
 
-        String url = TongDaoUrlTool.getInAppMessageUrl(USER_ID);
+        String url = urlTool.getInAppMessageUrl(USER_ID);
         apiTool.getMessagesRetrofit(APP_KEY, DEVICE_ID, false, url, null, new TdHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {

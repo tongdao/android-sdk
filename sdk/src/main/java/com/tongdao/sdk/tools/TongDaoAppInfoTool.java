@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 public class TongDaoAppInfoTool {
+    //constants
     private static final String CONNECTION_TYPE_UNKNOWN = "UNKNOWN";
     private static final String CONNECTION_TYPE_WIFI = "WIFI";
     private static final String CONNECTION_TYPE_WIMAX = "WIMAX";
@@ -55,9 +56,16 @@ public class TongDaoAppInfoTool {
     private static final String FINE = "fine";
     private static final String COARSE = "coarse";
 
+    //TODO: this might not be needed
     public static final Semaphore LOCK = new Semaphore(0);
 
-    public static Object[] getDeviceInfo(@NonNull Context c) {
+    //instance variables
+
+
+    public TongDaoAppInfoTool() {
+    }
+
+    public Object[] getDeviceInfo() {
         String model = Build.MODEL;
         String brand = Build.MANUFACTURER;
         String product_id = Build.PRODUCT;
@@ -72,7 +80,7 @@ public class TongDaoAppInfoTool {
                 OS_NAME, os_version, language};
     }
 
-    public static Object[] getVersionCodeOsName(@NonNull Context appContext) {
+    public Object[] getVersionCodeOsName(@NonNull Context appContext) {
         try {
             PackageInfo pi = appContext.getPackageManager().getPackageInfo(appContext.getPackageName(), 0);
             int versionCode = pi.versionCode;
@@ -87,7 +95,7 @@ public class TongDaoAppInfoTool {
         return null;
     }
 
-    public static Object[] getNetworkInfo(@NonNull Context c) {
+    public Object[] getNetworkInfo(@NonNull Context c) {
         PackageManager pm = c.getPackageManager();
         int accessNetworkState = pm.checkPermission("android.permission.ACCESS_NETWORK_STATE", c.getPackageName());
         String connectionType = UNKNOWN;
@@ -114,7 +122,7 @@ public class TongDaoAppInfoTool {
                 realCarrierCode};
     }
 
-    private static String getConnectionType(@NonNull Context context) {
+    private String getConnectionType(@NonNull Context context) {
         int networkStatePermission = context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
         if (networkStatePermission == PackageManager.PERMISSION_GRANTED) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -155,7 +163,7 @@ public class TongDaoAppInfoTool {
         }
     }
 
-    private static Object resolveCarrierCode(String carrierCodeStr) {
+    private Object resolveCarrierCode(String carrierCodeStr) {
         String[] carrierCodes = carrierCodeStr.split(",");
         if (carrierCodes.length == 1) {
             String code = carrierCodes[0];
@@ -171,7 +179,7 @@ public class TongDaoAppInfoTool {
         return ary.toString();
     }
 
-    public static Object[] getCurrentLocation(@NonNull final Context context) {
+    public Object[] getCurrentLocation(@NonNull final Context context) {
         double latitude = 0;
         double longitude = 0;
         String source = UNKNOWN;
@@ -205,7 +213,7 @@ public class TongDaoAppInfoTool {
     }
 
 
-    private static double[] getFormattedLocationString(@NonNull Context c, int accessCoarseLocation, int accessFineLocation) {
+    private double[] getFormattedLocationString(@NonNull Context c, int accessCoarseLocation, int accessFineLocation) {
 
         double[] ary = new double[2];
         LocationManager localLocationManager = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
@@ -309,75 +317,7 @@ public class TongDaoAppInfoTool {
         }
     }
 
-//	public static boolean isAppExist(Context context, String packageName) {
-//		PackageManager packageManager = context.getPackageManager();
-//		List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-//		if (pinfo != null) {
-//			for (PackageInfo eachPackageInfo : pinfo) {
-//				if (eachPackageInfo.packageName != null&& eachPackageInfo.packageName.equals(packageName)) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-
-//	public static void startApkByPackageName(Context context, String packageName) {
-//		Intent appIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-//		if (appIntent != null) {
-//			appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//			context.startActivity(appIntent);
-//		}
-//	}
-
-//	private static boolean isIntentCallable(Context context, Intent intent) {
-//		return context.getPackageManager().queryIntentActivities(intent,PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
-//	}
-
-//	public static boolean isDeeplinkOk(Context context, String deepLink) {
-//		Intent tempIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink));
-//		return isIntentCallable(context, tempIntent);
-//	}
-
-//	public static void startLink(Context context, String link) {
-//		Intent tempIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-//		tempIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		context.startActivity(tempIntent);
-//	}
-
-//	public static boolean isForeground(Context context) {
-//		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-//		List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-//		for (RunningAppProcessInfo appProcess : appProcesses) {
-//			if (appProcess.processName.equals(context.getPackageName())) {
-//				if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-//					return true;
-//				} else {
-//					return false;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-
-//	public static boolean isServiceRunning(Context mContext) {
-//		String packageName = mContext.getPackageName();
-//		boolean isRunning = false;
-//		ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-//		List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(600);
-//		if (!(serviceList.size() > 0)) {
-//			return isRunning;
-//		}
-//
-//		for (int i = 0; i < serviceList.size(); i++) {
-//			if (serviceList.get(i).service.getPackageName().equals(packageName)) {
-//				return true;
-//			}
-//		}
-//		return isRunning;
-//	}
-
-    public static void getImeiInfos(@NonNull final Context appContext, final JSONObject jsonObject) {
+    public void getImeiInfos(@NonNull final Context appContext, final JSONObject jsonObject) {
         PackageManager pm = appContext.getPackageManager();
         String packageName = appContext.getPackageName();
 
@@ -388,7 +328,7 @@ public class TongDaoAppInfoTool {
         }
     }
 
-    private static void addObject(@NonNull final Context appContext, final JSONObject jsonObject) {
+    private void addObject(@NonNull final Context appContext, final JSONObject jsonObject) {
         try {
             TelephonyManager telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
             String imei = telephonyManager.getDeviceId();
@@ -404,7 +344,7 @@ public class TongDaoAppInfoTool {
         }
     }
 
-    public static String[] getMacInfos() {
+    public String[] getMacInfos() {
         String mac = getMACAddress("wlan0"); //using wifi available
         if (mac == null) {
             mac = getMACAddress("eth0"); //using ethernet connection availale
@@ -415,14 +355,14 @@ public class TongDaoAppInfoTool {
         return new String[]{mac, macMD5, macSha1};
     }
 
-    public static String[] getUdidInfos(Context appContext) {
+    public String[] getUdidInfos(Context appContext) {
         String androidId = Secure.getString(appContext.getContentResolver(), Secure.ANDROID_ID);
         String androidMD5 = getMD5(androidId);
         String androidSha1 = getSHA1(androidId);
         return new String[]{androidId, androidMD5, androidSha1};
     }
 
-    private static String getMD5(String data) {
+    private String getMD5(String data) {
         if (data == null) {
             return null;
         }
@@ -446,7 +386,7 @@ public class TongDaoAppInfoTool {
         return hex.toString();
     }
 
-    private static String getSHA1(String val) {
+    private String getSHA1(String val) {
         if (val == null) {
             return null;
         }
@@ -470,7 +410,7 @@ public class TongDaoAppInfoTool {
     }
 
     @SuppressLint("NewApi")
-    private static String getMACAddress(String interfaceName) {
+    private String getMACAddress(String interfaceName) {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
@@ -493,7 +433,7 @@ public class TongDaoAppInfoTool {
     }
 
 
-    public static String getGaid(Context appContext) {
+    public String getGaid(Context appContext) {
         try {
             Class<?> adIdClientClass = Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient");
             Method getAdvertisingIdInfoMethod = adIdClientClass.getDeclaredMethod("getAdvertisingIdInfo", Context.class);
