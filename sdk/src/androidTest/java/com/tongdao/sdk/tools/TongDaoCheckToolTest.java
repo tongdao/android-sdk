@@ -1,12 +1,9 @@
 package com.tongdao.sdk.tools;
 
-import android.support.test.filters.FlakyTest;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.tongdao.sdk.enums.TdAppStore;
-
-import junit.extensions.RepeatedTest;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;

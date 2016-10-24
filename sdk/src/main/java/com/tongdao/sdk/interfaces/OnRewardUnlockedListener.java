@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface OnRewardUnlockedListener {
 
-    public void onSuccess(ArrayList<TdRewardBean> rewards);
+    void onSuccess(ArrayList<TdRewardBean> rewards);
 
 }

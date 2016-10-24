@@ -7,6 +7,6 @@ import java.util.ArrayList;
 
 public interface OnDownloadInAppMessageListener {
 
-    public void onSuccess(ArrayList<TdMessageBean> tdMessageBeanList);
+    void onSuccess(ArrayList<TdMessageBean> tdMessageBeanList);
 
 }

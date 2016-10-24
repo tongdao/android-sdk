@@ -29,8 +29,9 @@ public class UmengPushMessageReceiver extends BroadcastReceiver {
                 // extract the extra-data in the Notification
                 String msg = intent.getStringExtra("NotificationMessage");
                 Log.i(TAG, "NotificationMessage - " + msg);
-                TongDao.trackOpenPushMessage(msg);
-                TongDao.openPage(context, msg);
+                TongDaoShowApplication application = ((TongDaoShowApplication)context.getApplicationContext());
+                application.getTongDao().trackOpenPushMessage(msg);
+                application.getTongDao().openPage(context, msg);
             }
         }
     }

@@ -6,16 +6,11 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Locale;
-import java.util.Objects;
 
 import static org.junit.Assert.*;
 

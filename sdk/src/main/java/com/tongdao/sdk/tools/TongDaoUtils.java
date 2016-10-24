@@ -1,7 +1,6 @@
 package com.tongdao.sdk.tools;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.support.v4.app.NotificationManagerCompat;
 
 /**

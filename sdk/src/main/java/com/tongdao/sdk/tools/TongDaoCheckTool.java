@@ -16,10 +16,7 @@ import java.util.TimeZone;
 @SuppressLint("SimpleDateFormat")
 public class TongDaoCheckTool {
     public static boolean isEmpty(String text) {
-        if (text != null && !text.trim().equals("") && text.length() > 1 && !text.equals("null")) {
-            return false;
-        }
-        return true;
+        return !(text != null && !text.trim().equals("") && text.length() > 1 && !text.equals("null"));
     }
 
     public static boolean isValidKey(String paramString) {
@@ -39,11 +36,8 @@ public class TongDaoCheckTool {
             return false;
         }
 
-        if (!isValidKey(mAppKey)) {
-            return false;
-        }
+        return isValidKey(mAppKey);
 
-        return true;
     }
 
     public static String getTimeStamp(long timeStamp) {

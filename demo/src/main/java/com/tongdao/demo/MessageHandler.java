@@ -1,22 +1,14 @@
 package com.tongdao.demo;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.umeng.message.UHandler;
-import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.entity.UMessage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Set;
 
 /**
  * Created by kinjal.patel on 23/08/16.

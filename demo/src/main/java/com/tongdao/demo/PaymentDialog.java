@@ -1,5 +1,6 @@
 package com.tongdao.demo;
 
+import android.app.Application;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.TongDaoOO;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -27,9 +28,14 @@ public class PaymentDialog extends DialogFragment {
 
     Button btn_payment;
     EditText etx_quantity, etx_price;
+    TongDaoOO tongDao;
 
     public PaymentDialog() {
 
+    }
+
+    public void setTongDao(TongDaoOO tongDao){
+        this.tongDao = tongDao;
     }
 
     @Nullable
@@ -63,7 +69,7 @@ public class PaymentDialog extends DialogFragment {
         btn_payment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TongDao.trackPlaceOrder("product 2", Float.parseFloat(etx_price.getText().toString()), Currency.getInstance(Locale.CHINA),
+                tongDao.trackPlaceOrder("product 2", Float.parseFloat(etx_price.getText().toString()), Currency.getInstance(Locale.CHINA),
                         Integer.parseInt(etx_quantity.getText().toString()));
                 dismiss();
             }
@@ -94,8 +100,10 @@ public class PaymentDialog extends DialogFragment {
 
     }
 
-    public static PaymentDialog newInstance() {
+    public static PaymentDialog newInstance(Application applicationContext) {
+        TongDaoOO tongDao = ((TongDaoShowApplication)applicationContext).getTongDao();
         PaymentDialog frag = new PaymentDialog();
+        frag.setTongDao(tongDao);
         return frag;
     }
 

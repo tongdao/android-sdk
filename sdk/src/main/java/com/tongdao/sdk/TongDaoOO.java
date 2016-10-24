@@ -7,20 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.tongdao.sdk.activities.TdDialogActivity;
-import com.tongdao.sdk.activities.TdMessageDialogActivity;
+import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
-import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
-import com.tongdao.sdk.session.TongDaoActivityCallback;
-import com.tongdao.sdk.tools.Log;
-import com.tongdao.sdk.tools.TongDaoDataTool;
-import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
-import com.tongdao.sdk.tools.TongDaoJsonTool;
-import com.tongdao.sdk.tools.TongDaoSavingTool;
-import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
@@ -28,9 +20,17 @@ import com.tongdao.sdk.beans.TdProduct;
 import com.tongdao.sdk.beans.TdSource;
 import com.tongdao.sdk.enums.TdGender;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
+import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.sdk.session.TongDaoActivityCallback;
+import com.tongdao.sdk.tools.Log;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
+import com.tongdao.sdk.tools.TongDaoDataTool;
+import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
+import com.tongdao.sdk.tools.TongDaoJsonTool;
+import com.tongdao.sdk.tools.TongDaoSavingTool;
+import com.tongdao.sdk.ui.InAppDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +48,7 @@ import java.util.List;
  * Deeplink formatting:
  * scheme://any_deeplink?0Qpage=page_id
  */
-public class TongDao {
+public class TongDaoOO {
     //constants
     private static final String PAGE_ID = "pageId";
     private static final String MESSAGE = "td_message";
@@ -59,13 +59,24 @@ public class TongDao {
     private static final String VALUE_TAG = "tongrd_value";
 
     //SDK components, dependencies
-    private static OnRewardUnlockedListener rewardUnlockedListener;
-    private static TongDaoBridge tongDaoBridge;
-    private static TongDaoDataTool dataTool;
-    private static TongDaoSavingTool savingTool;
+    private OnRewardUnlockedListener rewardUnlockedListener;
+    private TongDaoBridge tongDaoBridge;
+    private TongDaoDataTool dataTool;
+    private TongDaoSavingTool savingTool;
+    private TongDaoActivityCallback activityCallback;
 
 
+    public static TongDaoOO getInstance(Application appContext, String appKey){
+        TongDaoOO tongDaoOO = new TongDaoOO();
+        tongDaoOO.init(appContext,appKey);
+        return tongDaoOO;
+    }
 
+    public static TongDaoOO getInstance(Application appContext, String appKey, String userId){
+        TongDaoOO tongDaoOO = new TongDaoOO();
+        tongDaoOO.init(appContext,appKey,userId);
+        return tongDaoOO;
+    }
 
     /**
      * 初始化同道服务,请在onCreate方法中调用
@@ -74,10 +85,12 @@ public class TongDao {
      * @param appKey     开发者从同道平台获得的AppKey
      * @return boolean 同道服务的初始化结果
      */
-    public static boolean init(Context appContext, String appKey) {
+    private boolean init(Application appContext, String appKey) {
         String deviceId = generateDeviceId(appContext);
         dataTool = new TongDaoDataTool();
         savingTool = new TongDaoSavingTool();
+        activityCallback = new TongDaoActivityCallback(appContext,this);
+        registerApplication(appContext);
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
             tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
             tongDaoBridge.init();
@@ -96,10 +109,12 @@ public class TongDao {
      *
      * @return boolean 同道服务的初始化结果
      */
-    public static boolean init(Context appContext, String appKey, String userId) {
+    private boolean init(Application appContext, String appKey, String userId) {
         String deviceId = generateDeviceId(appContext);
         dataTool = new TongDaoDataTool();
         savingTool = new TongDaoSavingTool();
+        activityCallback = new TongDaoActivityCallback(appContext,this);
+        registerApplication(appContext);
         if(null == userId){
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
                 tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
@@ -129,7 +144,7 @@ public class TongDao {
      * @param userId 用户自定义的userid
      * @return void 没有返回值
      */
-    public static void setUserId(Context appContext, String userId){
+    public void setUserId(Context appContext, String userId){
         if(null == userId){
             if(!savingTool.getAnonymous(appContext)){
                 savingTool.saveUserInfoData(appContext, generateDeviceId(appContext), generateDeviceId(appContext), true);
@@ -152,7 +167,7 @@ public class TongDao {
      * @param appContext 应用程序的上下文
      * @return String 生成userId
      */
-    public static String generateUserId(Context appContext) {
+    public String generateUserId(Context appContext) {
         return generateDeviceId(appContext);
     }
 
@@ -161,14 +176,14 @@ public class TongDao {
      *
      * @param onRewardUnlockedListener 奖品的回调接口
      */
-    public static void registerOnRewardUnlockedListener(OnRewardUnlockedListener onRewardUnlockedListener) {
+    public void registerOnRewardUnlockedListener(OnRewardUnlockedListener onRewardUnlockedListener) {
         rewardUnlockedListener = onRewardUnlockedListener;
     }
 
     /**
      * 同道内部调用,不建议使用
      */
-    public static OnRewardUnlockedListener getRewardUnlockedListener() {
+    public OnRewardUnlockedListener getRewardUnlockedListener() {
         return rewardUnlockedListener;
     }
 
@@ -178,7 +193,7 @@ public class TongDao {
      * @param eventName 用户自定义事件名称(不能以!打头)
      * @param values    跟踪事件附带的键值对(值支持字符串和数字)
      */
-    public static void track(String eventName, HashMap<String, Object> values) {
+    public void track(String eventName, HashMap<String, Object> values) {
         if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
             Log.e("TongRd SDK", "event starting with ! are reserved");
         } else {
@@ -195,7 +210,7 @@ public class TongDao {
      *
      * @param activity 当前应用程序的Activity
      */
-    public static void onSessionStart(Activity activity) {
+    public void onSessionStart(Activity activity) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && activity != null) {
             tongDaoBridge.onSessionStart(activity);
         }
@@ -206,7 +221,7 @@ public class TongDao {
      *
      * @param pageName 用户定义的页面名称
      */
-    public static void onSessionStart(String pageName) {
+    public void onSessionStart(String pageName) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
             tongDaoBridge.onSessionStart(pageName);
         }
@@ -217,7 +232,7 @@ public class TongDao {
      *
      * @param activity 当前应用程序的Activity
      */
-    public static void onSessionEnd(Activity activity) {
+    public void onSessionEnd(Activity activity) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && activity != null) {
             tongDaoBridge.onSessionEnd(activity);
         }
@@ -228,7 +243,7 @@ public class TongDao {
      *
      * @param pageName 用户定义的页面名称
      */
-    public static void onSessionEnd(String pageName) {
+    public void onSessionEnd(String pageName) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
             tongDaoBridge.onSessionEnd(pageName);
         }
@@ -239,7 +254,7 @@ public class TongDao {
      *
      * @param values 用户的属性键值对(值支持字符串和数字)
      */
-    public static void identify(HashMap<String, Object> values) {
+    public void identify(HashMap<String, Object> values) {
         if (values != null && !values.isEmpty()) {
             try {
                 sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
@@ -255,7 +270,7 @@ public class TongDao {
      * @param name  属性名
      * @param value 属性值(值支持字符串和数字)
      */
-    public static void identify(String name, Object value) {
+    public void identify(String name, Object value) {
         if (name != null && !name.trim().equals("") && value != null) {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put(name, value);
@@ -275,7 +290,7 @@ public class TongDao {
      *                   JPUSH:JPushInterface.EXTRA_REGISTRATION_ID,
      *                   GETUI:bundle.getString("clientid"))
      */
-    public static void identifyPushToken(String push_token) {
+    public void identifyPushToken(String push_token) {
         if (push_token == null || push_token.trim().equals("")) {
             return;
         } else {
@@ -294,7 +309,7 @@ public class TongDao {
      *
      * @param eventName 用户自定义事件名称(不能以!打头)
      */
-    public static void track(String eventName) {
+    public void track(String eventName) {
         if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
             Log.e("TongRd SDK", "event starting with ! are reserved");
         } else {
@@ -308,7 +323,7 @@ public class TongDao {
      * @param firstName 名
      * @param lastName  姓
      */
-    public static void identifyFullName(String firstName, String lastName) {
+    public void identifyFullName(String firstName, String lastName) {
         if (firstName == null && lastName == null) {
             return;
         } else {
@@ -325,7 +340,7 @@ public class TongDao {
             try {
                 sendEvent(ACTION_TYPE.identify, null, dataTool.makeUserProperties(values));
             } catch (JSONException e) {
-                com.tongdao.sdk.tools.Log.e("identifyFullName", "JSONException");
+                Log.e("identifyFullName", "JSONException");
             }
         }
     }
@@ -335,7 +350,7 @@ public class TongDao {
      *
      * @param fullName 用户全名
      */
-    public static void identifyFullName(String fullName) {
+    public void identifyFullName(String fullName) {
         if (fullName == null || fullName.trim().equals("")) {
             return;
         } else {
@@ -354,7 +369,7 @@ public class TongDao {
      *
      * @param userName 用户应用中的名字
      */
-    public static void identifyUserName(String userName) {
+    public void identifyUserName(String userName) {
         if (userName == null || userName.trim().equals("")) {
             return;
         } else {
@@ -373,7 +388,7 @@ public class TongDao {
      *
      * @param email 用户邮件地址
      */
-    public static void identifyEmail(String email) {
+    public void identifyEmail(String email) {
         if (email == null || email.trim().equals("")) {
             return;
         } else {
@@ -392,7 +407,7 @@ public class TongDao {
      *
      * @param phoneNumber 用户电话号码
      */
-    public static void identifyPhone(String phoneNumber) {
+    public void identifyPhone(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.trim().equals("")) {
             return;
         } else {
@@ -411,7 +426,7 @@ public class TongDao {
      *
      * @param gender 用户性别(枚举类型)
      */
-    public static void identifyGender(TdGender gender) {
+    public void identifyGender(TdGender gender) {
         if (gender == null) {
             return;
         } else {
@@ -430,7 +445,7 @@ public class TongDao {
      *
      * @param age 用户年龄
      */
-    public static void identifyAge(int age) {
+    public void identifyAge(int age) {
         if (age > 0) {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!age", age);
@@ -447,7 +462,7 @@ public class TongDao {
      *
      * @param url 用户头像链接地址
      */
-    public static void identifyAvatar(String url) {
+    public void identifyAvatar(String url) {
         if (url == null || url.trim().equals("")) {
             return;
         } else {
@@ -466,7 +481,7 @@ public class TongDao {
      *
      * @param address 用户联系地址
      */
-    public static void identifyAddress(String address) {
+    public void identifyAddress(String address) {
         if (address == null || address.trim().equals("")) {
             return;
         } else {
@@ -485,7 +500,7 @@ public class TongDao {
      *
      * @param date 用户出生日期
      */
-    public static void identifyBirthday(Date date) {
+    public void identifyBirthday(Date date) {
         if (date != null) {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!birthday", TongDaoCheckTool.getTimeStamp(date));
@@ -502,7 +517,7 @@ public class TongDao {
      *
      * @param source 用户应用源信息对象
      */
-    public static void identifySource(TdSource source) {
+    public void identifySource(TdSource source) {
         try {
             JSONObject dataObj = dataTool.makeSourceProperties(source);
             if (dataObj != null) {
@@ -516,7 +531,7 @@ public class TongDao {
     /**
      * 跟踪应用注册日期(使用当前系统时间,无日期参数)
      */
-    public static void trackRegistration() {
+    public void trackRegistration() {
         trackRegistration(null);
     }
 
@@ -525,7 +540,7 @@ public class TongDao {
      *
      * @param date 用户设置的日期对象
      */
-    public static void trackRegistration(Date date) {
+    public void trackRegistration(Date date) {
         try {
             sendEvent(ACTION_TYPE.track, "!registration", dataTool.makeRegisterProperties(date));
         } catch (JSONException e) {
@@ -538,7 +553,7 @@ public class TongDao {
      *
      * @param rating 应用评分
      */
-    public static void identifyRating(int rating) {
+    public void identifyRating(int rating) {
         try {
             sendEvent(ACTION_TYPE.identify, null, dataTool.makeRatingProperties(rating));
         } catch (JSONException e) {
@@ -551,7 +566,7 @@ public class TongDao {
      *
      * @param category 商品类别
      */
-    public static void trackViewProductCategory(String category) {
+    public void trackViewProductCategory(String category) {
         if (category != null && !category.trim().equals("")) {
             HashMap<String, Object> values = new HashMap<String, Object>();
             values.put("!category", category);
@@ -568,7 +583,7 @@ public class TongDao {
      *
      * @param product 商品信息
      */
-    public static void trackViewProduct(TdProduct product) {
+    public void trackViewProduct(TdProduct product) {
         try {
             JSONObject dataObj = dataTool.makeProductProperties(product);
             if (dataObj != null) {
@@ -584,7 +599,7 @@ public class TongDao {
      *
      * @param orderLines 订单列表
      */
-    public static void trackAddCart(ArrayList<TdOrderLine> orderLines) {
+    public void trackAddCart(ArrayList<TdOrderLine> orderLines) {
         try {
             JSONObject dataObj = dataTool.makeOrderLinesProperties(orderLines);
             if (dataObj != null) {
@@ -600,7 +615,7 @@ public class TongDao {
      *
      * @param orderLine 单个订单
      */
-    public static void trackAddCart(TdOrderLine orderLine) {
+    public void trackAddCart(TdOrderLine orderLine) {
         if (orderLine != null) {
             ArrayList<TdOrderLine> orderLines = new ArrayList<TdOrderLine>();
             orderLines.add(orderLine);
@@ -613,7 +628,7 @@ public class TongDao {
      *
      * @param orderLines 订单列表
      */
-    public static void trackRemoveCart(ArrayList<TdOrderLine> orderLines) {
+    public void trackRemoveCart(ArrayList<TdOrderLine> orderLines) {
         try {
             JSONObject dataObj = dataTool.makeOrderLinesProperties(orderLines);
             if (dataObj != null) {
@@ -629,7 +644,7 @@ public class TongDao {
      *
      * @param orderLine 单个订单
      */
-    public static void trackRemoveCart(TdOrderLine orderLine) {
+    public void trackRemoveCart(TdOrderLine orderLine) {
         if (orderLine != null) {
             ArrayList<TdOrderLine> orderLines = new ArrayList<TdOrderLine>();
             orderLines.add(orderLine);
@@ -642,7 +657,7 @@ public class TongDao {
      *
      * @param order 交易信息
      */
-    public static void trackPlaceOrder(TdOrder order) {
+    public void trackPlaceOrder(TdOrder order) {
         try {
             JSONObject dataObj = dataTool.makeOrderProperties(order);
             if (dataObj != null) {
@@ -661,7 +676,7 @@ public class TongDao {
      * @param currency 产品货币
      * @param quantity 产品个数
      */
-    public static void trackPlaceOrder(String name, float price, Currency currency, int quantity) {
+    public void trackPlaceOrder(String name, float price, Currency currency, int quantity) {
         if (name == null || name.trim().equals("") || currency == null || price<=0 || quantity <= 0) {
             return;
         }
@@ -697,31 +712,17 @@ public class TongDao {
      * @param price    产品单价
      * @param currency 产品货币
      */
-    public static void trackPlaceOrder(String name, float price, Currency currency) {
+    public void trackPlaceOrder(String name, float price, Currency currency) {
         trackPlaceOrder(name, price, currency, 1);
     }
 
-    /**
-     * 显示广告(Intent含有附加信息：广告页面id,可直接显示广告信息)
-     * 该方法建议在设置了Deeplink的Activity的onCreate方法下调用
-     *
-     * @param activity 设置了Deeplink的Activity
-     */
-    public static void displayAdvertisement(Activity activity) {
-        String pageId = getPageId(activity.getIntent());
-        if (pageId != null) {
-            Intent startIntent = new Intent(activity, TdDialogActivity.class);
-            startIntent.putExtra(PAGE_ID, pageId);
-            activity.startActivity(startIntent);
-        }
-    }
 
     /**
      * 显示应用最新的In App Message页面信息
      *
      * @param activity 需要显示In App Message页面信息的Activity
      */
-    public static void displayInAppMessage(final Activity activity) {
+    public void displayInAppMessage(final AppCompatActivity activity) {
         downloadInAppMessages(new OnDownloadInAppMessageListener() {
             @Override
             public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
@@ -729,9 +730,8 @@ public class TongDao {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Intent startIntent = new Intent(activity, TdMessageDialogActivity.class);
-                            startIntent.putExtra(MESSAGE, tdMessageBeanList.get(0));
-                            activity.startActivity(startIntent);
+                            InAppDialog inAppDialog = InAppDialog.newInstance(tdMessageBeanList.get(0));
+                            inAppDialog.show(activity.getSupportFragmentManager(),"frg_inapp");
                         }
                     });
                 }
@@ -756,7 +756,7 @@ public class TongDao {
      *
      * @param extraData 推送消息的附加信息
      */
-    public static void trackOpenMessage(String extraData) {
+    public void trackOpenMessage(String extraData) {
         if (extraData == null) {
             return;
         }
@@ -779,7 +779,7 @@ public class TongDao {
      *
      * @param extraData 推送消息的附加信息
      */
-    public static void trackOpenPushMessage(String extraData) {
+    public void trackOpenPushMessage(String extraData) {
         trackOpenMessage(extraData);
     }
 
@@ -788,7 +788,7 @@ public class TongDao {
      *
      * @param extraData 推送消息的附加信息
      */
-    public static void openPage(Context appcontext, String extraData) {
+    public void openPage(Context appcontext, String extraData) {
         if (extraData == null) {
             return;
         }
@@ -828,7 +828,7 @@ public class TongDao {
      *
      * @param tdMessageBean 同道返回的TdMessageBean
      */
-    public static void trackOpenInAppMessage(TdMessageBean tdMessageBean) {
+    public void trackOpenInAppMessage(TdMessageBean tdMessageBean) {
         trackOpenInAppMessage(tdMessageBean);
     }
 
@@ -837,7 +837,7 @@ public class TongDao {
      *
      * @param tdMessageBean 同道返回的TdMessageBean
      */
-    public static void trackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+    public void trackReceivedInAppMessage(TdMessageBean tdMessageBean) {
         trackReceivedInAppMessage(tdMessageBean);
     }
 
@@ -847,7 +847,7 @@ public class TongDao {
      * @param appContext 应用程序的上下文
      * @return String 生成userId
      */
-    public static String generateDeviceId(Context appContext) {
+    public String generateDeviceId(Context appContext) {
         try {
             return TongDaoDeviceUuidFactory.getDeviceUuid(appContext).toString();
         } catch (UnsupportedEncodingException e) {
@@ -856,7 +856,7 @@ public class TongDao {
         return null;
     }
 
-    public static void onAppSessionStart() {
+    public void onAppSessionStart() {
         Log.e("session event track bf", "Start" + 0);
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
             Log.e("session event track", "Start" + 0);
@@ -864,7 +864,7 @@ public class TongDao {
         }
     }
 
-    public static void onAppSessionEnd() {
+    public void onAppSessionEnd() {
         Log.e("session event track bf", "Emd" + 0);
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
             Log.e("session event track", "Emd" + 0);
@@ -872,7 +872,7 @@ public class TongDao {
         }
     }
 
-    private static void sendEvent(ACTION_TYPE action, String event, JSONObject properties) {
+    private void sendEvent(ACTION_TYPE action, String event, JSONObject properties) {
         String userId = null;
         if (tongDaoBridge != null && (userId = tongDaoBridge.getUserId()) != null) {
             TdEventBean tempEb = new TdEventBean(action, userId, event, properties);
@@ -880,24 +880,8 @@ public class TongDao {
         }
     }
 
-    /**
-     * 通过包含Deeplink的Intent取得广告的PageId
-     *
-     * @param deepLinkIntent 包含Deeplink的Intent
-     * @return String 广告的PageId
-     */
-    public static String getPageId(Intent deepLinkIntent) {
-        if (deepLinkIntent != null && deepLinkIntent.getDataString() != null) {
-            String deeplink = deepLinkIntent.getDataString();
-            int indexOfPage = deeplink.indexOf(ENDING_PAGE_STRING);
-            if (indexOfPage != -1) {
-                return getDataId(deeplink);
-            }
-        }
-        return null;
-    }
 
-    private static String getDataId(String deeplink) {
+    private String getDataId(String deeplink) {
         int lastIndexS = deeplink.lastIndexOf("=");
         String id = deeplink.substring(lastIndexS + 1);
         return id;
@@ -911,24 +895,24 @@ public class TongDao {
      * @param onDownloadInAppMessageListener 下载成功的回调接口函数，可以得到In App Message列表
      * @param onErrorListener                下载失败的回调接口函数
      */
-    public static void downloadInAppMessages(OnDownloadInAppMessageListener onDownloadInAppMessageListener, OnErrorListener onErrorListener) {
+    public void downloadInAppMessages(OnDownloadInAppMessageListener onDownloadInAppMessageListener, OnErrorListener onErrorListener) {
         if (tongDaoBridge != null) {
             tongDaoBridge.startDownloadInAppMessages(onDownloadInAppMessageListener, onErrorListener);
         }
     }
 
-    private static void sendOpenMessage(String eventName, long mid, long cid) throws JSONException {
+    private void sendOpenMessage(String eventName, long mid, long cid) throws JSONException {
         HashMap<String, Object> values = new HashMap<String, Object>();
         values.put("!message_id", mid);
         values.put("!campaign_id", cid);
         sendEvent(ACTION_TYPE.track, eventName, dataTool.makeUserProperties(values));
     }
 
-    private static boolean isIntentCallable(Context context, Intent intent) {
+    private boolean isIntentCallable(Context context, Intent intent) {
         return context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
 
-    private static boolean isAppExist(Context context, String packageName) {
+    private boolean isAppExist(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
         List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
         if (pinfo != null) {
@@ -941,7 +925,7 @@ public class TongDao {
         return false;
     }
 
-    private static void startApkByPackageName(Context context, String packageName) {
+    private void startApkByPackageName(Context context, String packageName) {
         Intent appIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         if (appIntent != null) {
             appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -949,11 +933,11 @@ public class TongDao {
         }
     }
 
-    public static void registerApplication(Application application) {
-        application.registerActivityLifecycleCallbacks(new TongDaoActivityCallback(application.getApplicationContext()));
+    public void registerApplication(Application application) {
+        application.registerActivityLifecycleCallbacks(activityCallback);
     }
 
-    public static void trackEvent() {
+    public void trackEvent() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -971,9 +955,23 @@ public class TongDao {
      * @param onDownloadLandingPageListener 下载成功的回调接口函数，可以得到广告页面信息
      * @param onErrorListener               下载失败的回调接口函数
      */
-    public static void downloadLandingPage(String pageId, OnDownloadLandingPageListener onDownloadLandingPageListener, OnErrorListener onErrorListener) {
+    public void downloadLandingPage(String pageId, OnDownloadLandingPageListener onDownloadLandingPageListener, OnErrorListener onErrorListener) {
         if (tongDaoBridge != null) {
             tongDaoBridge.startDownloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
         }
+    }
+
+    /**
+     * Enable tracking for activity sessions
+     */
+    public void startTrackingActivitySessions(){
+        activityCallback.setActivityTracking(true);
+    }
+
+    /**
+     * Disable tracking for activity sessions
+     */
+    public void stopTrackingActivitySessions(){
+        activityCallback.setActivityTracking(false);
     }
 }

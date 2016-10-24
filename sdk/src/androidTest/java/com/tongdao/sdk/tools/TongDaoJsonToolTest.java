@@ -3,12 +3,11 @@ package com.tongdao.sdk.tools;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.hamcrest.core.IsNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.hamcrest.core.Is.is;
+
 import static org.junit.Assert.*;
 import static org.hamcrest.core.IsNull.*;
 import static org.hamcrest.core.IsEqual.*;

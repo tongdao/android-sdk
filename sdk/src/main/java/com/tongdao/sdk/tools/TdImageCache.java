@@ -297,11 +297,9 @@ public class TdImageCache {
      * FILE means need copy file from the string data, here need to get mediaId and use mediaId to get file from app cache folder
      * SELF means @param bitmap is used for save
      */
-    public static enum Source {
+    public enum Source {
         NETWORK, FILE, SELF
     }
-
-    ;
 
     public void addBitmapToDiskCache(Source source, String data, String filePath, Bitmap bitmap) {
         if (data == null) {
@@ -327,7 +325,7 @@ public class TdImageCache {
                                     editSuccess = TdUtils.copyFileToStream(filePath, out);
                                     break;
                                 default:
-                                    editSuccess = bitmap != null ? bitmap.compress(DEFAULT_COMPRESS_FORMAT, 100, out) : false;
+                                    editSuccess = bitmap != null && bitmap.compress(DEFAULT_COMPRESS_FORMAT, 100, out);
                                     break;
                             }
                             if (editSuccess) {

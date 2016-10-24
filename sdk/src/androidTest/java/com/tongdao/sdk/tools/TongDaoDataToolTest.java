@@ -5,15 +5,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.tongdao.sdk.TongDao;
 import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
 import com.tongdao.sdk.beans.TdProduct;
 import com.tongdao.sdk.beans.TdSource;
 import com.tongdao.sdk.enums.TdAppStore;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.joda.time.DateTimeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

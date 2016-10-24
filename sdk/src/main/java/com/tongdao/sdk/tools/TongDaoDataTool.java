@@ -45,15 +45,15 @@ public class TongDaoDataTool {
         //connection
         Object[] networkObjs = appInfoTool.getNetworkInfo(appContext);
         JSONObject connectionObj = new JSONObject();
-        connectionObj.put("!carrier_name", (String) networkObjs[2]);
+        connectionObj.put("!carrier_name", networkObjs[2]);
         if (networkObjs[3] instanceof Integer) {
             connectionObj.put("!carrier_code", (int) networkObjs[3]);
         } else {
-            connectionObj.put("!carrier_code", (String) networkObjs[3]);
+            connectionObj.put("!carrier_code", networkObjs[3]);
         }
 
-        connectionObj.put("!connection_type", (String) networkObjs[0]);
-        connectionObj.put("!connection_quality", (String) networkObjs[1]);
+        connectionObj.put("!connection_type", networkObjs[0]);
+        connectionObj.put("!connection_quality", networkObjs[1]);
 
         String connectionData = savingTool.getConnectionInfoData(appContext);
         if (connectionData == null || !connectionData.equalsIgnoreCase(connectionObj.toString())) {
@@ -67,7 +67,7 @@ public class TongDaoDataTool {
         JSONObject locationObj = new JSONObject();
         locationObj.put("!latitude", (double) locationObjs[0]);
         locationObj.put("!longitude", (double) locationObjs[1]);
-        locationObj.put("!source", (String) locationObjs[2]);
+        locationObj.put("!source", locationObjs[2]);
 
         String locationData = savingTool.getLocationInfoData(appContext);
         if (locationData == null || !locationData.equalsIgnoreCase(locationObj.toString())) {
@@ -84,8 +84,8 @@ public class TongDaoDataTool {
         deviceObj.put("!build_id", devicesObjs[3] == null ? "" : (String) (devicesObjs[3]));
         deviceObj.put("!device_name", devicesObjs[4] == null ? "" : (String) (devicesObjs[4]));
         deviceObj.put("!os_name", devicesObjs[5] == null ? "" : (String) (devicesObjs[5]));
-        deviceObj.put("!os_version", (String) devicesObjs[6]);
-        deviceObj.put("!language", (String) devicesObjs[7]);
+        deviceObj.put("!os_version", devicesObjs[6]);
+        deviceObj.put("!language", devicesObjs[7]);
         //w and h
         DisplayMetrics dm = appContext.getResources().getDisplayMetrics();
         int resolution_width = dm.widthPixels;

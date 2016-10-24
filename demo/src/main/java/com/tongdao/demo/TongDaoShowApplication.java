@@ -1,14 +1,17 @@
 package com.tongdao.demo;
 
 import com.baidu.frontia.FrontiaApplication;
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.TongDaoOO;
 
 public class TongDaoShowApplication extends FrontiaApplication {
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        TongDao.registerApplication(this);
-    }
+    private TongDaoOO tongDao;
 
+    synchronized public TongDaoOO getTongDao() {
+        if (tongDao == null){
+            tongDao = TongDaoOO.getInstance(this,DataTool.APP_KEY);
+            tongDao.startTrackingActivitySessions();
+        }
+        return tongDao;
+    }
 }

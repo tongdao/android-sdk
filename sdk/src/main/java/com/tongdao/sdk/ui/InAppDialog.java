@@ -1,14 +1,19 @@
-package com.tongdao.sdk.activities;
+package com.tongdao.sdk.ui;
 
-import android.app.Activity;
+
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -17,16 +22,19 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.R;
+import com.tongdao.sdk.beans.TdMessageBean;
+import com.tongdao.sdk.beans.TdMessageButtonBean;
 import com.tongdao.sdk.tools.TdDisplayTool;
 import com.tongdao.sdk.tools.TdDisplayUtil;
 import com.tongdao.sdk.tools.TdImageManager;
 import com.tongdao.sdk.tools.TdUtils;
-import com.tongdao.sdk.beans.TdMessageBean;
-import com.tongdao.sdk.beans.TdMessageButtonBean;
-import com.tongdao.sdk.R;
 
-public class TdMessageDialogActivity extends Activity {
+/**
+ * Created by agonch on 10/21/16.
+ */
+
+public class InAppDialog extends DialogFragment {
 
     private static final String MESSAGE = "td_message";
     private Handler displayHandler;
@@ -34,39 +42,41 @@ public class TdMessageDialogActivity extends Activity {
     private TranslateAnimation tempTranslateAnimation;
     private static final int DURATION = 500;
     private TdImageManager imageManager;
+    private TdMessageBean tdMessageBean;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final TdMessageBean tempTdMessageBean = (TdMessageBean) this.getIntent().getSerializableExtra(MESSAGE);
-
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final TdMessageBean tempTdMessageBean = (TdMessageBean) getArguments().getSerializable(MESSAGE);
+        View fragmentView = null;
         if (tempTdMessageBean.getLayout().equalsIgnoreCase("top")) {
-            this.setContentView(R.layout.td_top_message);
+            fragmentView = inflater.inflate(R.layout.td_top_message, container, false);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
         } else if (tempTdMessageBean.getLayout().equalsIgnoreCase("bottom")) {
-            this.setContentView(R.layout.td_bottom_message);
+            fragmentView = inflater.inflate(R.layout.td_bottom_message, container, false);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 1, Animation.RELATIVE_TO_SELF, 0);
         } else if (tempTdMessageBean.getLayout().equalsIgnoreCase("full")) {
-            this.setContentView(R.layout.td_fullscreen_page);
+            fragmentView = inflater.inflate(R.layout.td_fullscreen_page, container, false);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
         } else {
+            fragmentView = super.onCreateView(inflater, container, savedInstanceState);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
         }
-
         tempTranslateAnimation.setDuration(DURATION);
 
         if (tempTdMessageBean.getLayout().equalsIgnoreCase("top") || tempTdMessageBean.getLayout().equalsIgnoreCase("bottom")) {
-            ImageView tempImageArrow = (ImageView) this.findViewById(R.id.td_message_arrow);
+            ImageView tempImageArrow = (ImageView) fragmentView.findViewById(R.id.td_message_arrow);
             //click target
             final String type = tempTdMessageBean.getActionType();
             final String value = tempTdMessageBean.getActionValue();
             if (type != null && value != null) {
                 tempImageArrow.setVisibility(View.VISIBLE);
-                this.findViewById(R.id.td_message_root).setOnClickListener(new OnClickListener() {
+                fragmentView.findViewById(R.id.td_message_root).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //跟踪打开InAppMessage
-                        TongDao.trackOpenInAppMessage(tempTdMessageBean);
+                        //TODO: fix here - cyclic dependency
+//                        TongDao.trackOpenInAppMessage(tempTdMessageBean);
                         openPage(type, value);
                     }
                 });
@@ -75,25 +85,26 @@ public class TdMessageDialogActivity extends Activity {
             }
 
             //show message
-            TextView tempTextView = (TextView) this.findViewById(R.id.td_message_tv);
+            TextView tempTextView = (TextView) fragmentView.findViewById(R.id.td_message_tv);
             tempTextView.setText(tempTdMessageBean.getMessage() == null ? "" : tempTdMessageBean.getMessage());
 
             //show img or not
-            ImageView tempImageView = (ImageView) this.findViewById(R.id.td_message_iv);
+            ImageView tempImageView = (ImageView) fragmentView.findViewById(R.id.td_message_iv);
             String imageUrl = tempTdMessageBean.getImageUrl();
             if (imageUrl != null && !imageUrl.trim().equals("")) {
                 tempImageView.setVisibility(View.VISIBLE);
-                this.imageManager = new TdImageManager(this.getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
+                this.imageManager = new TdImageManager(getActivity().getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
                 this.imageManager.loadImage(imageUrl, tempImageView, false, 1, null, null);
             } else {
                 tempImageView.setVisibility(View.GONE);
             }
 
         } else if (tempTdMessageBean.getLayout().equalsIgnoreCase("full")) {
+            final View finalFragmentView = fragmentView;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    initFullScreen(tempTdMessageBean);
+                    initFullScreen(tempTdMessageBean, finalFragmentView);
                 }
             }, 150);
         }
@@ -105,8 +116,8 @@ public class TdMessageDialogActivity extends Activity {
             displayRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (!TdMessageDialogActivity.this.isFinishing()) {
-                        TdMessageDialogActivity.this.finish();
+                    if (InAppDialog.this != null && InAppDialog.this.isVisible()) {
+                        InAppDialog.this.dismiss();
                     }
                 }
             };
@@ -114,29 +125,30 @@ public class TdMessageDialogActivity extends Activity {
         }
 
         if (tempTdMessageBean.getLayout().equalsIgnoreCase("top") || tempTdMessageBean.getLayout().equalsIgnoreCase("bottom") || tempTdMessageBean.getLayout().equalsIgnoreCase("full")) {
-            this.findViewById(R.id.td_message_root).startAnimation(tempTranslateAnimation);
+            fragmentView.findViewById(R.id.td_message_root).startAnimation(tempTranslateAnimation);
         } else {
             //ToDo
         }
+        //TODO: fix here - cyclic dependency
+//        TongDao.trackReceivedInAppMessage(tempTdMessageBean);
 
-        TongDao.trackReceivedInAppMessage(tempTdMessageBean);
+        return fragmentView;
     }
 
-
     @SuppressWarnings("deprecation")
-    private void initFullScreen(TdMessageBean tempTdMessageBean) {
+    private void initFullScreen(TdMessageBean tempTdMessageBean, View rootView) {
         //just for testing
-        int cutDp = TdDisplayUtil.getRawPixel(this.getApplicationContext(), 10);
-        int width = this.findViewById(R.id.td_root_container).getWidth();
-        int height = this.findViewById(R.id.td_root_container).getHeight();
+        int cutDp = TdDisplayUtil.getRawPixel(getActivity().getApplicationContext(), 10);
+        int width = rootView.findViewById(R.id.td_root_container).getWidth();
+        int height = rootView.findViewById(R.id.td_root_container).getHeight();
 
-        int[] datas = TdDisplayTool.configDisplayForFullScreen(getApplicationContext(), width, height, tempTdMessageBean.isPortrait());
+        int[] datas = TdDisplayTool.configDisplayForFullScreen(getActivity().getApplicationContext(), width, height, tempTdMessageBean.isPortrait());
 
-        RelativeLayout lq_page_out_container = (RelativeLayout) this.findViewById(R.id.td_message_root);
-        ImageView coverImageView = (ImageView) this.findViewById(R.id.lq_full_iv);
-        FrameLayout lq_btn_container = (FrameLayout) this.findViewById(R.id.lq_btn_container);
+        RelativeLayout lq_page_out_container = (RelativeLayout) rootView.findViewById(R.id.td_message_root);
+        ImageView coverImageView = (ImageView) rootView.findViewById(R.id.lq_full_iv);
+        FrameLayout lq_btn_container = (FrameLayout) rootView.findViewById(R.id.lq_btn_container);
 
-        final ImageView lq_page_close_iv = (ImageView) this.findViewById(R.id.lq_page_close_iv);
+        final ImageView lq_page_close_iv = (ImageView) rootView.findViewById(R.id.lq_page_close_iv);
 
         //for out container
         RelativeLayout.LayoutParams outPara = (RelativeLayout.LayoutParams) lq_page_out_container.getLayoutParams();
@@ -158,11 +170,11 @@ public class TdMessageDialogActivity extends Activity {
         lq_btn_container.setLayoutParams(framePara);
         lq_btn_container.setPadding(datas[2] / 2, datas[2] / 2, datas[2] / 2, datas[2] / 2);
 
-        int realW = this.findViewById(R.id.lq_fake_view).getWidth() - 2 * cutDp - datas[2];
-        int realH = this.findViewById(R.id.lq_fake_view).getHeight() - 2 * cutDp - datas[2];
+        int realW = rootView.findViewById(R.id.lq_fake_view).getWidth() - 2 * cutDp - datas[2];
+        int realH = rootView.findViewById(R.id.lq_fake_view).getHeight() - 2 * cutDp - datas[2];
 
         //for buttons
-        initButtons(tempTdMessageBean, realW, realH);
+        initButtons(tempTdMessageBean, realW, realH, rootView);
 
         //for close image view
         RelativeLayout.LayoutParams closeImgPara = (RelativeLayout.LayoutParams) lq_page_close_iv.getLayoutParams();
@@ -171,16 +183,16 @@ public class TdMessageDialogActivity extends Activity {
         lq_page_close_iv.setLayoutParams(closeImgPara);
         lq_page_close_iv.setVisibility(View.VISIBLE);
 
-        lq_page_close_iv.setOnClickListener(new OnClickListener() {
+        lq_page_close_iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TdMessageDialogActivity.this.finish();
+                InAppDialog.this.dismiss();
             }
         });
 
         String imageUrl = tempTdMessageBean.getImageUrl();
         if (imageUrl != null && !imageUrl.trim().equals("")) {
-            this.imageManager = new TdImageManager(this.getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
+            this.imageManager = new TdImageManager(getActivity().getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
             this.imageManager.loadImage(imageUrl, coverImageView, false, 1, null, null);
         }
 
@@ -188,7 +200,7 @@ public class TdMessageDialogActivity extends Activity {
         String closeImageUrl = tempTdMessageBean.getCloseBtn();
         if (closeImageUrl != null && !closeImageUrl.trim().equals("")) {
             if (this.imageManager == null) {
-                this.imageManager = new TdImageManager(this.getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
+                this.imageManager = new TdImageManager(getActivity().getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
             }
             this.imageManager.loadImage(closeImageUrl, lq_page_close_iv, false, 1, null, null, new TdImageManager.ImageLoadListener() {
 
@@ -199,8 +211,8 @@ public class TdMessageDialogActivity extends Activity {
 
                 @Override
                 public void onCancelled() {
-                    if (!TdMessageDialogActivity.this.isFinishing()) {
-                        lq_page_close_iv.setBackgroundDrawable(TdMessageDialogActivity.this.getResources().getDrawable(R.drawable.td_page_close));
+                    if (InAppDialog.this != null && !InAppDialog.this.isVisible()) {
+                        lq_page_close_iv.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.td_page_close));
                     }
                 }
             });
@@ -210,8 +222,7 @@ public class TdMessageDialogActivity extends Activity {
 
     }
 
-
-    private void initButtons(final TdMessageBean tempTdMessageBean, int realW, int realH/*,int marginTopGap,int marginLeftGap*/) {
+    private void initButtons(final TdMessageBean tempTdMessageBean, int realW, int realH, View fragmentView) {
         for (int i = 0; i < tempTdMessageBean.getButtons().size(); i++) {
             final TdMessageButtonBean eachButton = tempTdMessageBean.getButtons().get(i);
             double rateX = eachButton.getRateX();
@@ -221,9 +232,9 @@ public class TdMessageDialogActivity extends Activity {
 
             Button btn = null;
             if (i == 0) {
-                btn = (Button) this.findViewById(R.id.td_btn1);
+                btn = (Button) fragmentView.findViewById(R.id.td_btn1);
             } else if (i == 1) {
-                btn = (Button) this.findViewById(R.id.td_btn2);
+                btn = (Button) fragmentView.findViewById(R.id.td_btn2);
             }
 
             if (btn != null) {
@@ -235,11 +246,12 @@ public class TdMessageDialogActivity extends Activity {
                 btn.setBackgroundColor(Color.TRANSPARENT);
                 btn.setVisibility(View.VISIBLE);
 
-                btn.setOnClickListener(new OnClickListener() {
+                btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //跟踪打开InAppMessage
-                        TongDao.trackOpenInAppMessage(tempTdMessageBean);
+                        //TODO: fix here - cyclic dependency
+//                        TongDao.trackOpenInAppMessage(tempTdMessageBean);
                         openPage(eachButton.getActionType(), eachButton.getActionValue());
                     }
                 });
@@ -248,29 +260,29 @@ public class TdMessageDialogActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (this.tempTranslateAnimation != null) {
-            this.tempTranslateAnimation.cancel();
-        }
-
-        closeImageManager();
-        cancelHandler();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
-    private void closeImageManager() {
-        if (imageManager != null) {
-            imageManager.setExitTasksEarly(true);
-            imageManager.closeCache();
-        }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(STYLE_NO_FRAME,android.R.style.Theme_Holo_Light);
     }
 
-    private void cancelHandler() {
-        if (displayHandler != null && displayRunnable != null) {
-            displayHandler.removeCallbacks(displayRunnable);
-        }
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return super.onCreateDialog(savedInstanceState);
     }
 
+    public static InAppDialog newInstance(TdMessageBean message) {
+        InAppDialog inAppDialog = new InAppDialog();
+        Bundle args = new Bundle();
+        args.putSerializable(MESSAGE, message);
+        inAppDialog.setArguments(args);
+        return inAppDialog;
+    }
 
     private void openPage(String type, String value) {
         if (type == null || value == null) {
@@ -293,7 +305,6 @@ public class TdMessageDialogActivity extends Activity {
     }
 
     private boolean isIntentCallable(Intent intent) {
-        return this.getApplicationContext().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+        return getActivity().getApplicationContext().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
-
 }

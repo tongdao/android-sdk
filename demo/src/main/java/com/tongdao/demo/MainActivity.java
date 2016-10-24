@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +29,7 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.TongDaoOO;
 import com.tongdao.sdk.beans.TdRewardBean;
 import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
 import com.umeng.message.IUmengRegisterCallback;
@@ -41,7 +42,7 @@ import org.json.JSONException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity implements OnClickListener {
+public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     private LinearLayout btnContainer;
     private LinearLayout rewardsContainer;
@@ -57,13 +58,12 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
     PackageManager pm;
     String packageName;
+    TongDaoOO tongDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        TongDao.init(this, DataTool.APP_KEY);
-
+        tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
         this.getSupportActionBar().setIcon(R.drawable.ic_launcher);
         this.getSupportActionBar().setDisplayShowHomeEnabled(true);
         this.getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -86,7 +86,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         this.loadBtns();
 
         this.registerListeners();
-        TongDao.displayAdvertisement(this);
+
 
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, DataTool.BAIDU_API_KEY);
 
@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         }
         else {
             String device_token = UmengRegistrar.getRegistrationId(this);
-            TongDao.identifyPushToken(device_token);
+            tongDao.identifyPushToken(device_token);
             Log.e("Push", device_token);
         }
 
@@ -129,8 +129,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
                 // extract the extra-data in the Notification
                 String msg = extras.getString("NotificationMessage");
                 Log.i("Umeng", "NotificationMessage - " + msg);
-                TongDao.trackOpenPushMessage(msg);
-                TongDao.openPage(this, msg);
+                tongDao.trackOpenPushMessage(msg);
+                tongDao.openPage(this, msg);
 
             }
         }
@@ -139,14 +139,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDao.onSessionStart(this);
+        tongDao.onSessionStart(this);
         this.registerListeners();
         try {
             refreshReward();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        TongDao.displayInAppMessage(this);
+        tongDao.displayInAppMessage(this);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
         for (int i : grantResults) {
             if (i == PackageManager.PERMISSION_GRANTED) {
-                TongDao.trackEvent();
+                tongDao.trackEvent();
             }
 
             if( requestCode == 1 && pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName) != 0 ) {
@@ -177,7 +177,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        TongDao.onSessionEnd(this);
+        tongDao.onSessionEnd(this);
     }
 
     private void refreshReward() throws JSONException {
@@ -212,7 +212,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     }
 
     private void registerListeners() {
-        TongDao.registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
+        tongDao.registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
             @Override
             public void onSuccess(ArrayList<TdRewardBean> rewards) {
                 if (rewards != null && rewards.size() > 0) {
@@ -283,13 +283,13 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
                 TransferBean sendTransferBean = DataTool.getAllBeans().get(index);
                 if (sendTransferBean.getType() == Type.EVENT) {
                     if (sendTransferBean.getDatas().isEmpty()) {
-                        TongDao.track(sendTransferBean.getEventName());
+                        tongDao.track(sendTransferBean.getEventName());
                     } else {
-                        TongDao.track(sendTransferBean.getEventName(), sendTransferBean.getDatas());
+                        tongDao.track(sendTransferBean.getEventName(), sendTransferBean.getDatas());
                     }
                 } else if (sendTransferBean.getType() == Type.ATTRIBUTE) {
                     if (!sendTransferBean.getDatas().isEmpty()) {
-                        TongDao.identify(sendTransferBean.getDatas());
+                        tongDao.identify(sendTransferBean.getDatas());
                     }
                 }
             }
@@ -470,7 +470,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
                 args.putString("price", "100");
                 args.putString("quality", "200");
                 FragmentManager fm = getSupportFragmentManager();
-                PaymentDialog paymentDialog = PaymentDialog.newInstance();
+                PaymentDialog paymentDialog = PaymentDialog.newInstance(getApplication());
                 paymentDialog.setArguments(args);
                 paymentDialog.show(fm, "frg_payment");
                 return;
@@ -488,7 +488,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
                 @Override
                 public void run() {
-                    TongDao.identifyPushToken(registrationId);
+                    tongDao.identifyPushToken(registrationId);
                 }
             });
         }

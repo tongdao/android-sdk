@@ -12,6 +12,6 @@ public interface OnDownloadLandingPageListener {
      *
      * @param pageBean 着陆页信息
      */
-    public void onSuccess(TdPageBean pageBean);
+    void onSuccess(TdPageBean pageBean);
 
 }

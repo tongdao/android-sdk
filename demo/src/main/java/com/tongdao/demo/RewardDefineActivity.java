@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.TongDaoOO;
 
 import java.io.FileNotFoundException;
 
@@ -127,7 +127,8 @@ public class RewardDefineActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDao.displayInAppMessage(this);
+        TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
+        tongDao.displayInAppMessage(this);
     }
 
     @Override

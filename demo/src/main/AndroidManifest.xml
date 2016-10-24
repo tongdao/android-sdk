@@ -138,16 +138,12 @@
                     android:scheme="demo" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.tongdao.sdk.ui.TdDialogActivity"
-            android:configChanges="locale|keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/td_transcutestyle" />
-        <activity
-            android:name="com.tongdao.sdk.ui.TdMessageDialogActivity"
+
+        <!--TongDao Android SDK-->
+        <activity android:name="com.tongdao.sdk.activities.TdMessageDialogActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <!-- push应用定义消息receiver声明 -->
         <receiver android:name=".MyPushMessageReceiver" >
@@ -242,6 +238,7 @@
             android:name="UMENG_CHANNEL"
             android:value="Umeng" >
         </meta-data>
+
     </application>
 
 </manifest>

@@ -8,14 +8,14 @@ public class TongDaoUrlTool {
         return String.format(Constants.API_URL +
                         Constants.API_VERSION +
                         Constants.API_URI_PAGE + "?" + Constants.API_URI_PAGE_QS,
-                new Object[]{landingPageId, userId});
+                landingPageId, userId);
     }
 
     public String getInAppMessageUrl(String userId) {
         return String.format(Constants.API_URL +
                         Constants.API_VERSION +
                         Constants.API_URI_MESSAGES + "?" + Constants.API_URI_MESSAGES_QS,
-                new Object[]{userId});
+                userId);
     }
 
     public String getTrackEventUrlV2() {

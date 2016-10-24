@@ -41,7 +41,7 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_IMG_URL = "image_url";
     private static final String TD_MESSAGE = "message";
     private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
-    private static final String TD_MESSAGE_LAYOUT = "build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/res/layout";
+    private static final String TD_MESSAGE_LAYOUT = "layout";
     private static final String TD_MESSAGE_ACTION = "action";
     private static final String TD_MESSAGE_ACTION_TYPE = "type";
     private static final String TD_MESSAGE_ACTION_VALUE = "value";
@@ -432,7 +432,7 @@ public class TongDaoBridge {
                     apiTool.post(this.APP_KEY, this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, makeEventsJsonString(tempLqEventBeanArray), new TdHttpResponseHandler() {
 
                         @Override
-                        public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
+                        public void onSuccess(int statusCode, String responseBody) throws JSONException, IOException {
                             Log.i("Event response", "" + statusCode);
                             setCanRun(true);
                             if (isNeedRun()) {
@@ -476,7 +476,7 @@ public class TongDaoBridge {
                         apiTool.post(TongDaoBridge.this.APP_KEY, TongDaoBridge.this.DEVICE_ID, urlTool.getTrackEventUrlV2(), null, savingTool.getAppSessionData(appContext), new TdHttpResponseHandler() {
 
                             @Override
-                            public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
+                            public void onSuccess(int statusCode, String responseBody) throws JSONException, IOException {
                                 Log.i("Session event response", "" + statusCode);
                                 savingTool.setAppSessionData(appContext, null);
                             }
@@ -551,7 +551,7 @@ public class TongDaoBridge {
         }).start();
     }
 
-    private void downloadLandingPage(String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
+    private void downloadLandingPage(String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) throws IOException, JSONException {
         if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
             return;
         }
@@ -560,7 +560,7 @@ public class TongDaoBridge {
         apiTool.get(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
 
             @Override
-            public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
+            public void onSuccess(int statusCode, String responseBody) throws JSONException, IOException {
                 if (responseBody != null) {
                     JSONObject response = new JSONObject(responseBody);
                     TdPageBean tempLandingPageBean = new TdPageBean();
@@ -599,7 +599,7 @@ public class TongDaoBridge {
     }
 
 
-    private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
+    private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws IOException, JSONException {
         if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
             return;
         }
@@ -607,7 +607,7 @@ public class TongDaoBridge {
         String url = urlTool.getInAppMessageUrl(USER_ID);
         apiTool.get(APP_KEY, DEVICE_ID, false, url, null, new TdHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
+            public void onSuccess(int statusCode, String responseBody) throws JSONException, IOException {
                 if (responseBody != null) {
                     ArrayList<TdMessageBean> messageBeans = getInAppMessageBeans(responseBody);
                     if (onDownloadInAppMessageListener != null) {

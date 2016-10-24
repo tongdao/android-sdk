@@ -52,7 +52,8 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
         // updateContent(context, responseString);
 
         if (channelId != null) {
-            TongDao.identifyPushToken(channelId);
+            TongDaoShowApplication application = ((TongDaoShowApplication)context.getApplicationContext());
+            application.getTongDao().identifyPushToken(channelId);
             Log.e("Channel id", channelId);
         }
     }
@@ -89,8 +90,9 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
 //				+ description + "\" customContent=" + customContentString;
 //		Log.d(TAG, notifyString);
 
-        TongDao.trackOpenPushMessage(customContentString);
-        TongDao.openPage(context, customContentString);
+        TongDaoShowApplication application = ((TongDaoShowApplication)context.getApplicationContext());
+        application.getTongDao().trackOpenPushMessage(customContentString);
+        application.getTongDao().openPage(context, customContentString);
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         // updateContent(context, notifyString);
     }

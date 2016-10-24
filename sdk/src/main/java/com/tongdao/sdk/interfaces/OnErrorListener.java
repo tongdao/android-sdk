@@ -13,6 +13,6 @@ public interface OnErrorListener {
      *
      * @param errorBean 错误信息
      */
-    public void onError(TdErrorBean errorBean);
+    void onError(TdErrorBean errorBean);
 
 }

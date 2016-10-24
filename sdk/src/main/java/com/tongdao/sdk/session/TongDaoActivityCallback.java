@@ -10,16 +10,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.TongDaoOO;
 
 import java.util.List;
 
 public class TongDaoActivityCallback implements Application.ActivityLifecycleCallbacks {
     private Context context;
     private boolean isAppBroughtToBackground = false;
+    private boolean shouldTrackActivity = false;
+    private TongDaoOO tongDao;
 
-    public TongDaoActivityCallback(Context context) {
+    public TongDaoActivityCallback(Application context, TongDaoOO tongDao) {
         this.context = context;
+        this.tongDao = tongDao;
 
         IntentFilter inFilter = new IntentFilter();
         inFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -29,27 +32,34 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
+
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
+        if (shouldTrackActivity){
+            tongDao.onSessionEnd(activity);
+        }
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
+        if (shouldTrackActivity){
+            tongDao.onSessionStart(activity);
+        }
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
         if( isAppBroughtToBackground && !isApplicationBroughtToBackground() ) {
-            TongDao.onAppSessionStart();
+            tongDao.onAppSessionStart();
         }
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
         if( isApplicationBroughtToBackground() ) {
-            TongDao.onAppSessionEnd();
+            tongDao.onAppSessionEnd();
         }
     }
 
@@ -89,13 +99,16 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
         @Override
         public void onReceive(Context context, Intent intent) {
             if( intent.getAction() == Intent.ACTION_SCREEN_OFF && !isApplicationBroughtToBackground()) {
-                TongDao.onAppSessionEnd();
+                tongDao.onAppSessionEnd();
             }
 
             if( intent.getAction() == Intent.ACTION_SCREEN_ON && !isApplicationBroughtToBackground()) {
-                TongDao.onAppSessionStart();
+                tongDao.onAppSessionStart();
             }
         }
     }
 
+    public void setActivityTracking(boolean shouldTrack){
+
+    }
 }

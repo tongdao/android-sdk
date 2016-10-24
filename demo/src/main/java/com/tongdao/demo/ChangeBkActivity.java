@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDao;
+import com.tongdao.sdk.TongDaoOO;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -107,7 +107,8 @@ public class ChangeBkActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDao.displayInAppMessage(this);
+        TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
+        tongDao.displayInAppMessage(this);
     }
 
     @Override

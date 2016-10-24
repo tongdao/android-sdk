@@ -6,17 +6,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.test.ApplicationTestCase;
-import com.tongdao.sdk.tools.Log;
 
-import com.tongdao.sdk.tools.TongDaoAppInfoTool;
-import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
 
-import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -71,7 +66,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
-        TongDao.init(appContext, APP_KEY);
+//        TongDao.init(appContext, APP_KEY);
     }
 
     @Test
@@ -84,7 +79,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
         savingTool.setApplicationInfoData(appContext, "DummyApplicationData");
-        TongDao.init(appContext, APP_KEY);
+//        TongDao.init(appContext, APP_KEY);
     }
 
     public void testIdentifyWhenConnectionDataChanged() {
@@ -96,7 +91,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals("Telephony permission is required", true, telephonyPermission == 0);
 
         savingTool.setConnectionInfoData(appContext, "DummyConnectionData");
-        TongDao.init(appContext, APP_KEY);
+//        TongDao.init(appContext, APP_KEY);
     }
 
     public void testIdentifyWhenLocationDataChanged() {
@@ -109,7 +104,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         savingTool.setLocationInfoData(appContext, "DummyLocationData");
 
-        TongDao.init(appContext, APP_KEY);
+//        TongDao.init(appContext, APP_KEY);
     }
 
     public void testIdentifyWhenFingerPrintDataChanged() {
@@ -122,7 +117,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         savingTool.setFingerprintInfoData(appContext, "DummyFingerPrintData");
 
-        TongDao.init(appContext, APP_KEY);
+//        TongDao.init(appContext, APP_KEY);
     }
 
     public void testIdentifyWhenDeviceDataChanged() {
@@ -135,7 +130,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         savingTool.setDeviceInfoData(appContext, "DummyDeviceData");
 
-        TongDao.init(appContext, APP_KEY);
+//        TongDao.init(appContext, APP_KEY);
     }
 
     private String generateUserId() {
