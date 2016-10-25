@@ -31,7 +31,6 @@ public class TongDaoApiTool {
     private static final String CONTENT_TYPE_VALUE = "application/json";
     private static final int RES_204 = 204;
     private static final int RES_200 = 200;
-    private static final int BUFFER_SIZE = 4096;
 
     private static void generateHeaders(HttpURLConnection httpUrlConnection, String appKey, String deviceId, boolean isGet, boolean isPageCall, ArrayList<String[]> requestProperties) {
         ArrayList<String[]> allRequestProperties = new ArrayList<String[]>();
@@ -60,36 +59,6 @@ public class TongDaoApiTool {
             httpUrlConnection.setRequestProperty(nameAndValue[0], nameAndValue[1]);
         }
     }
-
-//    public static void post(String appKey, String deviceId, String url, ArrayList<String[]> requestProperties, String content, TdHttpResponseHandler handler) throws ClientProtocolException, IOException, JSONException {
-//        HttpParams params = new BasicHttpParams();
-//        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT);
-//        HttpConnectionParams.setSoTimeout(params, TIME_OUT);
-//        DefaultHttpClient httpClient = new Defa(params);
-//        TdSSLTrustManager.addSSLManagerForHttpClient(httpClient);
-//
-//        HttpPost httpPost = new HttpPost(url);
-//        httpPost.setHeaders(generateHeaders(appKey, deviceId, false, false, requestProperties));
-//        httpPost.setEntity(new StringEntity(content, "UTF-8"));
-//        if(null != requestProperties){
-//            com.tongdao.sdk.tools.Log.v("requestProperties == ", requestProperties.toString());
-//        }
-//
-//        HttpResponse httpResponse = httpClient.execute(httpPost);
-//        int resCode = httpResponse.getStatusLine().getStatusCode();
-//        if (resCode != RES_204 && resCode != RES_200) {
-//            //error call back
-//            String errorJsonString = inputStreamTOString(httpResponse.getEntity());
-//            if (handler != null) {
-//                handler.onFailure(resCode, errorJsonString);
-//            }
-//        } else {
-//            //success call back
-//            if (handler != null) {
-//                handler.onSuccess(resCode, null);
-//            }
-//        }
-//    }
 
     public void post(String appKey, String deviceId, String url, ArrayList<String[]> requestProperties, String content, TdHttpResponseHandler handler) throws IOException, JSONException {
         int resCode = 0;
@@ -177,54 +146,5 @@ public class TongDaoApiTool {
             }
         }
     }
-
-//    private static String inputStreamTOString(HttpEntity bodyEntity) {
-//        String jsonString = null;
-//        if (bodyEntity == null) {
-//            return jsonString;
-//        }
-//
-//        InputStream inStream = null;
-//        ByteArrayOutputStream outStream = null;
-//        try {
-//            inStream = bodyEntity.getContent();
-//            if (inStream != null) {
-//                outStream = new ByteArrayOutputStream();
-//                byte[] data = new byte[BUFFER_SIZE];
-//                int count = -1;
-//                while ((count = inStream.read(data, 0, BUFFER_SIZE)) != -1) {
-//                    outStream.write(data, 0, count);
-//                }
-//                outStream.flush();
-//                data = null;
-//                jsonString = new String(outStream.toByteArray(), "UTF-8");
-//            }
-//        } catch (IllegalStateException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (inStream != null) {
-//                try {
-//                    inStream.close();
-//                    inStream = null;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            if (outStream != null) {
-//                try {
-//                    outStream.close();
-//                    outStream = null;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//
-//        return jsonString;
-//    }
-
 
 }

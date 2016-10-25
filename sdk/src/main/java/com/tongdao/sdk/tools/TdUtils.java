@@ -333,28 +333,4 @@ public class TdUtils {
         return Build.VERSION.SDK_INT >= 14;
         // return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
-
-//	private static byte[] getBitmapBytes(Bitmap bitmap) throws IOException {
-//	        Bitmap localBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.RGB_565);
-//	        Canvas localCanvas = new Canvas(localBitmap);
-//	        int i;
-//	        int j;
-//	        if (bitmap.getHeight() > bitmap.getWidth()) {
-//	            i = bitmap.getWidth();
-//	            j = bitmap.getWidth();
-//	        } else {
-//	            i = bitmap.getHeight();
-//	            j = bitmap.getHeight();
-//	        }
-//	            localCanvas.drawARGB(255, 255, 255, 255);
-//	            localCanvas.drawBitmap(bitmap, new Rect(0, 0, i, j), new Rect(0, 0,80, 80), null);
-//	            bitmap.recycle();
-//	            ByteArrayOutputStream localByteArrayOutputStream = new ByteArrayOutputStream();
-//	            localBitmap.compress(Bitmap.CompressFormat.JPEG, 100,localByteArrayOutputStream);
-//	            localBitmap.recycle();
-//	            byte[] arrayOfByte = localByteArrayOutputStream.toByteArray();
-//	            localByteArrayOutputStream.close();
-//                return arrayOfByte;
-//	    }
-
 }

@@ -10,10 +10,8 @@ import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdMessageButtonBean;
-import com.tongdao.sdk.beans.TdPageBean;
 import com.tongdao.sdk.beans.TdRewardBean;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
-import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
 import com.tongdao.sdk.tools.Log;
@@ -192,14 +190,6 @@ public class TongDaoBridge {
                 }
             }
         }).start();
-    }
-
-    public static TongDaoBridge getGeneratedInstance() {
-        return uniqueInstance;
-    }
-
-    public String getAppKey() {
-        return this.APP_KEY;
     }
 
     public String getUserId() {
@@ -504,22 +494,6 @@ public class TongDaoBridge {
         }
     }
 
-    public void startDownloadLandingPage(final String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    downloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
-                } catch (ClientProtocolException e) {
-                    Log.e("startDownloadLandingPg", "ClientProtocolException");
-                } catch (IOException e) {
-                    Log.e("startDownloadLandingPg", "IOException");
-                } catch (JSONException e) {
-                    Log.e("startDownloadLandingPg", "JSONException");
-                }
-            }
-        }).start();
-    }
 
     public void startDownloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) {
         new Thread(new Runnable() {
@@ -538,52 +512,6 @@ public class TongDaoBridge {
         }).start();
     }
 
-    private void downloadLandingPage(String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) throws IOException, JSONException {
-        if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
-            return;
-        }
-
-        String url = urlTool.getLandingPageUrl(pageId, USER_ID);
-        apiTool.get(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, String responseBody) throws JSONException, IOException {
-                if (responseBody != null) {
-                    JSONObject response = new JSONObject(responseBody);
-                    TdPageBean tempLandingPageBean = new TdPageBean();
-                    tempLandingPageBean.setImage(TongDaoJsonTool.optJsonString(response, "image"));
-
-                    JSONArray rewards = response.optJSONArray("rewards");
-                    if (rewards != null && rewards.length() > 0) {
-                        ArrayList<TdRewardBean> rewardList = new ArrayList<TdRewardBean>();
-                        for (int i = 0; i < rewards.length(); i++) {
-                            JSONObject tempReward = rewards.getJSONObject(i);
-                            TdRewardBean tempRewardBean = new TdRewardBean();
-                            tempRewardBean.setId(tempReward.optInt("id"));
-                            tempRewardBean.setName(TongDaoJsonTool.optJsonString(tempReward, "name"));
-                            tempRewardBean.setSku(TongDaoJsonTool.optJsonString(tempReward, "sku"));
-                            tempRewardBean.setQuantity(tempReward.optInt("quantity"));
-                            rewardList.add(tempRewardBean);
-                        }
-
-                        tempLandingPageBean.setRewardList(rewardList);
-                    }
-
-                    if (onDownloadLandingPageListener != null) {
-                        onDownloadLandingPageListener.onSuccess(tempLandingPageBean);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, String responseBody) throws JSONException {
-                if (responseBody != null) {
-                    JSONObject errorResponse = new JSONObject(responseBody);
-                    onServerError(statusCode, errorResponse, onErrorListener);
-                }
-            }
-        });
-    }
 
 
     private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws IOException, JSONException {

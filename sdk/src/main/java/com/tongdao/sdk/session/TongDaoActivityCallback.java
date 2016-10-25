@@ -109,6 +109,6 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
     }
 
     public void setActivityTracking(boolean shouldTrack){
-
+        shouldTrackActivity = shouldTrack;
     }
 }

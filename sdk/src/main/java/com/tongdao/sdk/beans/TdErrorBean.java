@@ -43,7 +43,7 @@ public class TdErrorBean {
     /**
      * 同道内部调用,不建议使用
      *
-     * @param errorCode
+     * @param errorMsg
      */
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;

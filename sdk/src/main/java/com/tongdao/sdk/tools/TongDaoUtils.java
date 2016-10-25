@@ -19,7 +19,6 @@ public class TongDaoUtils {
      * new NotificationManagerCompat feature introduced in Android 24.
      * @return
      */
-    @SuppressWarnings("unchecked")
     public boolean isNotificationEnabled() {
         return NotificationManagerCompat.from(cxt).areNotificationsEnabled();
     }

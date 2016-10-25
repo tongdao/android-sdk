@@ -21,7 +21,6 @@ import com.tongdao.sdk.beans.TdSource;
 import com.tongdao.sdk.enums.TdGender;
 import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
-import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
 import com.tongdao.sdk.session.TongDaoActivityCallback;
@@ -867,6 +866,9 @@ public class TongDaoOO {
         return null;
     }
 
+    /**
+     * Track the start of an app session
+     */
     public void onAppSessionStart() {
         Log.e("session event track bf", "Start" + 0);
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
@@ -875,6 +877,9 @@ public class TongDaoOO {
         }
     }
 
+    /**
+     * Track the end of an app session
+     */
     public void onAppSessionEnd() {
         Log.e("session event track bf", "Emd" + 0);
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null) {
@@ -883,6 +888,12 @@ public class TongDaoOO {
         }
     }
 
+    /**
+     * Internal call. Sends event to API
+     * @param action
+     * @param event
+     * @param properties
+     */
     private void sendEvent(ACTION_TYPE action, String event, JSONObject properties) {
         String userId = null;
         if (tongDaoBridge != null && (userId = tongDaoBridge.getUserId()) != null) {
@@ -891,20 +902,11 @@ public class TongDaoOO {
         }
     }
 
-
-    private String getDataId(String deeplink) {
-        int lastIndexS = deeplink.lastIndexOf("=");
-        String id = deeplink.substring(lastIndexS + 1);
-        return id;
-    }
-
-
-
     /**
-     * 下载应用In App Message页面信息
+     * Download in-app messages
      *
-     * @param onDownloadInAppMessageListener 下载成功的回调接口函数，可以得到In App Message列表
-     * @param onErrorListener                下载失败的回调接口函数
+     * @param onDownloadInAppMessageListener Listener for downloads. Get in-app messages here
+     * @param onErrorListener                Error listener.
      */
     public void downloadInAppMessages(OnDownloadInAppMessageListener onDownloadInAppMessageListener, OnErrorListener onErrorListener) {
         if (tongDaoBridge != null) {
@@ -912,6 +914,13 @@ public class TongDaoOO {
         }
     }
 
+    /**
+     * Internal call.
+     * @param eventName
+     * @param mid
+     * @param cid
+     * @throws JSONException
+     */
     private void sendOpenMessage(String eventName, long mid, long cid) throws JSONException {
         HashMap<String, Object> values = new HashMap<String, Object>();
         values.put("!message_id", mid);
@@ -919,10 +928,22 @@ public class TongDaoOO {
         sendEvent(ACTION_TYPE.track, eventName, dataTool.makeUserProperties(values));
     }
 
+    /**
+     * Internal call.
+     * @param context
+     * @param intent
+     * @return
+     */
     private boolean isIntentCallable(Context context, Intent intent) {
         return context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
 
+    /**
+     * Internal call.
+     * @param context
+     * @param packageName
+     * @return
+     */
     private boolean isAppExist(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
         List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
@@ -936,6 +957,11 @@ public class TongDaoOO {
         return false;
     }
 
+    /**
+     * Internal call.
+     * @param context
+     * @param packageName
+     */
     private void startApkByPackageName(Context context, String packageName) {
         Intent appIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         if (appIntent != null) {
@@ -944,10 +970,17 @@ public class TongDaoOO {
         }
     }
 
+    /**
+     * Register your application to track app session events
+     * @param application
+     */
     public void registerApplication(Application application) {
         application.registerActivityLifecycleCallbacks(activityCallback);
     }
 
+    /**
+     * Initial identify of event
+     */
     public void trackEvent() {
         new Thread(new Runnable() {
             @Override
@@ -957,19 +990,6 @@ public class TongDaoOO {
                 }
             }
         }).start();
-    }
-
-    /**
-     * 下载应用广告页面信息
-     *
-     * @param pageId                        广告页面的pageId
-     * @param onDownloadLandingPageListener 下载成功的回调接口函数，可以得到广告页面信息
-     * @param onErrorListener               下载失败的回调接口函数
-     */
-    public void downloadLandingPage(String pageId, OnDownloadLandingPageListener onDownloadLandingPageListener, OnErrorListener onErrorListener) {
-        if (tongDaoBridge != null) {
-            tongDaoBridge.startDownloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
-        }
     }
 
     /**

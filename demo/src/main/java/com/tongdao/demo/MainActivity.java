@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     PackageManager pm;
     String packageName;
-    TongDaoOO tongDao;
+    private TongDaoOO tongDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        tongDao.onSessionStart(this);
         this.registerListeners();
         try {
             refreshReward();
@@ -177,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        tongDao.onSessionEnd(this);
     }
 
     private void refreshReward() throws JSONException {
