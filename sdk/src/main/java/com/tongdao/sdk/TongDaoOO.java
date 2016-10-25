@@ -19,6 +19,7 @@ import com.tongdao.sdk.beans.TdOrderLine;
 import com.tongdao.sdk.beans.TdProduct;
 import com.tongdao.sdk.beans.TdSource;
 import com.tongdao.sdk.enums.TdGender;
+import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnDownloadLandingPageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
@@ -79,11 +80,11 @@ public class TongDaoOO {
     }
 
     /**
-     * 初始化同道服务,请在onCreate方法中调用
+     * Initialize the Tongdao SDK. Call this from your application's onCreate method.
      *
-     * @param appContext 应用程序的上下文
-     * @param appKey     开发者从同道平台获得的AppKey
-     * @return boolean 同道服务的初始化结果
+     * @param appContext Your application object
+     * @param appKey     Your AppKey
+     * @return boolean   true if the SDK initialized correctly, false otherwise
      */
     private boolean init(Application appContext, String appKey) {
         String deviceId = generateDeviceId(appContext);
@@ -92,7 +93,7 @@ public class TongDaoOO {
         activityCallback = new TongDaoActivityCallback(appContext,this);
         registerApplication(appContext);
         if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
-            tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
+            tongDaoBridge = new TongDaoBridge(appContext, appKey, deviceId, deviceId);
             tongDaoBridge.init();
             onAppSessionStart();
             return true;
@@ -102,12 +103,12 @@ public class TongDaoOO {
     }
 
     /**
-     * 初始化同道服务,请在onCreate方法中调用
+     * Initialize the Tongdao SDK. Call this from your application's onCreate method.
      *
-     * @param appContext 应用程序的上下文
-     * @param appKey     开发者从同道平台获得的AppKey
-     *
-     * @return boolean 同道服务的初始化结果
+     * @param appContext Your application object
+     * @param appKey     Your AppKey
+     * @param userId     The ID of the User
+     * @return boolean   true if the SDK initialized correctly, false otherwise
      */
     private boolean init(Application appContext, String appKey, String userId) {
         String deviceId = generateDeviceId(appContext);
@@ -117,7 +118,7 @@ public class TongDaoOO {
         registerApplication(appContext);
         if(null == userId){
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-                tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, deviceId);
+                tongDaoBridge = new TongDaoBridge(appContext, appKey, deviceId, deviceId);
                 savingTool.setAnonymous(appContext, true);
                 tongDaoBridge.init();
                 onAppSessionStart();
@@ -127,7 +128,7 @@ public class TongDaoOO {
             }
         }else {
             if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
-                tongDaoBridge = TongDaoBridge.getInstance(appContext, appKey, deviceId, userId, null, false);
+                tongDaoBridge = new TongDaoBridge(appContext, appKey, deviceId, userId, null, false);
                 savingTool.setAnonymous(appContext, false);
                 tongDaoBridge.init();
                 onAppSessionStart();
@@ -139,10 +140,10 @@ public class TongDaoOO {
     }
 
     /**
-     * 使用用户自定义userid
+     * Set the user ID
      *
-     * @param userId 用户自定义的userid
-     * @return void 没有返回值
+     * @param userId The User ID to be set
+     * @return void
      */
     public void setUserId(Context appContext, String userId){
         if(null == userId){
@@ -162,36 +163,19 @@ public class TongDaoOO {
     }
 
     /**
-     * 使用同道SDK生成userId
+     * Set the RewardUnlockedListener for the SDK
      *
-     * @param appContext 应用程序的上下文
-     * @return String 生成userId
-     */
-    public String generateUserId(Context appContext) {
-        return generateDeviceId(appContext);
-    }
-
-    /**
-     * 注册获得奖品的回调接口
-     *
-     * @param onRewardUnlockedListener 奖品的回调接口
+     * @param onRewardUnlockedListener Your RewardUnlockedListener
      */
     public void registerOnRewardUnlockedListener(OnRewardUnlockedListener onRewardUnlockedListener) {
         rewardUnlockedListener = onRewardUnlockedListener;
     }
 
     /**
-     * 同道内部调用,不建议使用
-     */
-    public OnRewardUnlockedListener getRewardUnlockedListener() {
-        return rewardUnlockedListener;
-    }
-
-    /**
-     * 跟踪用户自定义事件
+     * Track custom events
      *
-     * @param eventName 用户自定义事件名称(不能以!打头)
-     * @param values    跟踪事件附带的键值对(值支持字符串和数字)
+     * @param eventName User-defined event name (cannot start with !)
+     * @param values    Hash-Map of values to track (supports Strings and numbers)
      */
     public void track(String eventName, HashMap<String, Object> values) {
         if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
@@ -206,9 +190,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 开始记录用户的使用时长
+     * Start recording a user session for the Activity.
      *
-     * @param activity 当前应用程序的Activity
+     * @param activity Activity for which to record the session
      */
     public void onSessionStart(Activity activity) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && activity != null) {
@@ -217,9 +201,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 开始记录用户的使用时长
+     * Start recording a user session for the page with the page name.
      *
-     * @param pageName 用户定义的页面名称
+     * @param pageName Custom page name for which to record the session
      */
     public void onSessionStart(String pageName) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
@@ -228,9 +212,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 终止记录用户的使用时长
+     * Stop recording the user session for the Activity.
      *
-     * @param activity 当前应用程序的Activity
+     * @param activity Activity for which to stop recording the session
      */
     public void onSessionEnd(Activity activity) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && activity != null) {
@@ -239,9 +223,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 终止记录用户的使用时长
+     * Stop recording the user session for the page.
      *
-     * @param pageName 用户定义的页面名称
+     * @param pageName Custom page name for which to stop recording the session
      */
     public void onSessionEnd(String pageName) {
         if (tongDaoBridge != null && tongDaoBridge.getUserId() != null && pageName != null) {
@@ -250,9 +234,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户多个自定义属性
+     * Identify custom user values
      *
-     * @param values 用户的属性键值对(值支持字符串和数字)
+     * @param values Hash-Map of custom values (support strings and numbers)
      */
     public void identify(HashMap<String, Object> values) {
         if (values != null && !values.isEmpty()) {
@@ -265,10 +249,10 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户单个自定义属性
+     * Identify a single custom attribute for the user
      *
-     * @param name  属性名
-     * @param value 属性值(值支持字符串和数字)
+     * @param name  Custom property name
+     * @param value Custom property value (support strings and numbers)
      */
     public void identify(String name, Object value) {
         if (name != null && !name.trim().equals("") && value != null) {
@@ -283,12 +267,14 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户的推送Token到同道平台，同道将根据用户Token推送信息
+     * Save the user's push token to Tongdao. This allows Tongdao to send push messages based on
+     * the token.
      *
-     * @param push_token 用户的推送Token
-     *                   (百度:onBind返回的channelId,
+     * @param push_token The user's push token
+     *                   (Baidu:onBind's method's variable channelId,
      *                   JPUSH:JPushInterface.EXTRA_REGISTRATION_ID,
-     *                   GETUI:bundle.getString("clientid"))
+     *                   GETUI:bundle.getString("clientid",
+     *                   etc.))
      */
     public void identifyPushToken(String push_token) {
         if (push_token == null || push_token.trim().equals("")) {
@@ -305,9 +291,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪用户自定义事件
+     * Track user-defined events
      *
-     * @param eventName 用户自定义事件名称(不能以!打头)
+     * @param eventName User-defined event name (cannot start with !)
      */
     public void track(String eventName) {
         if (eventName == null || eventName.trim().equals("") || eventName.startsWith("!")) {
@@ -318,10 +304,10 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户名字属性
+     * Save the user's full name
      *
-     * @param firstName 名
-     * @param lastName  姓
+     * @param firstName First name
+     * @param lastName  Last Name
      */
     public void identifyFullName(String firstName, String lastName) {
         if (firstName == null && lastName == null) {
@@ -346,9 +332,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户全名
+     * Save the user's full name
      *
-     * @param fullName 用户全名
+     * @param fullName Full name
      */
     public void identifyFullName(String fullName) {
         if (fullName == null || fullName.trim().equals("")) {
@@ -365,9 +351,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户应用中的名字
+     * Save the user's user name
      *
-     * @param userName 用户应用中的名字
+     * @param userName User name
      */
     public void identifyUserName(String userName) {
         if (userName == null || userName.trim().equals("")) {
@@ -384,9 +370,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户邮件地址
+     * Save the users e-mail address
      *
-     * @param email 用户邮件地址
+     * @param email E-mail address
      */
     public void identifyEmail(String email) {
         if (email == null || email.trim().equals("")) {
@@ -403,9 +389,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户电话号码
+     * Save the user's phone
      *
-     * @param phoneNumber 用户电话号码
+     * @param phoneNumber Phone number
      */
     public void identifyPhone(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.trim().equals("")) {
@@ -422,9 +408,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户性别
+     * Save the user's gender
      *
-     * @param gender 用户性别(枚举类型)
+     * @param gender User gender (enum)
      */
     public void identifyGender(TdGender gender) {
         if (gender == null) {
@@ -441,9 +427,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户年龄
+     * Save the user's age
      *
-     * @param age 用户年龄
+     * @param age Age
      */
     public void identifyAge(int age) {
         if (age > 0) {
@@ -458,9 +444,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户头像链接地址
+     * Save the user's image link
      *
-     * @param url 用户头像链接地址
+     * @param url Image URL
      */
     public void identifyAvatar(String url) {
         if (url == null || url.trim().equals("")) {
@@ -477,9 +463,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户联系地址
+     * Save the user's contact address
      *
-     * @param address 用户联系地址
+     * @param address User's address
      */
     public void identifyAddress(String address) {
         if (address == null || address.trim().equals("")) {
@@ -496,9 +482,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户出生日期
+     * Save the user's birthday
      *
-     * @param date 用户出生日期
+     * @param date User's birthday
      */
     public void identifyBirthday(Date date) {
         if (date != null) {
@@ -513,9 +499,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 保存用户应用源信息
+     * Save the user's application's information
      *
-     * @param source 用户应用源信息对象
+     * @param source User application information object
      */
     public void identifySource(TdSource source) {
         try {
@@ -529,16 +515,16 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪应用注册日期(使用当前系统时间,无日期参数)
+     * Track user registration in the app (current date and time)
      */
     public void trackRegistration() {
         trackRegistration(null);
     }
 
     /**
-     * 跟踪应用注册日期
+     * Track user registration in the app
      *
-     * @param date 用户设置的日期对象
+     * @param date Registration date and time
      */
     public void trackRegistration(Date date) {
         try {
@@ -549,9 +535,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪应用评分
+     * Track application rating
      *
-     * @param rating 应用评分
+     * @param rating Application rating
      */
     public void identifyRating(int rating) {
         try {
@@ -562,9 +548,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪浏览商品类别
+     * Track the user viewing a product category
      *
-     * @param category 商品类别
+     * @param category Product category
      */
     public void trackViewProductCategory(String category) {
         if (category != null && !category.trim().equals("")) {
@@ -579,9 +565,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪浏览商品信息
+     * Track the user viewing a product
      *
-     * @param product 商品信息
+     * @param product Product
      */
     public void trackViewProduct(TdProduct product) {
         try {
@@ -595,9 +581,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪添加多个订单到购物车
+     * Track the user adding products to the cart
      *
-     * @param orderLines 订单列表
+     * @param orderLines List of products added to the cart
      */
     public void trackAddCart(ArrayList<TdOrderLine> orderLines) {
         try {
@@ -611,9 +597,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪添加单个订单到购物车
+     * Track the user adding one product to the cart
      *
-     * @param orderLine 单个订单
+     * @param orderLine Product added to the cart
      */
     public void trackAddCart(TdOrderLine orderLine) {
         if (orderLine != null) {
@@ -624,9 +610,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪从购物车删除多个订单
+     * Track the user removing products from the cart
      *
-     * @param orderLines 订单列表
+     * @param orderLines List of products removed from cart
      */
     public void trackRemoveCart(ArrayList<TdOrderLine> orderLines) {
         try {
@@ -640,9 +626,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪从购物车删除单个订单
+     * Track the user removing one product from the cart
      *
-     * @param orderLine 单个订单
+     * @param orderLine Product removed from the cart
      */
     public void trackRemoveCart(TdOrderLine orderLine) {
         if (orderLine != null) {
@@ -653,9 +639,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪提交的交易信息
+     * Track the user placing an order
      *
-     * @param order 交易信息
+     * @param order Order information
      */
     public void trackPlaceOrder(TdOrder order) {
         try {
@@ -669,12 +655,12 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪提交的交易信息
+     * Track the user placing an order
      *
-     * @param name     产品名称
-     * @param price    产品单价
-     * @param currency 产品货币
-     * @param quantity 产品个数
+     * @param name     Product name
+     * @param price    Product price
+     * @param currency Product currency
+     * @param quantity Product quantity
      */
     public void trackPlaceOrder(String name, float price, Currency currency, int quantity) {
         if (name == null || name.trim().equals("") || currency == null || price<=0 || quantity <= 0) {
@@ -706,11 +692,11 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪提交的交易信息，产品个数默认为1
+     * Track the user placing an order for quantity of 1
      *
-     * @param name     产品名称
-     * @param price    产品单价
-     * @param currency 产品货币
+     * @param name     Product name
+     * @param price    Product price
+     * @param currency Product currency
      */
     public void trackPlaceOrder(String name, float price, Currency currency) {
         trackPlaceOrder(name, price, currency, 1);
@@ -718,9 +704,9 @@ public class TongDaoOO {
 
 
     /**
-     * 显示应用最新的In App Message页面信息
+     * Fetch and display any pending in-app message
      *
-     * @param activity 需要显示In App Message页面信息的Activity
+     * @param activity The Activity in which to display the message
      */
     public void displayInAppMessage(final AppCompatActivity activity) {
         downloadInAppMessages(new OnDownloadInAppMessageListener() {
@@ -730,7 +716,17 @@ public class TongDaoOO {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            InAppDialog inAppDialog = InAppDialog.newInstance(tdMessageBeanList.get(0));
+                            InAppDialog inAppDialog = InAppDialog.newInstance(tdMessageBeanList.get(0), new InAppMessageCallback() {
+                                @Override
+                                public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+                                    trackOpenInAppMessage(tdMessageBean);
+                                }
+
+                                @Override
+                                public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+                                    trackReceivedInAppMessage(tdMessageBean);
+                                }
+                            });
                             inAppDialog.show(activity.getSupportFragmentManager(),"frg_inapp");
                         }
                     });
@@ -752,11 +748,11 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪用户打开了推送消息(已过时，请使用trackOpenPushMessage)
+     * Track the opening of a push message
      *
-     * @param extraData 推送消息的附加信息
+     * @param extraData Push message additional data (sent through Tongdao SDK Push integration)
      */
-    public void trackOpenMessage(String extraData) {
+    public void trackOpenPushMessage(String extraData) {
         if (extraData == null) {
             return;
         }
@@ -775,18 +771,9 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪用户打开了推送消息
+     * Handle opening an app, deeplink or URL from the push message extra
      *
-     * @param extraData 推送消息的附加信息
-     */
-    public void trackOpenPushMessage(String extraData) {
-        trackOpenMessage(extraData);
-    }
-
-    /**
-     * 使用推送消息的附加信息打开应用，链接或网页
-     *
-     * @param extraData 推送消息的附加信息
+     * @param extraData Extra push message information (sent through Tongdao SDK Push integration)
      */
     public void openPage(Context appcontext, String extraData) {
         if (extraData == null) {
@@ -824,28 +811,52 @@ public class TongDaoOO {
     }
 
     /**
-     * 跟踪用户点击了应用内消息
+     * Track the opening of an in-app message
      *
-     * @param tdMessageBean 同道返回的TdMessageBean
+     * @param tdMessageBean TdMessageBean received from Tongdao
      */
     public void trackOpenInAppMessage(TdMessageBean tdMessageBean) {
-        trackOpenInAppMessage(tdMessageBean);
+        if (tdMessageBean == null) {
+            return;
+        }
+
+        try {
+            long messageId = tdMessageBean.getMid();
+            long clientId = tdMessageBean.getCid();
+            if (messageId != 0 && clientId != 0) {
+                sendOpenMessage("!open_message", messageId, clientId);
+            }
+        } catch (JSONException e) {
+            Log.e("trackOpenInAppMessage", "JSONException");
+        }
     }
 
     /**
-     * 跟踪用户收到了应用内消息
+     * Track that the user received an in-app message
      *
-     * @param tdMessageBean 同道返回的TdMessageBean
+     * @param tdMessageBean TdMessageBean received from Tongdao
      */
     public void trackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-        trackReceivedInAppMessage(tdMessageBean);
+        if (tdMessageBean == null) {
+            return;
+        }
+
+        try {
+            long messageId = tdMessageBean.getMid();
+            long clientId = tdMessageBean.getCid();
+            if (messageId != 0 && clientId != 0) {
+                sendOpenMessage("!receive_message", messageId, clientId);
+            }
+        } catch (JSONException e) {
+            Log.e("trackReceiovedInAppMsg", "JSONException");
+        }
     }
 
     /**
-     * 使用同道SDK生成userId
+     * Use the Tongdao SDK to generate a User ID linked to the device
      *
-     * @param appContext 应用程序的上下文
-     * @return String 生成userId
+     * @param appContext Application Context
+     * @return String Generated User ID
      */
     public String generateDeviceId(Context appContext) {
         try {

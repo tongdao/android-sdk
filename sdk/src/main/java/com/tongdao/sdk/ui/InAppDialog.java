@@ -23,8 +23,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.tongdao.sdk.R;
+import com.tongdao.sdk.TongDaoOO;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdMessageButtonBean;
+import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.tools.TdDisplayTool;
 import com.tongdao.sdk.tools.TdDisplayUtil;
 import com.tongdao.sdk.tools.TdImageManager;
@@ -42,7 +44,7 @@ public class InAppDialog extends DialogFragment {
     private TranslateAnimation tempTranslateAnimation;
     private static final int DURATION = 500;
     private TdImageManager imageManager;
-    private TdMessageBean tdMessageBean;
+    private InAppMessageCallback inAppMessageCallback;
 
     @Nullable
     @Override
@@ -64,6 +66,7 @@ public class InAppDialog extends DialogFragment {
         }
         tempTranslateAnimation.setDuration(DURATION);
 
+
         if (tempTdMessageBean.getLayout().equalsIgnoreCase("top") || tempTdMessageBean.getLayout().equalsIgnoreCase("bottom")) {
             ImageView tempImageArrow = (ImageView) fragmentView.findViewById(R.id.td_message_arrow);
             //click target
@@ -75,8 +78,7 @@ public class InAppDialog extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         //跟踪打开InAppMessage
-                        //TODO: fix here - cyclic dependency
-//                        TongDao.trackOpenInAppMessage(tempTdMessageBean);
+                        inAppMessageCallback.callbackTrackOpenInAppMessage(tempTdMessageBean);
                         openPage(type, value);
                     }
                 });
@@ -129,8 +131,7 @@ public class InAppDialog extends DialogFragment {
         } else {
             //ToDo
         }
-        //TODO: fix here - cyclic dependency
-//        TongDao.trackReceivedInAppMessage(tempTdMessageBean);
+        inAppMessageCallback.callbackTrackReceivedInAppMessage(tempTdMessageBean);
 
         return fragmentView;
     }
@@ -250,8 +251,7 @@ public class InAppDialog extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         //跟踪打开InAppMessage
-                        //TODO: fix here - cyclic dependency
-//                        TongDao.trackOpenInAppMessage(tempTdMessageBean);
+                        inAppMessageCallback.callbackTrackOpenInAppMessage(tempTdMessageBean);
                         openPage(eachButton.getActionType(), eachButton.getActionValue());
                     }
                 });
@@ -276,11 +276,12 @@ public class InAppDialog extends DialogFragment {
         return super.onCreateDialog(savedInstanceState);
     }
 
-    public static InAppDialog newInstance(TdMessageBean message) {
+    public static InAppDialog newInstance(TdMessageBean message,InAppMessageCallback inAppMessageCallback) {
         InAppDialog inAppDialog = new InAppDialog();
         Bundle args = new Bundle();
         args.putSerializable(MESSAGE, message);
         inAppDialog.setArguments(args);
+        inAppDialog.inAppMessageCallback = inAppMessageCallback;
         return inAppDialog;
     }
 

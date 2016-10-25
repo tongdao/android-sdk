@@ -6,7 +6,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.baidu.frontia.api.FrontiaPushMessageReceiver;
-import com.tongdao.sdk.TongDao;
 
 /**
  * Push消息处理receiver。请编写您需要的回调函数， 一般来说： onBind是必须的，用来处理startWork返回值；
@@ -108,7 +107,7 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
      */
     @Override
     public void onSetTags(Context context, int errorCode,
-                          List<String> sucessTags, List<String> failTags, String requestId) {
+                          List<String> successTags, List<String> failTags, String requestId) {
 //		String responseString = "onSetTags errorCode=" + errorCode
 //				+ " sucessTags=" + sucessTags + " failTags=" + failTags
 //				+ " requestId=" + requestId;
@@ -129,7 +128,7 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
      */
     @Override
     public void onDelTags(Context context, int errorCode,
-                          List<String> sucessTags, List<String> failTags, String requestId) {
+                          List<String> successTags, List<String> failTags, String requestId) {
 //		String responseString = "onDelTags errorCode=" + errorCode
 //				+ " sucessTags=" + sucessTags + " failTags=" + failTags
 //				+ " requestId=" + requestId;

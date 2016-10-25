@@ -86,7 +86,7 @@ public class TongDaoBridge {
         this.canRun = canRun;
     }
 
-    private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId) {
+    public TongDaoBridge(Context appContext, String appKey, String deviceId, String userId) {
         this.appContext = appContext;
         this.APP_KEY = appKey;
         this.USER_ID = userId;
@@ -100,7 +100,7 @@ public class TongDaoBridge {
         savingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
-    private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId, String previousId, boolean anonymous) {
+    public TongDaoBridge(Context appContext, String appKey, String deviceId, String userId, String previousId, boolean anonymous) {
         this.appContext = appContext;
         this.APP_KEY = appKey;
         this.USER_ID = userId;
@@ -116,19 +116,6 @@ public class TongDaoBridge {
         savingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
-    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID) {
-        if (uniqueInstance == null) {
-            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, DEVICE_ID, USER_ID);
-        }
-        return uniqueInstance;
-    }
-
-    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID, String PREVIOUS_ID, boolean ANONYMOUS) {
-        if (uniqueInstance == null) {
-            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, DEVICE_ID, USER_ID, PREVIOUS_ID, ANONYMOUS);
-        }
-        return uniqueInstance;
-    }
 
     public void init() {
         new Thread(new Runnable() {
