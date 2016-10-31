@@ -709,8 +709,8 @@ public class TongDaoOO {
      *
      * @param activity The Activity in which to display the message
      */
-    public void displayInAppMessage(final AppCompatActivity activity) {
-        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean("https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323","Lorem inpsum bacon magnus est. Bacon will save the world.",4000l, Constants.POPUP_MIDDLE_FULL,"asd","asdad",1220l,123l,null,true,"sasd","God of Bacon","Jump",576,1024), new InAppMessageCallback() {
+    public void displayInAppMessage(final Activity activity) {
+        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean("https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323","Lorem inpsum bacon magnus est. Bacon will save the world.",4l, Constants.POPUP_MIDDLE_TEMPLATE,"asd","asdad",1220l,123l,null,true,"sasd","God of Bacon","Jump",576,1024), new InAppMessageCallback() {
             @Override
             public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
                 trackOpenInAppMessage(tdMessageBean);
