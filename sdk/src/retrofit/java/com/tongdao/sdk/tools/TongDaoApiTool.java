@@ -93,6 +93,7 @@ public class TongDaoApiTool {
     }
 
     public void getMessagesRetrofit(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, final TdHttpResponseHandler handler, String userId) throws ClientProtocolException, IOException, JSONException {
+
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
@@ -107,64 +108,6 @@ public class TongDaoApiTool {
                 .build();
         TongDaoApi tongDaoApi = retrofit.create(TongDaoApi.class);
         Call<List<Message>> call = tongDaoApi.getInAppMessages(SDK_VERSION,appKey,deviceId, com.tongdao.sdk.tools.TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis()),isPageCall?AUTO_CLAIM_FLAG:null,userId);
-        call.enqueue(new Callback<List<Message>>() {
-            @Override
-            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
-                int resCode = response.code();
-                List<Message> messages = response.body();
-                if (resCode != RES_204 && resCode != RES_200) {
-
-                    if (handler != null) {
-                        try {
-                            handler.onFailure(resCode, response.message());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    //success call back
-                    if (handler != null) {
-                        try {
-                            handler.onSuccess(resCode, new Gson().toJson(messages));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (ClientProtocolException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Message>> call, Throwable t) {
-                if (handler != null) {
-                    try {
-                        handler.onFailure(0, t.getLocalizedMessage());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-
-    public void getLandingPageRetrofit(String appKey, String deviceId, boolean isPageCall, String url, ArrayList<String[]> requestProperties, final TdHttpResponseHandler handler, String userId) throws ClientProtocolException, IOException, JSONException {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
-                .addInterceptor(new MockNetworkIntercepter())
-                .build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.API_URL +
-                        Constants.API_VERSION)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-        TongDaoApi tongDaoApi = retrofit.create(TongDaoApi.class);
-        Call<List<Message>> call = tongDaoApi.getLandingPage(SDK_VERSION,appKey,deviceId, TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis()),isPageCall?AUTO_CLAIM_FLAG:null,userId);
         call.enqueue(new Callback<List<Message>>() {
             @Override
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {

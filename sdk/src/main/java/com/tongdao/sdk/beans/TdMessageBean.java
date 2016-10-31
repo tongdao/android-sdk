@@ -20,6 +20,11 @@ public class TdMessageBean implements Serializable {
     private ArrayList<TdMessageButtonBean> buttons;
     private boolean isPortrait;
     private String closeBtn;
+    //new variables
+    private String title;
+    private String cta;
+    private long imageHeight;
+    private long imageWidth;
 
     public TdMessageBean(String imageUrl, String message, long displayTime, String layout, String actionType, String actionValue, long cid, long mid, ArrayList<TdMessageButtonBean> buttons, boolean isPortrait, String closeBtn) {
         this.imageUrl = imageUrl;
@@ -33,6 +38,24 @@ public class TdMessageBean implements Serializable {
         this.buttons = buttons;
         this.isPortrait = isPortrait;
         this.closeBtn = closeBtn;
+    }
+
+    public TdMessageBean(String imageUrl, String message, long displayTime, String layout, String actionType, String actionValue, long cid, long mid, ArrayList<TdMessageButtonBean> buttons, boolean isPortrait, String closeBtn, String title, String cta, long imageWidth, long imageHeight) {
+        this.message = message;
+        this.displayTime = displayTime;
+        this.layout = layout;
+        this.actionType = actionType;
+        this.actionValue = actionValue;
+        this.imageUrl = imageUrl;
+        this.cid = cid;
+        this.mid = mid;
+        this.buttons = buttons;
+        this.isPortrait = isPortrait;
+        this.closeBtn = closeBtn;
+        this.title = title;
+        this.cta = cta;
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
     }
 
     public String getMessage() {
@@ -79,4 +102,19 @@ public class TdMessageBean implements Serializable {
         return closeBtn;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCta() {
+        return cta;
+    }
+
+    public long getImageHeight() {
+        return imageHeight;
+    }
+
+    public long getImageWidth() {
+        return imageWidth;
+    }
 }

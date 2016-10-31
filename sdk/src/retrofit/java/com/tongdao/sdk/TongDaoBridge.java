@@ -5,8 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.tongdao.sdk.tools.Log;
-import com.tongdao.sdk.tools.TongDaoApiTool;
 import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
@@ -16,6 +14,8 @@ import com.tongdao.sdk.beans.TdRewardBean;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
+import com.tongdao.sdk.tools.Log;
+import com.tongdao.sdk.tools.TongDaoApiTool;
 import com.tongdao.sdk.tools.TongDaoAppInfoTool;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
 import com.tongdao.sdk.tools.TongDaoClockTool;
@@ -39,7 +39,7 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_IMG_URL = "image_url";
     private static final String TD_MESSAGE = "message";
     private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
-    private static final String TD_MESSAGE_LAYOUT = "build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/res/layout";
+    private static final String TD_MESSAGE_LAYOUT = "layout";
     private static final String TD_MESSAGE_ACTION = "action";
     private static final String TD_MESSAGE_ACTION_TYPE = "type";
     private static final String TD_MESSAGE_ACTION_VALUE = "value";
@@ -49,9 +49,6 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_CID = "cid";
     private static final String TD_MESSAGE_MID = "mid";
     private final String LOCK = "lock";
-
-    //unique instance of bridge
-    private static TongDaoBridge uniqueInstance = null;
 
     //instance variables
     private String APP_KEY;
@@ -73,8 +70,8 @@ public class TongDaoBridge {
     private TongDaoUtils utils;
     private TongDaoUrlTool urlTool;
     private TongDaoAppInfoTool appInfoTool;
-    private TongDaoSavingTool savingTool;
     private TongDaoDataTool dataTool;
+    private TongDaoSavingTool savingTool;
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -84,7 +81,7 @@ public class TongDaoBridge {
         this.canRun = canRun;
     }
 
-    private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId) {
+    public TongDaoBridge(Context appContext, String appKey, String deviceId, String userId) {
         this.appContext = appContext;
         this.APP_KEY = appKey;
         this.USER_ID = userId;
@@ -93,12 +90,12 @@ public class TongDaoBridge {
         this.utils = new TongDaoUtils(appContext);
         this.urlTool = new TongDaoUrlTool();
         this.appInfoTool = new TongDaoAppInfoTool();
-        this.savingTool = new TongDaoSavingTool();
         this.dataTool = new TongDaoDataTool();
+        this.savingTool = new TongDaoSavingTool();
         savingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
-    private TongDaoBridge(Context appContext, String appKey, String deviceId, String userId, String previousId, boolean anonymous) {
+    public TongDaoBridge(Context appContext, String appKey, String deviceId, String userId, String previousId, boolean anonymous) {
         this.appContext = appContext;
         this.APP_KEY = appKey;
         this.USER_ID = userId;
@@ -109,24 +106,11 @@ public class TongDaoBridge {
         this.utils = new TongDaoUtils(appContext);
         this.urlTool = new TongDaoUrlTool();
         this.appInfoTool = new TongDaoAppInfoTool();
-        this.savingTool = new TongDaoSavingTool();
         this.dataTool = new TongDaoDataTool();
+        this.savingTool = new TongDaoSavingTool();
         savingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
-    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID) {
-        if (uniqueInstance == null) {
-            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, DEVICE_ID, USER_ID);
-        }
-        return uniqueInstance;
-    }
-
-    public static synchronized TongDaoBridge getInstance(Context appContext, String APP_KEY, String DEVICE_ID, String USER_ID, String PREVIOUS_ID, boolean ANONYMOUS) {
-        if (uniqueInstance == null) {
-            uniqueInstance = new TongDaoBridge(appContext, APP_KEY, DEVICE_ID, USER_ID, PREVIOUS_ID, ANONYMOUS);
-        }
-        return uniqueInstance;
-    }
 
     public void init() {
         new Thread(new Runnable() {
@@ -203,14 +187,6 @@ public class TongDaoBridge {
                 }
             }
         }).start();
-    }
-
-    public static TongDaoBridge getGeneratedInstance() {
-        return uniqueInstance;
-    }
-
-    public String getAppKey() {
-        return this.APP_KEY;
     }
 
     public String getUserId() {
@@ -515,22 +491,6 @@ public class TongDaoBridge {
         }
     }
 
-    public void startDownloadLandingPage(final String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    downloadLandingPage(pageId, onDownloadLandingPageListener, onErrorListener);
-                } catch (ClientProtocolException e) {
-                    Log.e("startDownloadLandingPg", "ClientProtocolException");
-                } catch (IOException e) {
-                    Log.e("startDownloadLandingPg", "IOException");
-                } catch (JSONException e) {
-                    Log.e("startDownloadLandingPg", "JSONException");
-                }
-            }
-        }).start();
-    }
 
     public void startDownloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) {
         new Thread(new Runnable() {
@@ -549,55 +509,9 @@ public class TongDaoBridge {
         }).start();
     }
 
-    private void downloadLandingPage(String pageId, final OnDownloadLandingPageListener onDownloadLandingPageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
-        if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
-            return;
-        }
-
-        String url = urlTool.getLandingPageUrl(pageId, USER_ID);
-        apiTool.getLandingPageRetrofit(APP_KEY, DEVICE_ID, true, url, null, new TdHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, String responseBody) throws ClientProtocolException, JSONException, IOException {
-                if (responseBody != null) {
-                    JSONObject response = new JSONObject(responseBody);
-                    TdPageBean tempLandingPageBean = new TdPageBean();
-                    tempLandingPageBean.setImage(TongDaoJsonTool.optJsonString(response, "image"));
-
-                    JSONArray rewards = response.optJSONArray("rewards");
-                    if (rewards != null && rewards.length() > 0) {
-                        ArrayList<TdRewardBean> rewardList = new ArrayList<TdRewardBean>();
-                        for (int i = 0; i < rewards.length(); i++) {
-                            JSONObject tempReward = rewards.getJSONObject(i);
-                            TdRewardBean tempRewardBean = new TdRewardBean();
-                            tempRewardBean.setId(tempReward.optInt("id"));
-                            tempRewardBean.setName(TongDaoJsonTool.optJsonString(tempReward, "name"));
-                            tempRewardBean.setSku(TongDaoJsonTool.optJsonString(tempReward, "sku"));
-                            tempRewardBean.setQuantity(tempReward.optInt("quantity"));
-                            rewardList.add(tempRewardBean);
-                        }
-
-                        tempLandingPageBean.setRewardList(rewardList);
-                    }
-
-                    if (onDownloadLandingPageListener != null) {
-                        onDownloadLandingPageListener.onSuccess(tempLandingPageBean);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, String responseBody) throws JSONException {
-                if (responseBody != null) {
-                    JSONObject errorResponse = new JSONObject(responseBody);
-                    onServerError(statusCode, errorResponse, onErrorListener);
-                }
-            }
-        },USER_ID);
-    }
 
 
-    private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws ClientProtocolException, IOException, JSONException {
+    private void downloadInAppMessages(final OnDownloadInAppMessageListener onDownloadInAppMessageListener, final OnErrorListener onErrorListener) throws IOException, JSONException {
         if (this.appContext == null || APP_KEY == null || USER_ID == null || DEVICE_ID == null) {
             return;
         }

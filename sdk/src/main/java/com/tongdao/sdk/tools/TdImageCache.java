@@ -339,8 +339,10 @@ public class TdImageCache {
                     }
                 } catch (final IOException e) {
                     Log.e("addBitmapToCache", "IOException");
+                    e.printStackTrace();
                 } catch (Exception e) {
                     Log.e("addBitmapToCache", "Exception");
+                    e.printStackTrace();
                 } finally {
                     try {
                         if (out != null) {

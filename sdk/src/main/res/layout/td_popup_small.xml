@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:padding="4dp"
+    android:background="@drawable/popup_box"
+    android:id="@+id/td_popup_view">
+
+    <ImageView
+        android:id="@+id/imageIV"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/td_in_app_icon"
+        android:padding="4dp"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/titleAndTextLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3">
+        <TextView
+            android:id="@+id/titleTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            android:text="Sample Headline"/>
+        <TextView
+            android:id="@+id/messageTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:layout_marginTop="4dp"
+            android:text="Lorem ipsum dolor bacon. Bacon is the food of gods."/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/closeAndCtaLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:id="@+id/closeIV"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_cancel"
+            android:tint="#999999"
+            android:alpha="0.7"
+            android:layout_gravity="end"/>
+        <Button
+            android:id="@+id/ctaButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="东北人活雷锋"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_gravity="bottom"/>
+    </LinearLayout>
+
+</LinearLayout>

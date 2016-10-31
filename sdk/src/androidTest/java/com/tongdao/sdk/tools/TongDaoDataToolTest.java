@@ -1,6 +1,7 @@
 package com.tongdao.sdk.tools;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -33,31 +34,24 @@ import static org.hamcrest.core.IsEqual.*;
 
 @RunWith(AndroidJUnit4.class)
 @MediumTest
-public class TongDaoDataToolTest extends android.test.ApplicationTestCase<Application> {
+public class TongDaoDataToolTest{
 
     TongDaoDataTool dataTool;
-
-    public TongDaoDataToolTest() {
-        super(Application.class);
-    }
+    Context mContext;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertNotNull(mContext);
         dataTool = new TongDaoDataTool();
         assertNotNull(dataTool);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     @Test
     public void makeInfoProperties() throws Exception {
-
+        //TODO: find a way to test this
+        String testGaid = "test-gaid";
+        JSONObject result = dataTool.makeInfoProperties(mContext,testGaid);
     }
 
     @Test

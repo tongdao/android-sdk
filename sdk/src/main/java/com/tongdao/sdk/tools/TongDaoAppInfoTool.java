@@ -317,7 +317,7 @@ public class TongDaoAppInfoTool {
         }
     }
 
-    public void getImeiInfos(@NonNull final Context appContext, final JSONObject jsonObject) {
+    public void getImeiInfos(@NonNull final Context appContext, @NonNull final JSONObject jsonObject) {
         PackageManager pm = appContext.getPackageManager();
         String packageName = appContext.getPackageName();
 

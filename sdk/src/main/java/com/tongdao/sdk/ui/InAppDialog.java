@@ -5,12 +5,14 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,12 +53,15 @@ public class InAppDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final TdMessageBean tempTdMessageBean = (TdMessageBean) getArguments().getSerializable(MESSAGE);
         View fragmentView = null;
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         if (tempTdMessageBean.getLayout().equalsIgnoreCase("top")) {
             fragmentView = inflater.inflate(R.layout.td_top_message, container, false);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
+//            getDialog().getWindow().setGravity(Gravity.TOP);
         } else if (tempTdMessageBean.getLayout().equalsIgnoreCase("bottom")) {
             fragmentView = inflater.inflate(R.layout.td_bottom_message, container, false);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 1, Animation.RELATIVE_TO_SELF, 0);
+//            getDialog().getWindow().setGravity(Gravity.BOTTOM);
         } else if (tempTdMessageBean.getLayout().equalsIgnoreCase("full")) {
             fragmentView = inflater.inflate(R.layout.td_fullscreen_page, container, false);
             tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
@@ -100,6 +105,14 @@ public class InAppDialog extends DialogFragment {
             } else {
                 tempImageView.setVisibility(View.GONE);
             }
+
+            final View finalFragmentView = fragmentView;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    resizeTopBottomFragments(finalFragmentView);
+                }
+            }, 150);
 
         } else if (tempTdMessageBean.getLayout().equalsIgnoreCase("full")) {
             final View finalFragmentView = fragmentView;
@@ -259,6 +272,15 @@ public class InAppDialog extends DialogFragment {
         }
     }
 
+    private void resizeTopBottomFragments(View rootView){
+        int cutDp = TdDisplayUtil.getRawPixel(getActivity().getApplicationContext(), 10);
+        int statusBar = TdDisplayUtil.getRawPixel(getActivity().getApplicationContext(), 25);
+        int width = rootView.findViewById(R.id.td_message_root).getWidth();
+        int height = TdDisplayUtil.getRawPixel(getActivity().getApplicationContext(), 64);
+        getDialog().getWindow().setLayout(width, height);
+//        rootView.setPadding(0,statusBar,0,0);
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -308,4 +330,6 @@ public class InAppDialog extends DialogFragment {
     private boolean isIntentCallable(Intent intent) {
         return getActivity().getApplicationContext().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
+
+
 }

@@ -18,6 +18,7 @@ import com.tongdao.sdk.beans.TdOrder;
 import com.tongdao.sdk.beans.TdOrderLine;
 import com.tongdao.sdk.beans.TdProduct;
 import com.tongdao.sdk.beans.TdSource;
+import com.tongdao.sdk.config.Constants;
 import com.tongdao.sdk.enums.TdGender;
 import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
@@ -31,6 +32,7 @@ import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
 import com.tongdao.sdk.ui.InAppDialog;
+import com.tongdao.sdk.ui.PopupManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -708,42 +710,54 @@ public class TongDaoOO {
      * @param activity The Activity in which to display the message
      */
     public void displayInAppMessage(final AppCompatActivity activity) {
-        downloadInAppMessages(new OnDownloadInAppMessageListener() {
+        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean("https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323","Lorem inpsum bacon magnus est. Bacon will save the world.",4000l, Constants.POPUP_MIDDLE_FULL,"asd","asdad",1220l,123l,null,true,"sasd","God of Bacon","Jump",576,1024), new InAppMessageCallback() {
             @Override
-            public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
-                if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            InAppDialog inAppDialog = InAppDialog.newInstance(tdMessageBeanList.get(0), new InAppMessageCallback() {
-                                @Override
-                                public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
-                                    trackOpenInAppMessage(tdMessageBean);
-                                }
-
-                                @Override
-                                public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-                                    trackReceivedInAppMessage(tdMessageBean);
-                                }
-                            });
-                            inAppDialog.show(activity.getSupportFragmentManager(),"frg_inapp");
-                        }
-                    });
-                }
+            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+                trackOpenInAppMessage(tdMessageBean);
             }
-        }, new OnErrorListener() {
+
             @Override
-            public void onError(final TdErrorBean errorBean) {
-                if (activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(activity.getApplicationContext(), "" + errorBean.getErrorCode() + ":" + errorBean.getErrorMsg(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+                trackReceivedInAppMessage(tdMessageBean);
             }
         });
+        inAppDialog.showInAppDialog();
+//        downloadInAppMessages(new OnDownloadInAppMessageListener() {
+//            @Override
+//            public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
+//                if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()) {
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            PopupManager inAppDialog = new PopupManager(activity,tdMessageBeanList.get(0), new InAppMessageCallback() {
+//                                @Override
+//                                public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+//                                    trackOpenInAppMessage(tdMessageBean);
+//                                }
+//
+//                                @Override
+//                                public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+//                                    trackReceivedInAppMessage(tdMessageBean);
+//                                }
+//                            });
+//                            inAppDialog.showInAppDialog();
+//                        }
+//                    });
+//                }
+//            }
+//        }, new OnErrorListener() {
+//            @Override
+//            public void onError(final TdErrorBean errorBean) {
+//                if (activity != null && !activity.isFinishing()) {
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(activity.getApplicationContext(), "" + errorBean.getErrorCode() + ":" + errorBean.getErrorMsg(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                }
+//            }
+//        });
     }
 
     /**

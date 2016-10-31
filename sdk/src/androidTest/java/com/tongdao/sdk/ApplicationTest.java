@@ -50,6 +50,8 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         accessCoarseLocation = pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName);
         accessFineLocation = pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName);
 
+
+
         assertEquals("Location permission is required", true, accessCoarseLocation == 0 || accessFineLocation == 0);
 
         telephonyPermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);

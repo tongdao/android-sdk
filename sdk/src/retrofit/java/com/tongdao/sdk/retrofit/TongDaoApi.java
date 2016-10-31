@@ -41,12 +41,4 @@ public interface TongDaoApi {
                                          @Header(X_AUTO_CLAIM) String autoClaim,
                                          @Query("user_id") String userId);
 
-    @Headers({"Accept:application/json","Content-type:application/json","X-APP-USE:Retrofit"})
-    @GET(Constants.API_URI_PAGE)
-    Call<List<Message>> getLandingPage(@Header(X_SDK_VERSION) String sdkVersion,
-                                       @Header(X_APP_KEY) String appKey,
-                                       @Header(X_DEVICE_KEY) String deviceKey,
-                                       @Header(X_LOCAL_TIME) String localTime,
-                                       @Header(X_AUTO_CLAIM) String autoClaim,
-                                       @Query("user_id") String userId);
 }

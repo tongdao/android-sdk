@@ -50,9 +50,6 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_MID = "mid";
     private final String LOCK = "lock";
 
-    //unique instance of bridge
-    private static TongDaoBridge uniqueInstance = null;
-
     //instance variables
     private String APP_KEY;
     private String USER_ID;

@@ -9,4 +9,10 @@ public class Constants {
     public final static String API_URI_MESSAGES_QS = "user_id=%s";
 
     public final static int SDK_VERSION = 30101;
+
+    public final static String POPUP_TOP = "top";
+    public final static String POPUP_CENTER = "full";
+    public final static String POPUP_BOTTOM = "bottom";
+    public final static String POPUP_MIDDLE_FULL = "middle_full";
+    public final static String POPUP_MIDDLE_TEMPLATE = "middle_template";
 }
