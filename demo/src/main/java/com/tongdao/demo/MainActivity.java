@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -87,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         this.loadBtns();
 
-        this.registerListeners();
-
 
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, DataTool.BAIDU_API_KEY);
 
@@ -114,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         int phoneStatePermission = pm.checkPermission(Manifest.permission.READ_PHONE_STATE, packageName);
 
-        if (phoneStatePermission != 0) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M && phoneStatePermission != 0) {
             this.requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
         }
 
@@ -141,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        this.registerListeners();
         try {
             refreshReward();
         } catch (JSONException e) {
@@ -164,11 +162,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 tongDao.trackEvent();
             }
 
-            if( requestCode == 1 && pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName) != 0 ) {
+            if( Build.VERSION.SDK_INT > Build.VERSION_CODES.M && requestCode == 1 && pm.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, packageName) != 0 ) {
                 this.requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 2);
             }
 
-            if( requestCode == 2 && pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName) != 0 ) {
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M && requestCode == 2 && pm.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, packageName) != 0 ) {
                 this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 3);
             }
         }
@@ -212,20 +210,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         }
     }
 
-    private void registerListeners() {
-        tongDao.registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
-            @Override
-            public void onSuccess(ArrayList<TdRewardBean> rewards) {
-                if (rewards != null && rewards.size() > 0) {
-                    try {
-                        DataTool.saveTempRewards(MainActivity.this, rewards);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

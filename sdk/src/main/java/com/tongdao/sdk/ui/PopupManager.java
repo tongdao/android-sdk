@@ -148,9 +148,6 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
         if (tdMessageBean.getMessage() != null && tdMessageBean.getMessage().length()>0 && messageTV != null){
             messageTV.setText(tdMessageBean.getMessage());
         }
-        if (tdMessageBean.getCta() != null & tdMessageBean.getCta().length() > 0 && ctaButton != null){
-            ctaButton.setText(tdMessageBean.getCta());
-        }
         if (closeIV != null){
             closeIV.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -367,7 +364,7 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
                 PopupManager.this.rootView = topRootView;
                 darkenScreen();
                 popupWidth = screenWidth - margin * 2;
-                popupHeight = (int)((popupWidth * tdMessageBean.getImageHeight()) / tdMessageBean.getImageWidth());
+//                popupHeight = (int)((popupWidth * tdMessageBean.getImageHeight()) / tdMessageBean.getImageWidth());
                 popupTop = (screenHeight - popupHeight) / 2;
                 layoutParams = new LinearLayout.LayoutParams(popupWidth,popupHeight);
                 tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
@@ -377,7 +374,7 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
                 PopupManager.this.rootView = topRootView;
                 darkenScreen();
                 popupWidth = screenWidth - margin * 2;
-                popupHeight = (int)((popupWidth * tdMessageBean.getImageHeight()) / tdMessageBean.getImageWidth());
+//                popupHeight = (int)((popupWidth * tdMessageBean.getImageHeight()) / tdMessageBean.getImageWidth());
                 popupTop = (screenHeight - popupHeight) / 2;
                 layoutParams = new LinearLayout.LayoutParams(popupWidth,popupHeight);
                 tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);

@@ -27,8 +27,6 @@ public class TongDaoSavingTool {
         editor.commit();
     }
     public void saveUserInfoData(Context appContext, String appKey, String userId, String previousId, Boolean anonymous) {
-        TongDaoDataTool dataTool = new TongDaoDataTool();
-        dataTool.setAnonymous(anonymous);
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(APP_KEY, appKey);
@@ -39,8 +37,6 @@ public class TongDaoSavingTool {
     }
 
     public void saveUserInfoData(Context appContext, String userId, String previousId, Boolean anonymous) {
-        TongDaoDataTool dataTool = new TongDaoDataTool();
-        dataTool.setAnonymous(anonymous);
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(USER_ID, userId);
@@ -62,16 +58,12 @@ public class TongDaoSavingTool {
     }
 
     public Boolean getAnonymous(Context appContext){
-        TongDaoDataTool dataTool = new TongDaoDataTool();
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         boolean anonymous = sp.getBoolean(ANONYMOUS, true);
-        dataTool.setAnonymous(anonymous);
         return anonymous;
     }
 
     public void setAnonymous(Context appContext, boolean anonymous){
-        TongDaoDataTool dataTool = new TongDaoDataTool();
-        dataTool.setAnonymous(anonymous);
         SharedPreferences sp = appContext.getSharedPreferences(USER_INFO_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(ANONYMOUS, anonymous);

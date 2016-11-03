@@ -26,6 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            android:lines="1"
+            android:ellipsize="marquee"
             android:text="Sample Headline"/>
         <TextView
             android:id="@+id/messageTV"
@@ -33,6 +35,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:layout_marginTop="4dp"
+            android:maxLines="2"
             android:text="Lorem ipsum dolor bacon. Bacon is the food of gods."/>
     </LinearLayout>
 
@@ -55,7 +58,7 @@
             android:id="@+id/ctaButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="东北人活雷锋"
+            android:text="Thise"
             android:maxLines="1"
             android:ellipsize="end"
             android:layout_gravity="bottom"/>

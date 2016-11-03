@@ -26,7 +26,6 @@ public class DemoPage1 extends AppCompatActivity {
         this.setContentView(R.layout.page);
         ((TextView) this.findViewById(R.id.link_tv)).setText("demo://page1");
 
-        this.registerListeners();
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, DataTool.BAIDU_API_KEY);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -56,20 +55,4 @@ public class DemoPage1 extends AppCompatActivity {
         super.onPause();
     }
 
-    private void registerListeners() {
-        TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
-        tongDao
-                .registerOnRewardUnlockedListener(new OnRewardUnlockedListener() {
-                    @Override
-                    public void onSuccess(ArrayList<TdRewardBean> rewards) {
-                        if (rewards != null && rewards.size() > 0) {
-                            try {
-                                DataTool.saveTempRewards(DemoPage1.this, rewards);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-    }
 }

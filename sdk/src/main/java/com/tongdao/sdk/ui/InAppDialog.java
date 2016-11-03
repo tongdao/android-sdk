@@ -75,21 +75,21 @@ public class InAppDialog extends DialogFragment {
         if (tempTdMessageBean.getLayout().equalsIgnoreCase("top") || tempTdMessageBean.getLayout().equalsIgnoreCase("bottom")) {
             ImageView tempImageArrow = (ImageView) fragmentView.findViewById(R.id.td_message_arrow);
             //click target
-            final String type = tempTdMessageBean.getActionType();
-            final String value = tempTdMessageBean.getActionValue();
-            if (type != null && value != null) {
-                tempImageArrow.setVisibility(View.VISIBLE);
-                fragmentView.findViewById(R.id.td_message_root).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //跟踪打开InAppMessage
-                        inAppMessageCallback.callbackTrackOpenInAppMessage(tempTdMessageBean);
-                        openPage(type, value);
-                    }
-                });
-            } else {
-                tempImageArrow.setVisibility(View.GONE);
-            }
+//            final String type = tempTdMessageBean.getActionType();
+//            final String value = tempTdMessageBean.getActionValue();
+//            if (type != null && value != null) {
+//                tempImageArrow.setVisibility(View.VISIBLE);
+//                fragmentView.findViewById(R.id.td_message_root).setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        //跟踪打开InAppMessage
+//                        inAppMessageCallback.callbackTrackOpenInAppMessage(tempTdMessageBean);
+//                        openPage(type, value);
+//                    }
+//                });
+//            } else {
+//                tempImageArrow.setVisibility(View.GONE);
+//            }
 
             //show message
             TextView tempTextView = (TextView) fragmentView.findViewById(R.id.td_message_tv);
@@ -156,7 +156,7 @@ public class InAppDialog extends DialogFragment {
         int width = rootView.findViewById(R.id.td_root_container).getWidth();
         int height = rootView.findViewById(R.id.td_root_container).getHeight();
 
-        int[] datas = TdDisplayTool.configDisplayForFullScreen(getActivity().getApplicationContext(), width, height, tempTdMessageBean.isPortrait());
+        int[] datas = TdDisplayTool.configDisplayForFullScreen(getActivity().getApplicationContext(), width, height, true);
 
         RelativeLayout lq_page_out_container = (RelativeLayout) rootView.findViewById(R.id.td_message_root);
         ImageView coverImageView = (ImageView) rootView.findViewById(R.id.lq_full_iv);
@@ -211,28 +211,28 @@ public class InAppDialog extends DialogFragment {
         }
 
 
-        String closeImageUrl = tempTdMessageBean.getCloseBtn();
-        if (closeImageUrl != null && !closeImageUrl.trim().equals("")) {
-            if (this.imageManager == null) {
-                this.imageManager = new TdImageManager(getActivity().getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
-            }
-            this.imageManager.loadImage(closeImageUrl, lq_page_close_iv, false, 1, null, null, new TdImageManager.ImageLoadListener() {
-
-                @Override
-                public void onLoadComplete() {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onCancelled() {
-                    if (InAppDialog.this != null && !InAppDialog.this.isVisible()) {
-                        lq_page_close_iv.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.td_page_close));
-                    }
-                }
-            });
-        } else {
+//        String closeImageUrl = tempTdMessageBean.getCloseBtn();
+//        if (closeImageUrl != null && !closeImageUrl.trim().equals("")) {
+//            if (this.imageManager == null) {
+//                this.imageManager = new TdImageManager(getActivity().getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
+//            }
+//            this.imageManager.loadImage(closeImageUrl, lq_page_close_iv, false, 1, null, null, new TdImageManager.ImageLoadListener() {
+//
+//                @Override
+//                public void onLoadComplete() {
+//                    // TODO Auto-generated method stub
+//                }
+//
+//                @Override
+//                public void onCancelled() {
+//                    if (InAppDialog.this != null && !InAppDialog.this.isVisible()) {
+//                        lq_page_close_iv.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.td_page_close));
+//                    }
+//                }
+//            });
+//        } else {
             lq_page_close_iv.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.td_page_close));
-        }
+//        }
 
     }
 

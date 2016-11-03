@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@drawable/popup_box">
+            android:background="@drawable/popup_box_template">
 
             <ImageView
                 android:id="@+id/imageIV"
@@ -63,7 +63,7 @@
             android:layout_marginBottom="16dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="东北人活雷锋" />
+            android:text="东北人活雷锋东北人活雷锋东北人活雷锋东北人" />
 
         <ImageButton
             android:background="@android:color/transparent"

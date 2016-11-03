@@ -22,8 +22,6 @@ import java.util.Map.Entry;
 
 public class TongDaoDataTool {
 
-    public Boolean mAnonymous = true;
-
     public JSONObject makeInfoProperties(@NonNull Context appContext, String gaid) throws JSONException {
         TongDaoAppInfoTool appInfoTool = new TongDaoAppInfoTool();
         TongDaoSavingTool savingTool = new TongDaoSavingTool();
@@ -123,6 +121,7 @@ public class TongDaoDataTool {
         }
 
         boolean anonymousSet = savingTool.getAnonymousSet(appContext);
+        boolean mAnonymous = savingTool.getAnonymous(appContext);
         if (!anonymousSet) {
             propertiesObj.put("!anonymous", mAnonymous);
             savingTool.isAnonymousSet(appContext);
@@ -333,13 +332,5 @@ public class TongDaoDataTool {
         Log.i("PlaceOrder from JSON->", "" + propertiesObj.get("!total"));
 
         return propertiesObj;
-    }
-
-    public void setAnonymous(Boolean anonymous) {
-        mAnonymous = anonymous;
-    }
-
-    public Boolean getAnonymous() {
-        return mAnonymous;
     }
 }

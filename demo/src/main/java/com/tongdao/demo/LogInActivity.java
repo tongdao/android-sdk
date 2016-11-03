@@ -54,13 +54,13 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
         switch (v.getId()) {
             case R.id.user1_longin:
-                tongDao.setUserId(LogInActivity.this, "John");
+                tongDao.login(LogInActivity.this, "John");
                 break;
             case R.id.user2_longin:
-                tongDao.setUserId(LogInActivity.this, "Adrien");
+                tongDao.login(LogInActivity.this, "Adrien");
                 break;
             case R.id.logout:
-                tongDao.setUserId(LogInActivity.this, null);
+                tongDao.logout(LogInActivity.this);
                 break;
         }
     }

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
 import com.tongdao.sdk.ui.InAppDialog;
 import com.tongdao.sdk.ui.PopupManager;
+import com.tongdao.sdk.ui.PopupManagerWebView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +72,7 @@ public class TongDaoOO {
 
     public static TongDaoOO getInstance(Application appContext, String appKey){
         TongDaoOO tongDaoOO = new TongDaoOO();
-        tongDaoOO.init(appContext,appKey);
+        tongDaoOO.init(appContext,appKey,null);
         return tongDaoOO;
     }
 
@@ -78,29 +80,6 @@ public class TongDaoOO {
         TongDaoOO tongDaoOO = new TongDaoOO();
         tongDaoOO.init(appContext,appKey,userId);
         return tongDaoOO;
-    }
-
-    /**
-     * Initialize the Tongdao SDK. Call this from your application's onCreate method.
-     *
-     * @param appContext Your application object
-     * @param appKey     Your AppKey
-     * @return boolean   true if the SDK initialized correctly, false otherwise
-     */
-    private boolean init(Application appContext, String appKey) {
-        String deviceId = generateDeviceId(appContext);
-        dataTool = new TongDaoDataTool();
-        savingTool = new TongDaoSavingTool();
-        activityCallback = new TongDaoActivityCallback(appContext,this);
-        registerApplication(appContext);
-        if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
-            tongDaoBridge = new TongDaoBridge(appContext, appKey, deviceId, deviceId);
-            tongDaoBridge.init();
-            onAppSessionStart();
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -118,7 +97,7 @@ public class TongDaoOO {
         activityCallback = new TongDaoActivityCallback(appContext,this);
         registerApplication(appContext);
         if(null == userId){
-            if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(userId)) {
+            if (TongDaoCheckTool.isValidKey(appKey) && !TongDaoCheckTool.isEmpty(deviceId)) {
                 tongDaoBridge = new TongDaoBridge(appContext, appKey, deviceId, deviceId);
                 savingTool.setAnonymous(appContext, true);
                 tongDaoBridge.init();
@@ -141,35 +120,31 @@ public class TongDaoOO {
     }
 
     /**
-     * Set the user ID
+     * Log user out
      *
-     * @param userId The User ID to be set
      * @return void
      */
-    public void setUserId(Context appContext, String userId){
-        if(null == userId){
-            if(!savingTool.getAnonymous(appContext)){
-                savingTool.saveUserInfoData(appContext, generateDeviceId(appContext), generateDeviceId(appContext), true);
-                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, generateDeviceId(appContext));
-            }
-        }else{
-            if(savingTool.getAnonymous(appContext)){
-                savingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
-                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.merge, generateDeviceId(appContext), userId);
-            }else{
-                savingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
-                tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, generateDeviceId(appContext), userId);
-            }
+    public void logout(Context appContext){
+        if(!savingTool.getAnonymous(appContext)){
+            savingTool.saveUserInfoData(appContext, generateDeviceId(appContext), generateDeviceId(appContext), true);
+            tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, null, generateDeviceId(appContext));
         }
     }
 
     /**
-     * Set the RewardUnlockedListener for the SDK
+     * Log user in
      *
-     * @param onRewardUnlockedListener Your RewardUnlockedListener
+     * @param userId The User ID to be set
+     * @return void
      */
-    public void registerOnRewardUnlockedListener(OnRewardUnlockedListener onRewardUnlockedListener) {
-        rewardUnlockedListener = onRewardUnlockedListener;
+    public void login(Context appContext, @NonNull String userId){
+        if(savingTool.getAnonymous(appContext)){
+            savingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
+            tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.merge, generateDeviceId(appContext), userId);
+        }else{
+            savingTool.saveUserInfoData(appContext, userId, generateDeviceId(appContext), false);
+            tongDaoBridge.changePropertiesAndUserId(ACTION_TYPE.identify, generateDeviceId(appContext), userId);
+        }
     }
 
     /**
@@ -710,54 +685,83 @@ public class TongDaoOO {
      * @param activity The Activity in which to display the message
      */
     public void displayInAppMessage(final Activity activity) {
-        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean("https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323","Lorem inpsum bacon magnus est. Bacon will save the world.",4l, Constants.POPUP_MIDDLE_TEMPLATE,"asd","asdad",1220l,123l,null,true,"sasd","God of Bacon","Jump",576,1024), new InAppMessageCallback() {
-            @Override
-            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
-                trackOpenInAppMessage(tdMessageBean);
-            }
-
-            @Override
-            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-                trackReceivedInAppMessage(tdMessageBean);
-            }
-        });
-        inAppDialog.showInAppDialog();
-//        downloadInAppMessages(new OnDownloadInAppMessageListener() {
+//        TdMessageBean messageBean = new TdMessageBean(30200,1220l,123l,"我跟你说猪肉是天下第我跟你说猪肉是天下第我跟你说猪肉是天下第","我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃","https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323",4l, Constants.POPUP_MIDDLE_TEMPLATE,null,null);
+//        InAppMessageCallback messageCallback = new InAppMessageCallback() {
 //            @Override
-//            public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
-//                if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()) {
-//                    activity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            PopupManager inAppDialog = new PopupManager(activity,tdMessageBeanList.get(0), new InAppMessageCallback() {
-//                                @Override
-//                                public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
-//                                    trackOpenInAppMessage(tdMessageBean);
-//                                }
-//
-//                                @Override
-//                                public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-//                                    trackReceivedInAppMessage(tdMessageBean);
-//                                }
-//                            });
-//                            inAppDialog.showInAppDialog();
-//                        }
-//                    });
-//                }
+//            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+//                trackOpenInAppMessage(tdMessageBean);
 //            }
-//        }, new OnErrorListener() {
+//
 //            @Override
-//            public void onError(final TdErrorBean errorBean) {
-//                if (activity != null && !activity.isFinishing()) {
-//                    activity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(activity.getApplicationContext(), "" + errorBean.getErrorCode() + ":" + errorBean.getErrorMsg(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                }
+//            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+//                trackReceivedInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackOpenMessage(TdMessageBean tdMessageBean) {
+//
+//            }
+//        };
+//        PopupManagerWebView popupManagerWebView = new PopupManagerWebView(messageBean,messageCallback);
+//        popupManagerWebView.displayPopup(activity);
+//        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean(30200,1220l,123l,"我跟你说猪肉是天下第我跟你说猪肉是天下第我跟你说猪肉是天下第","我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃","https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323",4l, Constants.POPUP_MIDDLE_TEMPLATE,null,null), new InAppMessageCallback() {
+//            @Override
+//            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+//                trackOpenInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+//                trackReceivedInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackOpenMessage(TdMessageBean tdMessageBean) {
+//
 //            }
 //        });
+//        inAppDialog.showInAppDialog();
+        downloadInAppMessages(new OnDownloadInAppMessageListener() {
+            @Override
+            public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
+                if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PopupManager inAppDialog = new PopupManager(activity,tdMessageBeanList.get(0), new InAppMessageCallback() {
+                                @Override
+                                public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+                                    trackOpenInAppMessage(tdMessageBean);
+                                }
+
+                                @Override
+                                public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+                                    trackReceivedInAppMessage(tdMessageBean);
+                                }
+
+                                @Override
+                                public void callbackOpenMessage(TdMessageBean tdMessageBean) {
+
+                                }
+                            });
+                            inAppDialog.showInAppDialog();
+                        }
+                    });
+                }
+            }
+        }, new OnErrorListener() {
+            @Override
+            public void onError(final TdErrorBean errorBean) {
+                if (activity != null && !activity.isFinishing()) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(activity.getApplicationContext(), "" + errorBean.getErrorCode() + ":" + errorBean.getErrorMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**

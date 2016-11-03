@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.tongdao.sdk.beans.TdErrorBean;
 import com.tongdao.sdk.beans.TdEventBean;
 import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
+import com.tongdao.sdk.beans.TdMessageAction;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdMessageButtonBean;
 import com.tongdao.sdk.beans.TdRewardBean;
@@ -41,13 +42,14 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_DISPLAY_TIME = "display_time";
     private static final String TD_MESSAGE_LAYOUT = "layout";
     private static final String TD_MESSAGE_ACTION = "action";
+    private static final String TD_MESSAGE_ACTION_TEXT = "text";
     private static final String TD_MESSAGE_ACTION_TYPE = "type";
     private static final String TD_MESSAGE_ACTION_VALUE = "value";
-    private static final String TD_MESSAGE_IS_PORTRAIT = "is_portrait";
     private static final String TD_MESSAGE_BUTTONS = "buttons";
-    private static final String TD_MESSAGE_CLOSE_BUTTON = "close_btn";
     private static final String TD_MESSAGE_CID = "cid";
     private static final String TD_MESSAGE_MID = "mid";
+    private static final String TD_MESSAGE_MIN_SDK = "min_sdk";
+    private static final String TD_MESSAGE_TITLE = "title";
     private final String LOCK = "lock";
 
     //instance variables
@@ -546,21 +548,23 @@ public class TongDaoBridge {
             JSONObject contentObj = arrayObj.getJSONObject(i);
             String imageUrl = TongDaoJsonTool.optJsonString(contentObj, TD_MESSAGE_IMG_URL);
             String message = TongDaoJsonTool.optJsonString(contentObj, TD_MESSAGE);
+            String title = TongDaoJsonTool.optJsonString(contentObj, TD_MESSAGE_TITLE);
             long displayTime = contentObj.optLong(TD_MESSAGE_DISPLAY_TIME);
             long cid = contentObj.optLong(TD_MESSAGE_CID);
             long mid = contentObj.optLong(TD_MESSAGE_MID);
+            long minSdk = contentObj.optLong(TD_MESSAGE_MIN_SDK);
             String layout = TongDaoJsonTool.optJsonString(contentObj, TD_MESSAGE_LAYOUT);
             String actionType = null;
             String actionValue = null;
+            String actionText = null;
+            TdMessageAction messageAction = null;
             JSONObject actionObj = contentObj.optJSONObject(TD_MESSAGE_ACTION);
             if (actionObj != null) {
+                actionText = TongDaoJsonTool.optJsonString(actionObj,TD_MESSAGE_ACTION_TEXT);
                 actionType = TongDaoJsonTool.optJsonString(actionObj, TD_MESSAGE_ACTION_TYPE);
                 actionValue = TongDaoJsonTool.optJsonString(actionObj, TD_MESSAGE_ACTION_VALUE);
+                messageAction = new TdMessageAction(actionText,actionType,actionValue);
             }
-
-            boolean isPortrait = contentObj.optBoolean(TD_MESSAGE_IS_PORTRAIT);
-            //the close button image url
-            String closeBtnUrl = TongDaoJsonTool.optJsonString(contentObj, TD_MESSAGE_CLOSE_BUTTON);
 
             //in app message buttons
             ArrayList<TdMessageButtonBean> buttonsList = new ArrayList<TdMessageButtonBean>();
@@ -586,7 +590,7 @@ public class TongDaoBridge {
                 }
             }
 
-            beanList.add(new TdMessageBean(imageUrl, message, displayTime, layout, actionType, actionValue, cid, mid, buttonsList, isPortrait, closeBtnUrl));
+            beanList.add(new TdMessageBean(minSdk,cid,mid,title,message,imageUrl,displayTime,layout,messageAction,buttonsList));
         }
 
         return beanList;
