@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     PackageManager pm;
     String packageName;
-    private TongDaoOO tongDao;
+    TongDaoOO tongDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         this.findViewById(R.id.page4_tv).setOnClickListener(this);
         this.findViewById(R.id.page5_tv).setOnClickListener(this);
         this.findViewById(R.id.page6_tv).setOnClickListener(this);
+        this.findViewById(R.id.identify_tv).setOnClickListener(this);
+        this.findViewById(R.id.track_tv).setOnClickListener(this);
 
         this.loadBtns();
 
@@ -176,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
+        tongDao.onSessionEnd(this);
     }
 
     private void refreshReward() throws JSONException {
@@ -471,6 +474,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 PaymentDialog paymentDialog = PaymentDialog.newInstance(getApplication());
                 paymentDialog.setArguments(args);
                 paymentDialog.show(fm, "frg_payment");
+                return;
+            case R.id.identify_tv:
+                tongDao = TongDaoOO.getInstance(getApplication(),DataTool.APP_KEY);
+                return;
+            case R.id.track_tv:
+                tongDao.track("trackTestingName");
                 return;
         }
 

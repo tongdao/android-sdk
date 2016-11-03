@@ -50,6 +50,32 @@
             android:paddingRight="20dp"></LinearLayout>
 
         <TextView
+            android:id="@+id/identify_tv"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/button_selector"
+            android:textColor="#FFFFFF"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Identify"></TextView>
+
+        <TextView
+            android:id="@+id/track_tv"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/button_selector"
+            android:textColor="#FFFFFF"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Track"></TextView>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="22dp"
