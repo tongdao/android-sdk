@@ -99,7 +99,7 @@ public class TongDaoAppInfoToolTest {
         when(mockTelephonyManager.getDeviceId()).thenReturn(testImei);
         JSONObject emptyObject = new JSONObject();
         appInfoTool.getImeiInfos(mockContext,emptyObject);
-        assertThat("Objects not equal",expectedResult,equalTo(emptyObject.toString()));
+        assertThat("Objects not equal. Result: " + emptyObject.toString(),expectedResult,equalTo(emptyObject.toString()));
     }
 
     @Test
