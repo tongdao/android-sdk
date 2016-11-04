@@ -89,6 +89,7 @@ public class TongDaoAppInfoToolTest {
         String testPackageName = "com.tongdao.test";
         String testImei = "353490061927915";
         String expectedResult = "{\"!imei\":\"353490061927915\",\"!imei_md5\":\"7696de438d2de019506ff7346c57d010\",\"!imei_sha1\":\"4e3b63326bcfe15318c8118e70c7e664885462b4\"}";
+        JSONObject expectedResultJson = new JSONObject(expectedResult);
         Context mockContext = mock(Context.class);
         TelephonyManager mockTelephonyManager = mock(TelephonyManager.class);
         PackageManager mockPackageManager = mock(PackageManager.class);
@@ -99,7 +100,7 @@ public class TongDaoAppInfoToolTest {
         when(mockTelephonyManager.getDeviceId()).thenReturn(testImei);
         JSONObject emptyObject = new JSONObject();
         appInfoTool.getImeiInfos(mockContext,emptyObject);
-        assertThat("Objects not equal. Result: " + emptyObject.toString(),expectedResult,equalTo(emptyObject.toString()));
+        assertThat("Objects not equal. Result: " + emptyObject.toString(),expectedResultJson.toString(),equalTo(emptyObject.toString()));
     }
 
     @Test
