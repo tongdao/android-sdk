@@ -6,13 +6,7 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDaoOO;
-import com.tongdao.sdk.beans.TdRewardBean;
-import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
-
-import org.json.JSONException;
-
-import java.util.ArrayList;
+import com.tongdao.sdk.TongDao;
 
 public class DemoPage1 extends AppCompatActivity {
     @Override
@@ -46,7 +40,7 @@ public class DemoPage1 extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
+        TongDao tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
         tongDao.displayInAppMessage(this);
     }
 

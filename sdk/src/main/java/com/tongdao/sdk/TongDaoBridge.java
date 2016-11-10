@@ -11,7 +11,6 @@ import com.tongdao.sdk.beans.TdEventBean.ACTION_TYPE;
 import com.tongdao.sdk.beans.TdMessageAction;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdMessageButtonBean;
-import com.tongdao.sdk.beans.TdRewardBean;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
 import com.tongdao.sdk.interfaces.TdHttpResponseHandler;
@@ -45,7 +44,9 @@ public class TongDaoBridge {
     private static final String TD_MESSAGE_ACTION_TEXT = "text";
     private static final String TD_MESSAGE_ACTION_TYPE = "type";
     private static final String TD_MESSAGE_ACTION_VALUE = "value";
+    private static final String TD_MESSAGE_IS_PORTRAIT = "is_portrait";
     private static final String TD_MESSAGE_BUTTONS = "buttons";
+    private static final String TD_MESSAGE_CLOSE_BUTTON = "close_btn";
     private static final String TD_MESSAGE_CID = "cid";
     private static final String TD_MESSAGE_MID = "mid";
     private static final String TD_MESSAGE_MIN_SDK = "min_sdk";
@@ -565,6 +566,9 @@ public class TongDaoBridge {
                 actionValue = TongDaoJsonTool.optJsonString(actionObj, TD_MESSAGE_ACTION_VALUE);
                 messageAction = new TdMessageAction(actionText,actionType,actionValue);
             }
+            boolean isPortrait = contentObj.optBoolean(TD_MESSAGE_IS_PORTRAIT);
+            //the close button image url
+            String closeBtnUrl = TongDaoJsonTool.optJsonString(contentObj, TD_MESSAGE_CLOSE_BUTTON);
 
             //in app message buttons
             ArrayList<TdMessageButtonBean> buttonsList = new ArrayList<TdMessageButtonBean>();
@@ -590,7 +594,7 @@ public class TongDaoBridge {
                 }
             }
 
-            beanList.add(new TdMessageBean(minSdk,cid,mid,title,message,imageUrl,displayTime,layout,messageAction,buttonsList));
+            beanList.add(new TdMessageBean(minSdk,cid,mid,title,message,imageUrl,displayTime,layout,messageAction,buttonsList,isPortrait));
         }
 
         return beanList;

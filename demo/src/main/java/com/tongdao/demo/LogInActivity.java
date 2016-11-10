@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.tongdao.sdk.TongDaoOO;
+import com.tongdao.sdk.TongDao;
 
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
@@ -51,7 +51,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         return super.onOptionsItemSelected(item);
     }
     public void onClick(View v) {
-        TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
+        TongDao tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
         switch (v.getId()) {
             case R.id.user1_longin:
                 tongDao.login(LogInActivity.this, "John");

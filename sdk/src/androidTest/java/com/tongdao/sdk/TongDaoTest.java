@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class TongDaoOOTest {
+public class TongDaoTest {
     @Before
     public void setUp() throws Exception {
 

@@ -8,7 +8,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.tongdao.sdk.beans.TdErrorBean;
@@ -24,7 +23,6 @@ import com.tongdao.sdk.enums.TdGender;
 import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.interfaces.OnDownloadInAppMessageListener;
 import com.tongdao.sdk.interfaces.OnErrorListener;
-import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
 import com.tongdao.sdk.session.TongDaoActivityCallback;
 import com.tongdao.sdk.tools.Log;
 import com.tongdao.sdk.tools.TongDaoCheckTool;
@@ -32,9 +30,7 @@ import com.tongdao.sdk.tools.TongDaoDataTool;
 import com.tongdao.sdk.tools.TongDaoDeviceUuidFactory;
 import com.tongdao.sdk.tools.TongDaoJsonTool;
 import com.tongdao.sdk.tools.TongDaoSavingTool;
-import com.tongdao.sdk.ui.InAppDialog;
 import com.tongdao.sdk.ui.PopupManager;
-import com.tongdao.sdk.ui.PopupManagerWebView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +48,7 @@ import java.util.List;
  * Deeplink formatting:
  * scheme://any_deeplink?0Qpage=page_id
  */
-public class TongDaoOO {
+public class TongDao {
     //constants
     private static final String PAGE_ID = "pageId";
     private static final String MESSAGE = "td_message";
@@ -63,23 +59,22 @@ public class TongDaoOO {
     private static final String VALUE_TAG = "tongrd_value";
 
     //SDK components, dependencies
-    private OnRewardUnlockedListener rewardUnlockedListener;
     private TongDaoBridge tongDaoBridge;
     private TongDaoDataTool dataTool;
     private TongDaoSavingTool savingTool;
     private TongDaoActivityCallback activityCallback;
 
 
-    public static TongDaoOO getInstance(Application appContext, String appKey){
-        TongDaoOO tongDaoOO = new TongDaoOO();
-        tongDaoOO.init(appContext,appKey,null);
-        return tongDaoOO;
+    public static TongDao getInstance(Application appContext, String appKey){
+        TongDao tongDao = new TongDao();
+        tongDao.init(appContext,appKey,null);
+        return tongDao;
     }
 
-    public static TongDaoOO getInstance(Application appContext, String appKey, String userId){
-        TongDaoOO tongDaoOO = new TongDaoOO();
-        tongDaoOO.init(appContext,appKey,userId);
-        return tongDaoOO;
+    public static TongDao getInstance(Application appContext, String appKey, String userId){
+        TongDao tongDao = new TongDao();
+        tongDao.init(appContext,appKey,userId);
+        return tongDao;
     }
 
     /**
@@ -685,68 +680,11 @@ public class TongDaoOO {
      * @param activity The Activity in which to display the message
      */
     public void displayInAppMessage(final Activity activity) {
-//        TdMessageBean messageBean = new TdMessageBean(30200,1220l,123l,"我跟你说猪肉是天下第我跟你说猪肉是天下第我跟你说猪肉是天下第","我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃","https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323",4l, Constants.POPUP_MIDDLE_TEMPLATE,null,null);
-//        InAppMessageCallback messageCallback = new InAppMessageCallback() {
-//            @Override
-//            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
-//                trackOpenInAppMessage(tdMessageBean);
-//            }
-//
-//            @Override
-//            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-//                trackReceivedInAppMessage(tdMessageBean);
-//            }
-//
-//            @Override
-//            public void callbackOpenMessage(TdMessageBean tdMessageBean) {
-//
-//            }
-//        };
-//        PopupManagerWebView popupManagerWebView = new PopupManagerWebView(messageBean,messageCallback);
-//        popupManagerWebView.displayPopup(activity);
-//        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean(30200,1220l,123l,"我跟你说猪肉是天下第我跟你说猪肉是天下第我跟你说猪肉是天下第","我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃","https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323",4l, Constants.POPUP_MIDDLE_TEMPLATE,null,null), new InAppMessageCallback() {
-//            @Override
-//            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
-//                trackOpenInAppMessage(tdMessageBean);
-//            }
-//
-//            @Override
-//            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-//                trackReceivedInAppMessage(tdMessageBean);
-//            }
-//
-//            @Override
-//            public void callbackOpenMessage(TdMessageBean tdMessageBean) {
-//
-//            }
-//        });
-//        inAppDialog.showInAppDialog();
         downloadInAppMessages(new OnDownloadInAppMessageListener() {
             @Override
             public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
                 if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            PopupManager inAppDialog = new PopupManager(activity,tdMessageBeanList.get(0), new InAppMessageCallback() {
-                                @Override
-                                public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
-                                    trackOpenInAppMessage(tdMessageBean);
-                                }
-
-                                @Override
-                                public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
-                                    trackReceivedInAppMessage(tdMessageBean);
-                                }
-
-                                @Override
-                                public void callbackOpenMessage(TdMessageBean tdMessageBean) {
-
-                                }
-                            });
-                            inAppDialog.showInAppDialog();
-                        }
-                    });
+                    showInAppMessage(activity,tdMessageBeanList);
                 }
             }
         }, new OnErrorListener() {
@@ -760,6 +698,38 @@ public class TongDaoOO {
                         }
                     });
                 }
+            }
+        });
+    }
+
+    private void showInAppMessage(final Activity activity, final ArrayList<TdMessageBean> tdMessageBeanList){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                PopupManager inAppDialog = new PopupManager(activity,tdMessageBeanList.remove(0), new InAppMessageCallback() {
+                    @Override
+                    public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+                        trackOpenInAppMessage(tdMessageBean);
+                    }
+
+                    @Override
+                    public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+                        trackReceivedInAppMessage(tdMessageBean);
+                    }
+
+                    @Override
+                    public void callbackOpenMessage(TdMessageBean tdMessageBean) {
+
+                    }
+
+                    @Override
+                    public void callbackMessageClosed() {
+                        if (tdMessageBeanList.size() > 0 && activity != null && !activity.isFinishing()){
+                            showInAppMessage(activity,tdMessageBeanList);
+                        }
+                    }
+                });
+                inAppDialog.showInAppDialog();
             }
         });
     }

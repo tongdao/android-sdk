@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-import com.tongdao.sdk.TongDaoOO;
+import com.tongdao.sdk.TongDao;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ public class TongDaoActivityCallback implements Application.ActivityLifecycleCal
     private Context context;
     private boolean isAppBroughtToBackground = false;
     private boolean shouldTrackActivity = false;
-    private TongDaoOO tongDao;
+    private TongDao tongDao;
 
-    public TongDaoActivityCallback(Application context, TongDaoOO tongDao) {
+    public TongDaoActivityCallback(Application context, TongDao tongDao) {
         this.context = context;
         this.tongDao = tongDao;
 

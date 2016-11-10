@@ -17,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.tongdao.sdk.TongDaoOO;
+import com.tongdao.sdk.TongDao;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -28,13 +28,13 @@ public class PaymentDialog extends DialogFragment {
 
     Button btn_payment;
     EditText etx_quantity, etx_price;
-    TongDaoOO tongDao;
+    TongDao tongDao;
 
     public PaymentDialog() {
 
     }
 
-    public void setTongDao(TongDaoOO tongDao){
+    public void setTongDao(TongDao tongDao){
         this.tongDao = tongDao;
     }
 
@@ -101,7 +101,7 @@ public class PaymentDialog extends DialogFragment {
     }
 
     public static PaymentDialog newInstance(Application applicationContext) {
-        TongDaoOO tongDao = ((TongDaoShowApplication)applicationContext).getTongDao();
+        TongDao tongDao = ((TongDaoShowApplication)applicationContext).getTongDao();
         PaymentDialog frag = new PaymentDialog();
         frag.setTongDao(tongDao);
         return frag;

@@ -5,7 +5,6 @@ import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.widget.LinearLayout;
 
-import com.tongdao.sdk.TongDaoOO;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.tools.Log;
 

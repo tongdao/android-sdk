@@ -40,14 +40,6 @@
             android:paddingRight="20dp"
             android:text="Custom prizes"></TextView>
 
-        <LinearLayout
-            android:id="@+id/rewards_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="20dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"></LinearLayout>
 
         <TextView
             android:id="@+id/identify_tv"

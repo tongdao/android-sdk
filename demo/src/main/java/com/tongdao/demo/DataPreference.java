@@ -14,8 +14,6 @@ public class DataPreference {
 
     private static final String BK_STRING = "BK_STRING";
 
-    private static final String REWARD_JSON_STRING = "REWARD_JSON_STRING";
-
     public static String getBtnJsonString(Context appContext) {
         SharedPreferences sp = appContext.getSharedPreferences(USER_DATA, Context.MODE_PRIVATE);
         return sp.getString(BTN_JSON_STRING, null);
@@ -40,15 +38,4 @@ public class DataPreference {
         editor.commit();
     }
 
-    public static String getRewardJsonString(Context appContext) {
-        SharedPreferences sp = appContext.getSharedPreferences(USER_DATA, Context.MODE_PRIVATE);
-        return sp.getString(REWARD_JSON_STRING, null);
-    }
-
-    public static void setRewardJsonString(Context appContext, String rewardJsonString) {
-        SharedPreferences sp = appContext.getSharedPreferences(USER_DATA, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(REWARD_JSON_STRING, rewardJsonString);
-        editor.commit();
-    }
 }

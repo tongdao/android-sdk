@@ -9,16 +9,17 @@
     android:paddingRight="12dp">
 
     <ImageView
-        android:id="@+id/td_message_iv"
+        android:id="@+id/imageIV"
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:contentDescription="@string/lq_gb_icon"
         android:layout_marginRight="10dp"
-        android:background="@drawable/td_in_app_icon" />
+        android:background="@drawable/td_in_app_icon"
+        android:visibility="gone"/>
 
 
     <TextView
-        android:id="@+id/td_message_tv"
+        android:id="@+id/messageTV"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.tongdao.sdk.R;
-import com.tongdao.sdk.TongDaoOO;
 import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.beans.TdMessageButtonBean;
 import com.tongdao.sdk.interfaces.InAppMessageCallback;
@@ -92,11 +90,11 @@ public class InAppDialog extends DialogFragment {
 //            }
 
             //show message
-            TextView tempTextView = (TextView) fragmentView.findViewById(R.id.td_message_tv);
+            TextView tempTextView = (TextView) fragmentView.findViewById(R.id.messageTV);
             tempTextView.setText(tempTdMessageBean.getMessage() == null ? "" : tempTdMessageBean.getMessage());
 
             //show img or not
-            ImageView tempImageView = (ImageView) fragmentView.findViewById(R.id.td_message_iv);
+            ImageView tempImageView = (ImageView) fragmentView.findViewById(R.id.imageIV);
             String imageUrl = tempTdMessageBean.getImageUrl();
             if (imageUrl != null && !imageUrl.trim().equals("")) {
                 tempImageView.setVisibility(View.VISIBLE);

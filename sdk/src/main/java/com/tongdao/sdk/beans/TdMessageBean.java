@@ -21,8 +21,9 @@ public class TdMessageBean implements Serializable {
     private String layout;
     private TdMessageAction messageAction;
     private ArrayList<TdMessageButtonBean> buttons;
+    private boolean isPortrait;
 
-    public TdMessageBean(long minSdk, long cid, long mid, String title, String message, String imageUrl, long displayTime, String layout, TdMessageAction messageAction, ArrayList<TdMessageButtonBean> buttons) {
+    public TdMessageBean(long minSdk, long cid, long mid, String title, String message, String imageUrl, long displayTime, String layout, TdMessageAction messageAction, ArrayList<TdMessageButtonBean> buttons, boolean isPortrait) {
         this.minSdk = minSdk;
         this.cid = cid;
         this.mid = mid;
@@ -33,6 +34,7 @@ public class TdMessageBean implements Serializable {
         this.layout = layout;
         this.messageAction = messageAction;
         this.buttons = buttons;
+        this.isPortrait = isPortrait;
     }
 
     public String getMessage() {
@@ -69,6 +71,10 @@ public class TdMessageBean implements Serializable {
 
     public long getMinSdk() {
         return minSdk;
+    }
+
+    public boolean isPortrait() {
+        return isPortrait;
     }
 
     public TdMessageAction getMessageAction() {

@@ -11,4 +11,5 @@ public interface InAppMessageCallback {
     void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean);
     void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean);
     void callbackOpenMessage(TdMessageBean tdMessageBean);
+    void callbackMessageClosed();
 }

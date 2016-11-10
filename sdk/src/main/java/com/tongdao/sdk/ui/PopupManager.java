@@ -37,9 +37,11 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
     private TdMessageBean tdMessageBean;
     private Activity activity;
     private ViewGroup rootView;
+    private ViewGroup contentRootView;
     private LinearLayout popupView;
     private int screenWidth;
     private int screenHeight;
+    private int contentWidth;
     private int contentHeight;
     private int margin;
     private int statusBar;
@@ -102,9 +104,11 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
         }
         topRootView = (ViewGroup) activity.getWindow().getDecorView();
         bottomRootView = (ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content);
+        contentRootView = (ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content);
         screenWidth = activity.getWindow().getDecorView().getWidth();
         screenHeight = activity.getWindow().getDecorView().getHeight();
         contentHeight = activity.getWindow().getDecorView().findViewById(android.R.id.content).getHeight();
+        contentWidth = activity.getWindow().getDecorView().findViewById(android.R.id.content).getWidth();
         margin = TdDisplayUtil.getRawPixel(activity, 4);
         statusBar = TdDisplayUtil.getRawPixel(activity, 25);
         popupHeight = TdDisplayUtil.getRawPixel(activity, 80);
@@ -115,7 +119,7 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
         if (activity == null || activity.getWindow() == null || activity.getWindow().getDecorView() == null) {
             return;
         }
-        popupView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.td_popup_small,null);
+        popupView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.td_app_message_body,null);
 
     }
 
@@ -138,13 +142,13 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
     }
 
     private void setLayoutItems(){
-        TextView titleTV = (TextView) popupView.findViewById(R.id.titleTV);
+//        TextView titleTV = (TextView) popupView.findViewById(R.id.titleTV);
         TextView messageTV = (TextView) popupView.findViewById(R.id.messageTV);
         ImageButton closeIV = (ImageButton) popupView.findViewById(R.id.closeIV);
-        Button ctaButton = (Button) popupView.findViewById(R.id.ctaButton);
-        if (tdMessageBean.getTitle() != null && tdMessageBean.getTitle().length()>0 && titleTV != null){
-            titleTV.setText(tdMessageBean.getTitle());
-        }
+//        Button ctaButton = (Button) popupView.findViewById(R.id.ctaButton);
+//        if (tdMessageBean.getTitle() != null && tdMessageBean.getTitle().length()>0 && titleTV != null){
+//            titleTV.setText(tdMessageBean.getTitle());
+//        }
         if (tdMessageBean.getMessage() != null && tdMessageBean.getMessage().length()>0 && messageTV != null){
             messageTV.setText(tdMessageBean.getMessage());
         }
@@ -156,12 +160,15 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
                 }
             });
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                closePopup();
-            }
-        },tdMessageBean.getDisplayTime() * 1000L);
+        long displayTime = tdMessageBean.getDisplayTime();
+        if (displayTime > 0) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    closePopup();
+                }
+            },tdMessageBean.getDisplayTime() * 1000L);
+        }
     }
 
     private void closePopup(){
@@ -322,6 +329,13 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
             this.imageManager = new TdImageManager(activity.getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
             this.imageManager.loadImage(imageUrl, imageIV, false, 1, null, null,this);
         } else {
+            if (tdMessageBean.getLayout().equalsIgnoreCase(POPUP_TOP) || tdMessageBean.getLayout().equalsIgnoreCase(POPUP_BOTTOM)){
+                if (imageIV != null){
+                    imageIV.setVisibility(View.GONE);
+                }
+                setLayoutItems();
+                showNotification();
+            }
         }
     }
 
@@ -331,21 +345,29 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
         }
         topRootView.removeView(popupView);
         bottomRootView.removeView(popupView);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth - margin * 2, popupHeight);
+        popupWidth = Math.min(screenWidth,screenHeight) - margin * 2;
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(popupWidth, popupHeight);
 
 
         int popupTop;
+        int popupLeft;
 
         switch (tdMessageBean.getLayout()){
             case POPUP_TOP:
                 PopupManager.this.rootView = topRootView;
                 tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
                 popupView.setTranslationY(margin + statusBar);
+                popupView.setTranslationX((screenWidth - popupWidth) / 2);
+                popupView.setLayoutParams(layoutParams);
+                rootView.addView(popupView,layoutParams);
                 break;
             case POPUP_BOTTOM:
                 PopupManager.this.rootView = bottomRootView;
                 tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 1, Animation.RELATIVE_TO_SELF, 0);
                 popupView.setTranslationY(contentHeight - margin - popupHeight);
+                popupView.setTranslationX((screenWidth - popupWidth) / 2);
+                popupView.setLayoutParams(layoutParams);
+                contentRootView.addView(popupView,layoutParams);
                 break;
             case POPUP_MIDDLE_TEMPLATE:
                 PopupManager.this.rootView = topRootView;
@@ -359,6 +381,9 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
                 objectAnimator.setRepeatCount(0);
                 objectAnimator.start();
                 popupView.setTranslationY(top);
+                popupView.setTranslationX(margin);
+                popupView.setLayoutParams(layoutParams);
+                rootView.addView(popupView,layoutParams);
                 break;
             case POPUP_MIDDLE_FULL:
                 PopupManager.this.rootView = topRootView;
@@ -369,21 +394,37 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
                 layoutParams = new LinearLayout.LayoutParams(popupWidth,popupHeight);
                 tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
                 popupView.setTranslationY(popupTop);
+                popupView.setTranslationX(margin);
+                popupView.setLayoutParams(layoutParams);
+                rootView.addView(popupView,layoutParams);
                 break;
             case POPUP_CENTER:
                 PopupManager.this.rootView = topRootView;
                 darkenScreen();
-                popupWidth = screenWidth - margin * 2;
-//                popupHeight = (int)((popupWidth * tdMessageBean.getImageHeight()) / tdMessageBean.getImageWidth());
+                popupWidth = contentWidth - margin * 2;
+                if(tdMessageBean.isPortrait()){
+                    //portrait
+                    popupHeight = (int)(popupWidth * 1.7);
+                    if(popupHeight>contentHeight){
+                        popupHeight = contentHeight - margin * 2;
+                        popupWidth = (int)((double)popupHeight / 1.7);
+                    }
+                }else{
+                    //landscape
+                    popupHeight = (int)((double)popupWidth / 1.7);
+                }
                 popupTop = (screenHeight - popupHeight) / 2;
+                popupLeft = (screenWidth - popupWidth) / 2;
                 layoutParams = new LinearLayout.LayoutParams(popupWidth,popupHeight);
                 tempTranslateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
+                popupView.setLayoutParams(layoutParams);
+                rootView.addView(popupView,layoutParams);
                 popupView.setTranslationY(popupTop);
+                popupView.setTranslationX(popupLeft);
                 break;
         }
-        popupView.setLayoutParams(layoutParams);
-        rootView.addView(popupView,layoutParams);
-        popupView.setTranslationX(margin);
+
+
         if (tempTranslateAnimation != null){
             tempTranslateAnimation.setDuration(DURATION);
             popupView.startAnimation(tempTranslateAnimation);
@@ -396,22 +437,7 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
     @Override
     public void onLoadComplete() {
         setLayoutItems();
-        switch (tdMessageBean.getLayout()){
-            case POPUP_TOP:
-                showNotification();
-                break;
-            case POPUP_MIDDLE_FULL:
-                showNotification();
-                break;
-            case POPUP_MIDDLE_TEMPLATE:
-                showNotification();
-                break;
-            case POPUP_BOTTOM:
-                showNotification();
-                break;
-            default:
-                return;
-        }
+        showNotification();
     }
 
     @Override

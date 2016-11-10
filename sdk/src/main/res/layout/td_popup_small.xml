@@ -20,7 +20,8 @@
         android:id="@+id/titleAndTextLayout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3">
+        android:layout_weight="3"
+        android:paddingLeft="4dp">
         <TextView
             android:id="@+id/titleTV"
             android:layout_width="match_parent"
@@ -61,7 +62,8 @@
             android:text="Thise"
             android:maxLines="1"
             android:ellipsize="end"
-            android:layout_gravity="bottom"/>
+            android:layout_gravity="bottom"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </LinearLayout>

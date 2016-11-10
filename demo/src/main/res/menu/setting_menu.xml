@@ -18,10 +18,4 @@
         android:title="设置背景"
         app:showAsAction="always"></item>
 
-    <item
-        android:id="@+id/setting_jp_item"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="设置奖品"
-        app:showAsAction="always"></item>
-
 </menu>

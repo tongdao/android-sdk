@@ -1,18 +1,12 @@
 package com.tongdao.demo;
 
-import java.util.ArrayList;
-
-import org.json.JSONException;
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDaoOO;
-import com.tongdao.sdk.beans.TdRewardBean;
-import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.sdk.TongDao;
 
 public class DemoPage2 extends AppCompatActivity {
     @Override
@@ -32,7 +26,7 @@ public class DemoPage2 extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        TongDaoOO tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
+        TongDao tongDao = ((TongDaoShowApplication)getApplication()).getTongDao();
         tongDao.displayInAppMessage(this);
     }
 

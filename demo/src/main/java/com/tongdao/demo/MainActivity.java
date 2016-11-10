@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,9 +29,7 @@ import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
-import com.tongdao.sdk.TongDaoOO;
-import com.tongdao.sdk.beans.TdRewardBean;
-import com.tongdao.sdk.interfaces.OnRewardUnlockedListener;
+import com.tongdao.sdk.TongDao;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
@@ -46,12 +43,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     private LinearLayout btnContainer;
-    private LinearLayout rewardsContainer;
     private ImageView mainCn;
     private Bitmap bm;
-    private LayoutInflater inflater;
     private static final int SAMPLE_SIZE = 4;
-    private ArrayList<Bitmap> rewardBitmaps = new ArrayList<Bitmap>();
     private Uri bkUri;
 
     private PushAgent mPushAgent;
@@ -59,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     PackageManager pm;
     String packageName;
-    TongDaoOO tongDao;
+    TongDao tongDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +67,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         setContentView(R.layout.activity_main);
 
 
-        this.inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mainCn = (ImageView) this.findViewById(R.id.main_cn);
         this.btnContainer = (LinearLayout) this.findViewById(R.id.btn_container);
-        this.rewardsContainer = (LinearLayout) this.findViewById(R.id.rewards_container);
         this.findViewById(R.id.page1_tv).setOnClickListener(this);
         this.findViewById(R.id.page2_tv).setOnClickListener(this);
         this.findViewById(R.id.page3_tv).setOnClickListener(this);
@@ -140,11 +132,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            refreshReward();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         tongDao.displayInAppMessage(this);
     }
 
@@ -179,38 +166,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         tongDao.onSessionEnd(this);
     }
 
-    private void refreshReward() throws JSONException {
-        if (!this.isFinishing()) {
-            ArrayList<TransferRewardBean> tempRewards = DataTool.recoverTempRewards(this);
-            ArrayList<TransferRewardBean> allOldRewards = DataTool.getAllRewardBeans();
-//
-            ArrayList<TransferRewardBean> newRewards = new ArrayList<TransferRewardBean>();
-            for (TransferRewardBean eachNewTransferRewardBean : tempRewards) {
-                boolean isExist = false;
-                for (TransferRewardBean eachOldTransferRewardBean : allOldRewards) {
-                    if (eachOldTransferRewardBean.getRewardSku().equals(eachNewTransferRewardBean.getRewardSku())) {
-                        int newNum = eachOldTransferRewardBean.getNum() + eachNewTransferRewardBean.getNum();
-                        eachOldTransferRewardBean.setNum(newNum);
-                        eachOldTransferRewardBean.setRewardName(eachNewTransferRewardBean.getRewardName());
-                        //update ui
-                        updateRewardNum(eachNewTransferRewardBean.getRewardName(), eachNewTransferRewardBean.getRewardSku(), eachNewTransferRewardBean.getNum());
-                        isExist = true;
-                        break;
-                    }
-                }
-
-                if (!isExist) {
-                    //add new to ui
-                    addRewardItem(eachNewTransferRewardBean);
-                    newRewards.add(eachNewTransferRewardBean);
-                }
-            }
-
-            allOldRewards.addAll(newRewards);
-        }
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.getMenuInflater().inflate(R.menu.setting_menu, menu);
@@ -221,8 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.setting_bk_item) {
             startChangeBk();
-        } else if (item.getItemId() == R.id.setting_jp_item) {
-            startDefineReward();
         } else if (item.getItemId() == R.id.setting_add_item) {
             startDefineBtn();
         } else if(item.getItemId() == R.id.test_userid_item){
@@ -241,11 +194,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private void startDefineBtn() {
         Intent defineIntent = new Intent(this, BtnDefineActivity.class);
         this.startActivityForResult(defineIntent, 999);
-    }
-
-    private void startDefineReward() {
-        Intent defineRewardIntent = new Intent(this, RewardDefineActivity.class);
-        this.startActivityForResult(defineRewardIntent, 997);
     }
 
     @SuppressWarnings("deprecation")
@@ -290,24 +238,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         }
     }
 
-    private void loadAllRewards() {
-        ArrayList<TransferRewardBean> rewardsDatas = DataTool.getAllRewardBeans();
-        for (TransferRewardBean eachTransferRewardBean : rewardsDatas) {
-            addRewardItem(eachTransferRewardBean);
-        }
-    }
-
-    private void updateRewardNum(String name, String sku, int num) {
-        View tempView = this.rewardsContainer.findViewWithTag(sku);
-        if (tempView != null) {
-            TextView numTextView = (TextView) tempView.findViewById(R.id.reward_num_tv);
-            TextView nameTextView = (TextView) tempView.findViewById(R.id.reward_item_name_tv);
-            int currentNum = Integer.parseInt(numTextView.getText().toString()) + num;
-            numTextView.setText(String.valueOf(currentNum));
-            nameTextView.setText(name);
-        }
-    }
-
     @SuppressWarnings("deprecation")
     private void setBk(Uri bkUri) {
         ContentResolver resolver = getContentResolver();
@@ -331,55 +261,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             addBtn(tempTransferBean, datas.size() - 1);
         } else if (requestCode == 998 && resultCode == RESULT_OK) {
             setBk(data.getData());
-        } else if (requestCode == 997 && resultCode == RESULT_OK) {
-            ArrayList<TransferRewardBean> datas = DataTool.getAllRewardBeans();
-            TransferRewardBean tempTransferRewardBean = datas.get(datas.size() - 1);
-            addRewardItem(tempTransferRewardBean);
         }
     }
 
-    @SuppressWarnings("deprecation")
-    @SuppressLint("InflateParams")
-    private void addRewardItem(TransferRewardBean tempTransferRewardBean) {
-        View rewardItem = this.inflater.inflate(R.layout.reward_item, null);
-        ImageView rewardIv = (ImageView) rewardItem.findViewById(R.id.reward_item_iv);
-        TextView rewardNameTv = (TextView) rewardItem.findViewById(R.id.reward_item_name_tv);
-        TextView rewardSkuTv = (TextView) rewardItem.findViewById(R.id.reward_item_sku_tv);
-        TextView rewardNumTv = (TextView) rewardItem.findViewById(R.id.reward_num_tv);
-
-        rewardItem.setTag(tempTransferRewardBean.getRewardSku());
-        rewardNameTv.setText(tempTransferRewardBean.getRewardName());
-        rewardSkuTv.setText(tempTransferRewardBean.getRewardSku());
-        rewardNumTv.setText(String.valueOf(tempTransferRewardBean.getNum()));
-
-        if (tempTransferRewardBean.getPicUri() != null && !tempTransferRewardBean.getPicUri().toString().equals("")) {
-            ContentResolver resolver = getContentResolver();
-            try {
-                BitmapFactory.Options opts = new BitmapFactory.Options();
-                opts.inSampleSize = SAMPLE_SIZE;
-                Bitmap rewardBitmap = BitmapFactory.decodeStream(resolver.openInputStream(tempTransferRewardBean.getPicUri()), null, opts);//MediaStore.Images.Media.getBitmap(resolver, originalUri);
-                rewardIv.setBackgroundDrawable(new BitmapDrawable(rewardBitmap));
-                rewardBitmaps.add(rewardBitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        LinearLayout.LayoutParams tempLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        this.rewardsContainer.addView(rewardItem, tempLayoutParams);
-    }
 
     private void saveBtnsData() {
         try {
             String btns = DataTool.makeBtnsString();
-            String rewards = DataTool.makeRewardsString(DataTool.getAllRewardBeans());
-            if (btns != null || rewards != null || this.bkUri != null) {
+            if (btns != null || this.bkUri != null) {
                 if (btns != null) {
                     DataPreference.setBtnJsonString(MainActivity.this, btns);
-                }
-
-                if (rewards != null) {
-                    DataPreference.setRewardJsonString(MainActivity.this, rewards);
                 }
 
                 if (this.bkUri != null) {
@@ -394,18 +285,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     private void loadBtns() {
         String oldBtnJsonString = null;
-        String oldRewardString = null;
         String bkUriString = null;
 
         oldBtnJsonString = DataPreference.getBtnJsonString(MainActivity.this);
-        oldRewardString = DataPreference.getRewardJsonString(MainActivity.this);
         bkUriString = DataPreference.getBkString(MainActivity.this);
 
         try {
             DataTool.initialBtnDatas(oldBtnJsonString);
-            DataTool.initialRewardDatas(oldRewardString);
             loadAllButtons();
-            loadAllRewards();
 
             if (bkUriString != null && !bkUriString.equals("")) {
                 setBk(Uri.parse(bkUriString));
@@ -422,12 +309,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         if (this.bm != null && !this.bm.isRecycled()) {
             this.bm.recycle();
             this.bm = null;
-        }
-
-        for (Bitmap eachBitmap : this.rewardBitmaps) {
-            if (eachBitmap != null && !eachBitmap.isRecycled()) {
-                eachBitmap.recycle();
-            }
         }
     }
 
@@ -460,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 paymentDialog.show(fm, "frg_payment");
                 return;
             case R.id.identify_tv:
-                tongDao = TongDaoOO.getInstance(getApplication(),DataTool.APP_KEY);
+                tongDao = TongDao.getInstance(getApplication(),DataTool.APP_KEY);
                 return;
             case R.id.track_tv:
                 tongDao.track("trackTestingName");
