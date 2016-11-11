@@ -201,7 +201,7 @@ public class TongDaoDataTool {
     public JSONObject makeRegisterProperties(Date date) throws JSONException {
         String timeString;
         if (date == null) {
-            timeString = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
+            timeString = TongDaoCheckTool.getTimeStamp(getSystemTime());
         } else {
             timeString = TongDaoCheckTool.getTimeStamp(date);
         }
@@ -332,5 +332,9 @@ public class TongDaoDataTool {
         Log.i("PlaceOrder from JSON->", "" + propertiesObj.get("!total"));
 
         return propertiesObj;
+    }
+
+    public long getSystemTime(){
+        return new TongDaoClockTool().currentTimeMillis();
     }
 }

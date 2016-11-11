@@ -33,14 +33,14 @@ public class TdEventBean {
         this.userId = userId;
         this.event = event;
         this.properties = properties;
-        this.timestamp = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
+        this.timestamp = TongDaoCheckTool.getTimeStamp(new TongDaoClockTool().currentTimeMillis());
     }
 
     public TdEventBean(@NonNull ACTION_TYPE action, String userId, String event) {
         this.action = action;
         this.userId = userId;
         this.event = event;
-        this.timestamp = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
+        this.timestamp = TongDaoCheckTool.getTimeStamp(new TongDaoClockTool().currentTimeMillis());
     }
 
     public TdEventBean(@NonNull ACTION_TYPE action, String userId, String previousId, String event, JSONObject properties) {
@@ -49,7 +49,7 @@ public class TdEventBean {
         this.userId = userId;
         this.event = event;
         this.properties = properties;
-        this.timestamp = TongDaoCheckTool.getTimeStamp(TongDaoClockTool.currentTimeMillis());
+        this.timestamp = TongDaoCheckTool.getTimeStamp(currentTimeMillis());
     }
 
     public JSONObject getJsonObject() throws JSONException {
@@ -74,6 +74,10 @@ public class TdEventBean {
         tempJsonObj.put(KEY_TIMESTAMP, this.timestamp);
 
         return tempJsonObj;
+    }
+
+    public long currentTimeMillis(){
+        return new TongDaoClockTool().currentTimeMillis();
     }
 
 }

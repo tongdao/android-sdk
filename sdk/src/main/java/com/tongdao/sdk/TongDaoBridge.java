@@ -75,6 +75,7 @@ public class TongDaoBridge {
     private TongDaoAppInfoTool appInfoTool;
     private TongDaoDataTool dataTool;
     private TongDaoSavingTool savingTool;
+    private TongDaoClockTool clockTool;
 
     private synchronized boolean isCanRun() {
         return canRun;
@@ -95,6 +96,7 @@ public class TongDaoBridge {
         this.appInfoTool = new TongDaoAppInfoTool();
         this.dataTool = new TongDaoDataTool();
         this.savingTool = new TongDaoSavingTool();
+        this.clockTool = new TongDaoClockTool();
         savingTool.saveAppKeyAndUserId(appContext, appKey, userId);
     }
 
@@ -111,6 +113,7 @@ public class TongDaoBridge {
         this.appInfoTool = new TongDaoAppInfoTool();
         this.dataTool = new TongDaoDataTool();
         this.savingTool = new TongDaoSavingTool();
+        this.clockTool = new TongDaoClockTool();
         savingTool.saveUserInfoData(appContext, appKey, userId, previousId, anonymous);
     }
 
@@ -276,7 +279,7 @@ public class TongDaoBridge {
 
     public void onSessionStart(String pageName) {
         this.pageNameStart = pageName;
-        this.startTime = TongDaoClockTool.currentTimeMillis();
+        this.startTime = clockTool.currentTimeMillis();
 
         if (this.pageNameStart == null || this.startTime == 0) {
             return;
@@ -338,7 +341,7 @@ public class TongDaoBridge {
     }
 
     public void onAppSessionStart() {
-        this.startTimeForCloseApp = TongDaoClockTool.currentTimeMillis();
+        this.startTimeForCloseApp = clockTool.currentTimeMillis();
 
         if (this.startTimeForCloseApp == 0) {
             return;
@@ -355,7 +358,7 @@ public class TongDaoBridge {
 
     public TdEventBean onNotificationStatus() {
         int status = (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || utils.isNotificationEnabled()) ? 1 : 0;
-        this.startTime = TongDaoClockTool.currentTimeMillis();
+        this.startTime = clockTool.currentTimeMillis();
 
         if (this.startTime == 0 ||
                 savingTool.getNotificationData(appContext) == status) {

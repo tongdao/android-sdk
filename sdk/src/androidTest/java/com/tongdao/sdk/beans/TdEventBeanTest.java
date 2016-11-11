@@ -5,7 +5,6 @@ package com.tongdao.sdk.beans;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.joda.time.DateTimeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -24,16 +23,6 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 @SmallTest
 public class TdEventBeanTest {
-
-    @Before
-    public void setUp(){
-        DateTimeUtils.setCurrentMillisFixed(1475047297264L);
-    }
-
-    @After
-    public void tearDown(){
-        DateTimeUtils.setCurrentMillisSystem();
-    }
 
     @Test(expected = NullPointerException.class)
     public void testGetJsonObjectNull(){

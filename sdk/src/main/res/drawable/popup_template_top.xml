@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/td_img_background">
-        <shape android:shape="rectangle">
-            <corners android:topLeftRadius="12dp" android:topRightRadius="12dp"></corners>
-            <stroke android:color="@android:color/darker_gray" android:width="1dp"/>
-        </shape>
-    </item>
-</layer-list>

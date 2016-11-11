@@ -1,6 +1,5 @@
 package com.tongdao.sdk.tools;
 
-import org.joda.time.DateTimeUtils;
 
 /**
  * Created by agonch on 9/28/16.
@@ -8,7 +7,7 @@ import org.joda.time.DateTimeUtils;
 
 public class TongDaoClockTool {
 
-    public static long currentTimeMillis(){
-        return DateTimeUtils.currentTimeMillis();
+    public long currentTimeMillis(){
+        return System.currentTimeMillis();
     }
 }

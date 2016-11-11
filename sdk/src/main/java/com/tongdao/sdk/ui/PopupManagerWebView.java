@@ -46,7 +46,7 @@ public class PopupManagerWebView{
             webView.setWebContentsDebuggingEnabled(true);
         }
         webView.setInitialScale(50);
-        webView.addJavascriptInterface(new TongDaoWebviewInterface(rootView,popupView,activity,callback),"TongDao");
+        webView.addJavascriptInterface(new TongDaoWebviewInterface(rootView,popupView,activity,callback),"tongdao");
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {

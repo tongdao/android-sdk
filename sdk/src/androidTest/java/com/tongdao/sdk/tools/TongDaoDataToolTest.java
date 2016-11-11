@@ -12,13 +12,13 @@ import com.tongdao.sdk.beans.TdProduct;
 import com.tongdao.sdk.beans.TdSource;
 import com.tongdao.sdk.enums.TdAppStore;
 
-import org.joda.time.DateTimeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import java.util.ArrayList;
 import java.util.Currency;
@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.IsEqual.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by agonch on 10/8/16.
@@ -137,7 +138,7 @@ public class TongDaoDataToolTest{
 
     @Test
     public void makeRegisterProperties() throws Exception {
-        DateTimeUtils.setCurrentMillisFixed(1475047297264L);
+        when(dataTool.getSystemTime()).thenReturn(1475047297264L);
 
         JSONObject result = dataTool.makeRegisterProperties(null);
         JSONObject expected = new JSONObject("{\"!register_at\":\"2016-09-28T07:21:37.264Z\"}");

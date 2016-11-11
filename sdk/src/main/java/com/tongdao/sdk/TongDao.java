@@ -680,6 +680,47 @@ public class TongDao {
      * @param activity The Activity in which to display the message
      */
     public void displayInAppMessage(final Activity activity) {
+        //        TdMessageBean messageBean = new TdMessageBean(30200,1220l,123l,"我跟你说猪肉是天下第我跟你说猪肉是天下第我跟你说猪肉是天下第","我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃","https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323",4l, Constants.POPUP_MIDDLE_TEMPLATE,null,null);
+//        InAppMessageCallback messageCallback = new InAppMessageCallback() {
+//            @Override
+//            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+//                trackOpenInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+//                trackReceivedInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackOpenMessage(TdMessageBean tdMessageBean) {
+//
+//            }
+//        };
+//        PopupManagerWebView popupManagerWebView = new PopupManagerWebView(messageBean,messageCallback);
+//        popupManagerWebView.displayPopup(activity);
+//        PopupManager inAppDialog = new PopupManager(activity, new TdMessageBean(30200,1220l,123l,"我跟你说猪肉是天下第我跟你说猪肉是天下第我跟你说猪肉是天下第","我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃我跟你说猪肉是天下第一。 那么好吃，味道那么好～～ 快来吃","https://0qian-production-ugc.oss-cn-hangzhou.aliyuncs.com/6f3d952334d5e2edd08c8ec3f843a323",4l, Constants.POPUP_CENTER,null,null,true), new InAppMessageCallback() {
+//            @Override
+//            public void callbackTrackOpenInAppMessage(TdMessageBean tdMessageBean) {
+//                trackOpenInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackTrackReceivedInAppMessage(TdMessageBean tdMessageBean) {
+//                trackReceivedInAppMessage(tdMessageBean);
+//            }
+//
+//            @Override
+//            public void callbackOpenMessage(TdMessageBean tdMessageBean) {
+//
+//            }
+//
+//            @Override
+//            public void callbackMessageClosed() {
+//
+//            }
+//        });
+//        inAppDialog.showInAppDialog();
         downloadInAppMessages(new OnDownloadInAppMessageListener() {
             @Override
             public void onSuccess(final ArrayList<TdMessageBean> tdMessageBeanList) {
