@@ -62,9 +62,9 @@ ext {
 
     libraryVersion = '3.2.0-beta'
 
-    developerId = 'adrien'
-    developerName = 'Adrien Moreau'
-    developerEmail = 'adrien@tongrd.com'
+    developerId = 'mcs2k8'
+    developerName = 'Alexander Goncharov'
+    developerEmail = 'alex@tongdao.io'
 
     licenseName = 'The MIT Software License'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
@@ -85,7 +85,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -102,6 +102,14 @@ android {
     }
     dexOptions{
         dexInProcess = false
+    }
+    productFlavors{
+        mini{
+
+        }
+        full{
+
+        }
     }
 }
 

@@ -16,8 +16,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="4dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/td_in_app_icon" />
+            android:scaleType="centerCrop"/>
 
         <Button
             android:id="@+id/ctaButton1"

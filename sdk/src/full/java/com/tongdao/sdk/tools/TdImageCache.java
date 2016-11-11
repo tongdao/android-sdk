@@ -77,7 +77,7 @@ public class TdImageCache {
                  */
                 @Override
                 protected int sizeOf(String key, Bitmap bitmap) {
-                    return TdUtils.getBitmapSize(bitmap);
+                    return TongDaoUtils.getBitmapSize(bitmap);
                 }
             };
         }
@@ -105,7 +105,7 @@ public class TdImageCache {
                     if (!diskCacheDir.exists()) {
                         diskCacheDir.mkdirs();
                     }
-                    if (TdUtils.getUsableSpace(diskCacheDir) > imageCacheParams.diskCacheSize) {
+                    if (TongDaoUtils.getUsableSpace(diskCacheDir) > imageCacheParams.diskCacheSize) {
                         try {
                             mDiskLruCache = TdDiskLruCache.open(diskCacheDir, 1, 1, imageCacheParams.diskCacheSize);
                         } catch (IOException e) {
@@ -148,7 +148,7 @@ public class TdImageCache {
             if (mDiskLruCache != null) {
                 InputStream inputStream = null;
                 try {
-                    TdDiskLruCache.Snapshot snapshot = mDiskLruCache.get(TdUtils.hashKeyForDisk(data));
+                    TdDiskLruCache.Snapshot snapshot = mDiskLruCache.get(TongDaoUtils.hashKeyForDisk(data));
                     if (snapshot != null) {
                         inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
                         if (inputStream != null) {
@@ -259,7 +259,7 @@ public class TdImageCache {
         public boolean initDiskCacheOnCreate = DEFAULT_INIT_DISK_CACHE_ON_CREATE;
 
         public ImageCacheParams(Context context, String uniqueName) {
-            diskCacheDir = TdUtils.getDiskCacheDir(context, uniqueName);
+            diskCacheDir = TongDaoUtils.getDiskCacheDir(context, uniqueName);
         }
 
         public ImageCacheParams(File diskCacheDir) {
@@ -308,7 +308,7 @@ public class TdImageCache {
         synchronized (mDiskCacheLock) {
             // Add to disk cache
             if (mDiskLruCache != null) {
-                final String key = TdUtils.hashKeyForDisk(data);
+                final String key = TongDaoUtils.hashKeyForDisk(data);
                 OutputStream out = null;
                 try {
                     TdDiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);
@@ -319,10 +319,10 @@ public class TdImageCache {
                             boolean editSuccess = false;
                             switch (source) {
                                 case NETWORK:
-                                    editSuccess = TdUtils.downloadUrlToStream(data, out);
+                                    editSuccess = TongDaoUtils.downloadUrlToStream(data, out);
                                     break;
                                 case FILE:
-                                    editSuccess = TdUtils.copyFileToStream(filePath, out);
+                                    editSuccess = TongDaoUtils.copyFileToStream(filePath, out);
                                     break;
                                 default:
                                     editSuccess = bitmap != null && bitmap.compress(DEFAULT_COMPRESS_FORMAT, 100, out);

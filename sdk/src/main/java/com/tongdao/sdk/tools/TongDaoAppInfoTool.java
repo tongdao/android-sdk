@@ -47,9 +47,6 @@ public class TongDaoAppInfoTool {
     private static final String CONNECTION_TYPE_MOBILE_EVDO_A = "EVDO_A";
     private static final String CONNECTION_TYPE_MOBILE_GPRS = "GPRS";
     private static final String CONNECTION_TYPE_MOBILE_UMTS = "UMTS";
-    public static final String ACCESS_COARSE_LOCATION_PERMISSION = "android.permission.ACCESS_COARSE_LOCATION";
-    public static final String ACCESS_FINE_LOCATION_PERMISSION = "android.permission.ACCESS_FINE_LOCATION";
-    public static final String ACCESS_TELEPHONY_PERMISSION = "android.permission.READ_PHONE_STATE";
     private static final String OS_NAME = "android";
     private static final String UNKNOWN = "unknown";
     private static final String PHONE_SERVICE = "phone";

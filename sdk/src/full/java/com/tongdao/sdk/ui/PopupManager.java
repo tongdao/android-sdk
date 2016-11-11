@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,7 +18,7 @@ import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.tools.TdDisplayUtil;
 import com.tongdao.sdk.tools.TdImageManager;
-import com.tongdao.sdk.tools.TdUtils;
+import com.tongdao.sdk.tools.TongDaoUtils;
 
 import static com.tongdao.sdk.config.Constants.*;
 
@@ -326,7 +325,7 @@ public class PopupManager implements TdImageManager.ImageLoadListener{
         String imageUrl = tdMessageBean.getImageUrl();
         ImageView imageIV = (ImageView) popupView.findViewById(R.id.imageIV);
         if (imageUrl != null && !imageUrl.trim().equals("") && imageIV != null) {
-            this.imageManager = new TdImageManager(activity.getApplicationContext(), TdUtils.HTTP_CACHE_DIR);
+            this.imageManager = new TdImageManager(activity.getApplicationContext(), TongDaoUtils.HTTP_CACHE_DIR);
             this.imageManager.loadImage(imageUrl, imageIV, false, 1, null, null,this);
         } else {
             if (tdMessageBean.getLayout().equalsIgnoreCase(POPUP_TOP) || tdMessageBean.getLayout().equalsIgnoreCase(POPUP_BOTTOM)){

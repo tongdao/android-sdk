@@ -14,7 +14,6 @@ import com.tongdao.sdk.beans.TdMessageBean;
 import com.tongdao.sdk.interfaces.InAppMessageCallback;
 import com.tongdao.sdk.interfaces.TongDaoWebviewInterface;
 import com.tongdao.sdk.tools.Log;
-import com.tongdao.sdk.tools.TdImageManager;
 
 /**
  * Created by agonch on 11/1/16.

@@ -23,8 +23,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="1dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/td_in_app_icon" />
+                android:scaleType="centerCrop" />
 
             <LinearLayout
                 android:layout_width="match_parent"
