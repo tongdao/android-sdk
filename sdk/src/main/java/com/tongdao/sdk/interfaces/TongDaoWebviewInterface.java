@@ -1,5 +1,6 @@
 package com.tongdao.sdk.interfaces;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
@@ -19,6 +20,12 @@ public class TongDaoWebviewInterface {
     Activity activity;
     TdMessageBean tdMessageBean;
     InAppMessageCallback callback;
+    int screenWidth;
+    int screenHeight;
+    int width;
+    int height;
+    int top;
+    int left;
 
     public TongDaoWebviewInterface(ViewGroup container, LinearLayout popup, Activity activity, InAppMessageCallback callback) {
         this.container = container;
@@ -40,6 +47,8 @@ public class TongDaoWebviewInterface {
                 @Override
                 public void run() {
                     container.addView(popup,params);
+                    float[] animation = {-screenHeight,top};
+                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(popup,"y",animation);
                 }
             });
         }
@@ -49,12 +58,17 @@ public class TongDaoWebviewInterface {
     public void setSize(int width, int height){
         Log.i("Popup Manager WebView","set size: " + width + "," + height);
         params = new LinearLayout.LayoutParams(width,height);
+        width = width;
+        height = height;
     }
 
     @JavascriptInterface
     public void positionPopup(int x, int y){
         popup.setTranslationX(x);
         popup.setTranslationY(y);
+        top = y;
+        left = x;
+
     }
 
     @JavascriptInterface
@@ -81,7 +95,7 @@ public class TongDaoWebviewInterface {
 
     @JavascriptInterface
     public void openMessage(){
-
+        callback.callbackOpenMessage(tdMessageBean);
     }
 
     @JavascriptInterface
